@@ -1,5 +1,7 @@
 package com.joymeter.task;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
 
     @Autowired
     private static String cron = "0 0 0/%s * * ?";
-    private static final String analysisRate = PropertiesUtils.getProperty("analysisRate", "30");
+    private static final String analysisRate = PropertiesUtils.getProperty("analysisRate", "1");
     private static final Logger logger = Logger.getLogger(ScheduledForDynamicCron.class.getName());
     private static final String queryUrl = PropertiesUtils.getProperty("queryUrl","");
     private static final String postUrl = PropertiesUtils.getProperty("postUrl","");
@@ -34,7 +36,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
             taskRegistrar.addTriggerTask(() -> {
                 getTotalDataByType();
             }, (triggerContext) -> {
-                //定时任务触发，可修改定时任务的执行周期，默认30分钟
+                //定时任务触发，可修改定时任务的执行周期，1小时
                 CronTrigger trigger = new CronTrigger(String.format(cron, analysisRate));
                 return trigger.nextExecutionTime(triggerContext);
             });
@@ -49,7 +51,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
     public void getTotalDataByType(){
         for (String type : types) {
             try {
-                String result = HttpClient.sendPost(queryUrl, "{\"query\":\"" + String.format(Queries.QUERY_TYPE_DATA, type) + "\"}");
+                String result = HttpClient.sendPost(queryUrl, String.format(Queries.QUERY_TYPE_DATA, type));
                 String data = result.contains("sumdata")?result.substring(result.indexOf(":")+1,result.indexOf("}")):"0";
                 HttpClient.sendPost(postUrl, "{\"type\":\"" + type + "\",\"data\":\"" + data + "\",\"datetime\":\"" + System.currentTimeMillis() + "\"}");
             }catch (Exception e) {
@@ -57,4 +59,23 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
             }
         }
     }
+    
+    /**
+     * 计算离线设备数量
+     * @return
+     */
+    public int getOfflineCount() {
+    	String result = HttpClient.sendPost(queryUrl,Queries.QUERY_OFFLINE_DEVICEID);  //获取离线设备Id
+        JSONArray jarray = JSONArray.parseArray(result);
+        int offlinecount = 0;
+        for(Object ja:jarray) {
+       	 	JSONObject job = JSONObject.parseObject(ja.toString());
+            System.out.println(job.get("deviceId"));
+            //根据设备Id获取设备最后的在线离线事件
+            JSONArray rArray = JSONArray.parseArray(HttpClient.sendPost(queryUrl,String.format(Queries.QUERY_DEVICEID_STATUS, job.get("deviceId"))));              
+            if(JSONObject.parseObject(rArray.getString(0)).get("event").equals("offline"))
+           	 offlinecount++;
+        }
+        return offlinecount;
+	}
 }
