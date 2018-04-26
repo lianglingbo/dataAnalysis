@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * 定时采集设备耗能信息，并存入Druid数据库中
+ * 定时统计设备耗能信息，并存入Druid数据库中
  */
 @Service
 public class ScheduledForDynamicCron implements SchedulingConfigurer {
