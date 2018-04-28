@@ -42,6 +42,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
         try {
             taskRegistrar.addTriggerTask(() -> {
                 getTotalDataByType();
+                getOfflineCount();
             }, (triggerContext) -> {
                 //定时任务触发，可修改定时任务的执行周期，1小时
                 CronTrigger trigger = new CronTrigger(String.format(cron, analysisRate));
@@ -92,6 +93,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
     public int getOfflineCount() {
     	String result = HttpClient.sendPost(queryUrl,QUERY_OFFLINE_DEVICEID);  //获取离线设备Id
         JSONArray jarray = JSONArray.parseArray(result);
+        if(jarray.isEmpty()) return 0;
         int offlinecount = 0;
         for(Object ja:jarray) {
        	 	JSONObject job = JSONObject.parseObject(ja.toString());
