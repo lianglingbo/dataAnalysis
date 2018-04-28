@@ -38,7 +38,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
                 || (types==null || (types!=null && types.length==0))) return;
         try {
             taskRegistrar.addTriggerTask(() -> {
-                //getTotalDataByType();
+                getTotalDataByType();
             }, (triggerContext) -> {
                 //定时任务触发，可修改定时任务的执行周期，1小时
                 CronTrigger trigger = new CronTrigger(String.format(cron, analysisRate));
