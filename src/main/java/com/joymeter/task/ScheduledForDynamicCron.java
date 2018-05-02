@@ -42,7 +42,7 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
         try {
             taskRegistrar.addTriggerTask(() -> {
                 getTotalDataByType();
-                getOfflineCount();
+                setOfflineRate();
             }, (triggerContext) -> {
                 //定时任务触发，可修改定时任务的执行周期，1小时
                 CronTrigger trigger = new CronTrigger(String.format(cron, analysisRate));
