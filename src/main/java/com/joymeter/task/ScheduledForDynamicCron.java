@@ -5,9 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -19,7 +17,7 @@ import java.util.logging.Logger;
  * 2.定时计算离线设备数量
  */
 @Service
-public class ScheduledForDynamicCron implements SchedulingConfigurer {
+public class ScheduledForDynamicCron {
 
     @Autowired
     private static String cron = "0 0 0/%s * * ?";
@@ -34,23 +32,16 @@ public class ScheduledForDynamicCron implements SchedulingConfigurer {
     private static final String QUERY_DEVICEID_STATUS = PropertiesUtils.getProperty("QUERY_DEVICEID_STATUS","");
     private static final String QUERY_TOTAL_DEVICEID = PropertiesUtils.getProperty("QUERY_TOTAL_DEVICEID","");
     
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+    
+    //定时任务每天每小时执行一次
+    @Scheduled(cron = "0 0 0/1 * * ?")
+    public void configureTasks( ) {
         if (StringUtils.isEmpty(queryUrl) || StringUtils.isEmpty(postEnUrl)
         		|| StringUtils.isEmpty(postOfUrl)
                 || (types==null || (types!=null && types.length==0))) return;
-        try {
-            taskRegistrar.addTriggerTask(() -> {
+       
                 getTotalDataByType();
-                getOfflineCount();
-            }, (triggerContext) -> {
-                //定时任务触发，可修改定时任务的执行周期，1小时
-                CronTrigger trigger = new CronTrigger(String.format(cron, analysisRate));
-                return trigger.nextExecutionTime(triggerContext);
-            });
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, null, e);
-        }
+                setOfflineRate();
     }
     
     /**

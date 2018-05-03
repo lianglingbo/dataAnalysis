@@ -18,6 +18,7 @@ public class DruidServieImpl implements DruidService{
 	private static final Logger logger = Logger.getLogger(DruidServieImpl.class.getName());
 	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
 	
+	
 	/**
      * 保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
      * "type":"1","event":"data","data":"","datetime":"1513576307290"}
@@ -45,4 +46,6 @@ public class DruidServieImpl implements DruidService{
     		logger.log(Level.SEVERE, null, e);
 		}
     }
+ 
+    
 }
