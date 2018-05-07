@@ -19,9 +19,6 @@ import java.util.logging.Logger;
 @Service
 public class ScheduledForDynamicCron {
 
-    @Autowired
-    private static String cron = "0 0 0/%s * * ?";
-    private static final String analysisRate = PropertiesUtils.getProperty("analysisRate", "1");
     private static final Logger logger = Logger.getLogger(ScheduledForDynamicCron.class.getName());
     private static final String queryUrl = PropertiesUtils.getProperty("queryUrl","");
     private static final String postEnUrl = PropertiesUtils.getProperty("postEnUrl","");
@@ -48,10 +45,12 @@ public class ScheduledForDynamicCron {
      * 获取不同类型设备总耗能并存入Druid
      */
     public void getTotalDataByType(){
+    	String result;
+    	String data;
         for (String type : types) {
             try {
-                String result = HttpClient.sendPost(queryUrl, String.format(QUERY_TYPE_DATA, type));
-                String data = result.contains("sumdata")?result.substring(result.indexOf(":")+1,result.indexOf("}")):"0";
+                result = HttpClient.sendPost(queryUrl, String.format(QUERY_TYPE_DATA, type));
+                data = result.contains("sumdata")?result.substring(result.indexOf(":")+1,result.indexOf("}")):"0";
                 HttpClient.sendPost(postEnUrl, "{\"type\":\"" + type + "\",\"data\":\"" + data + "\",\"datetime\":\"" + System.currentTimeMillis() + "\"}");
             }catch (Exception e) {
                 logger.log(Level.SEVERE,null,e);
@@ -86,11 +85,12 @@ public class ScheduledForDynamicCron {
         JSONArray jarray = JSONArray.parseArray(result);
         if(jarray.isEmpty()) return 0;
         int offlinecount = 0;
+        JSONObject job;
+        JSONArray rArray;
         for(Object ja:jarray) {
-       	 	JSONObject job = JSONObject.parseObject(ja.toString());
-            System.out.println(job.get("deviceId"));
+       	 	job = JSONObject.parseObject(ja.toString());
             //根据设备Id获取设备最后的在线离线事件
-            JSONArray rArray = JSONArray.parseArray(HttpClient.sendPost(queryUrl,String.format(QUERY_DEVICEID_STATUS,job.get("deviceId"))));              
+            rArray = JSONArray.parseArray(HttpClient.sendPost(queryUrl,String.format(QUERY_DEVICEID_STATUS,job.get("deviceId"))));              
             if(JSONObject.parseObject(rArray.getString(0)).get("event").equals("offline"))
            	 offlinecount++;
         }
