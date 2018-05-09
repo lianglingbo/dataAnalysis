@@ -1,5 +1,5 @@
 package com.joymeter.service;
 
-public interface DruidService {
+public interface AnalysisService {
 	void addData(String data);
 }
