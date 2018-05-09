@@ -13,9 +13,9 @@ import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
 
 @Service
-public class AnalysisServieImpl implements AnalysisService{
+public class AnalysisServiceImpl implements AnalysisService{
 	@Autowired
-	private static final Logger logger = Logger.getLogger(AnalysisServieImpl.class.getName());
+	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
 	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
 	
 	
