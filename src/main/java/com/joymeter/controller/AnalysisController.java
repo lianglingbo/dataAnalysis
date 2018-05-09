@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.joymeter.service.DruidService;
+import com.joymeter.service.AnalysisService;
 
 @CrossOrigin("*")
 @RestController
 @RequestMapping("joy")
-public class DruidController {
+public class AnalysisController {
 	@Autowired
-	private DruidService druidService;
+	private AnalysisService druidService;
 	
 	@RequestMapping("/addData")
     public void addData(@RequestParam("data") String data) {
