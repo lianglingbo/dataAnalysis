@@ -46,6 +46,12 @@ public class AnalysisServieImpl implements AnalysisService{
     		logger.log(Level.SEVERE, null, e);
 		}
     }
+
+
+	@Override
+	public void updateStatus(String data) {
+		 
+	}
  
     
 }
