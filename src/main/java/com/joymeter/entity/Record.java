@@ -26,18 +26,6 @@ public class Record {
 		this.status = jsonObject.getString("status");
 	}
 	
-	public Record(long deviceId, String projectName, String province, String city, String district, String community,
-			String status) {
-		super();
-		this.deviceId = deviceId;
-		this.projectName = projectName;
-		this.province = province;
-		this.city = city;
-		this.district = district;
-		this.community = community;
-		this.status = status;
-	}
-	
 	public long getDeviceId() {
 		return deviceId;
 	}
