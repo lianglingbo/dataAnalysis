@@ -1,5 +1,7 @@
 package com.joymeter.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,8 @@ public class AnalysisController {
 		analysisService.updateStatus(data);
 	}
 	
-	@RequestMapping("/showData")
-	public Map<String, String> showData(@RequestParam("param")String param){
-		return null;
+	@RequestMapping("/getOffline")
+	public List<HashMap<String, Object>> getOffline(@RequestParam("params")String params){
+		return analysisService.getOffline(params);
 	}
 }

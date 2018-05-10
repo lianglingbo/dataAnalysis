@@ -1,5 +1,7 @@
 package com.joymeter.entity;
 
+import com.alibaba.fastjson.JSONObject;
+
 public class Record {
 	private long deviceId;
 	private String projectName;
@@ -11,6 +13,17 @@ public class Record {
 	
 	public Record() {
 		
+	}
+	
+	public Record(JSONObject jsonObject) {
+		super();
+		this.deviceId = jsonObject.getLongValue("deviceId");
+		this.projectName = jsonObject.getString("projectName");
+		this.province = jsonObject.getString("province");
+		this.city = jsonObject.getString("city");
+		this.district = jsonObject.getString("district");
+		this.community = jsonObject.getString("community");
+		this.status = jsonObject.getString("status");
 	}
 	
 	public Record(long deviceId, String projectName, String province, String city, String district, String community,

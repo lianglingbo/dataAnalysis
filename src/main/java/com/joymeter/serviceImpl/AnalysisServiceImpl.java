@@ -1,13 +1,17 @@
 package com.joymeter.serviceImpl;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.joymeter.entity.Record;
 import com.joymeter.mapper.RecordMapper;
 import com.joymeter.service.AnalysisService;
 import com.joymeter.util.HttpClient;
@@ -50,9 +54,31 @@ public class AnalysisServiceImpl implements AnalysisService{
     }
 
 
+	/**
+	 * 更新设备状态
+	 */
 	@Override
 	public void updateStatus(String data) {
 		 
+	}
+
+
+	/**
+	 * 根据参数获取离线数量
+	 */
+	@Override
+	public List<HashMap<String, Object>> getOffline(String params) {
+		if(StringUtils.isEmpty(params)) return null;
+		
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(params);
+			Record record = new Record(jsonObject);
+			
+			return recordMapper.getofflineCount(record);
+		}catch(Exception e){
+			logger.log(Level.SEVERE, null, e);
+		}
+		return null;
 	}
  
     
