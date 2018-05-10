@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.joymeter.mapper.RecordMapper;
 import com.joymeter.service.AnalysisService;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
@@ -15,6 +16,7 @@ import com.joymeter.util.PropertiesUtils;
 @Service
 public class AnalysisServiceImpl implements AnalysisService{
 	@Autowired
+	private RecordMapper recordMapper;
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
 	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
 	
