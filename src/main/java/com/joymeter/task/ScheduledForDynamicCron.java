@@ -98,14 +98,14 @@ public class ScheduledForDynamicCron {
 		for (Object ja : jarray) {
 			job = JSONObject.parseObject(ja.toString());
 			// 根据设备Id获取设备最后的在线离线事件
-			deviceInfo.setDeviceId(job.getLongValue("deviceId"));
+			deviceInfo.setDeviceId(job.getString("deviceId"));
 			rArray = JSONArray.parseArray(
 					HttpClient.sendPost(queryUrl, String.format(QUERY_DEVICEID_STATUS, job.get("deviceId"))));
 			if (JSONObject.parseObject(rArray.getString(0)).get("event").equals("offline")) {
-				deviceInfo.setDeviceState(1);
+				deviceInfo.setDeviceState("1");
 				offlinecount++;
 			} else {
-				deviceInfo.setDeviceState(0);
+				deviceInfo.setDeviceState("0");
 			}
 			deviceInfoMapper.updateDevice(deviceInfo);
 		}

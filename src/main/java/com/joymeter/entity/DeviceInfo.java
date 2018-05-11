@@ -3,8 +3,8 @@ package com.joymeter.entity;
 import com.alibaba.fastjson.JSONObject;
 
 public class DeviceInfo {
-	private long deviceId;
-	private long simId;
+	private String deviceId;
+	private String simId;
 	private String gatewayId;
 	private String project;
 	private String province;
@@ -12,38 +12,78 @@ public class DeviceInfo {
 	private String district;
 	private String community;
 	private String address;
-	private int valveState;
-	private int deviceState;
-	private int simState;
-	private long dataUsed;
-	
+	private String valveState;
+	private String deviceState;
+	private String simState;
+	private String dataUsed;
 
 	public DeviceInfo() {
-		
+
 	}
-	
+
 	public DeviceInfo(JSONObject jsonObject) {
 		super();
-		this.deviceId = jsonObject.getLongValue("deviceId");
-		this.simId = jsonObject.getLongValue("simId");
+		this.deviceId = jsonObject.getString("deviceId");
+		this.simId = jsonObject.getString("simId");
 		this.gatewayId = jsonObject.getString("gatewayId");
-		this.project = jsonObject.getString("projectName");
+		this.project = jsonObject.getString("project");
 		this.province = jsonObject.getString("province");
 		this.city = jsonObject.getString("city");
 		this.district = jsonObject.getString("district");
 		this.community = jsonObject.getString("community");
-		this.valveState = jsonObject.getIntValue("valveState");
-		this.deviceState = jsonObject.getIntValue("deviceState");
-		this.simState = jsonObject.getIntValue("simState");
-		this.dataUsed = jsonObject.getLongValue("dataUsed");
+		this.address = jsonObject.getString("address");
+		this.valveState = jsonObject.getString("valveState");
+		this.deviceState = jsonObject.getString("deviceState");
+		this.simState = jsonObject.getString("simState");
+		this.dataUsed = jsonObject.getString("dataUsed");
 	}
-	
-	public long getSimId() {
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getSimId() {
 		return simId;
 	}
 
-	public void setSimId(long simId) {
+	public void setSimId(String simId) {
 		this.simId = simId;
+	}
+
+	public String getValveState() {
+		return valveState;
+	}
+
+	public void setValveState(String valveState) {
+		this.valveState = valveState;
+	}
+
+	public String getDeviceState() {
+		return deviceState;
+	}
+
+	public void setDeviceState(String deviceState) {
+		this.deviceState = deviceState;
+	}
+
+	public String getSimState() {
+		return simState;
+	}
+
+	public void setSimState(String simState) {
+		this.simState = simState;
+	}
+
+	public String getDataUsed() {
+		return dataUsed;
+	}
+
+	public void setDataUsed(String dataUsed) {
+		this.dataUsed = dataUsed;
 	}
 
 	public String getGatewayId() {
@@ -70,73 +110,36 @@ public class DeviceInfo {
 		this.address = address;
 	}
 
-	public int getValveState() {
-		return valveState;
-	}
-
-	public void setValveState(int valveState) {
-		this.valveState = valveState;
-	}
-
-	public int getDeviceState() {
-		return deviceState;
-	}
-
-	public void setDeviceState(int deviceState) {
-		this.deviceState = deviceState;
-	}
-
-	public int getSimState() {
-		return simState;
-	}
-
-	public void setSimState(int simState) {
-		this.simState = simState;
-	}
-	
-	public long getDeviceId() {
-		return deviceId;
-	}
-	public void setDeviceId(long deviceId) {
-		this.deviceId = deviceId;
-	}
-	public String getProjectName() {
-		return project;
-	}
-	public void setProjectName(String projectName) {
-		this.project = projectName;
-	}
 	public String getProvince() {
 		return province;
 	}
+
 	public void setProvince(String province) {
 		this.province = province;
 	}
+
 	public String getCity() {
 		return city;
 	}
+
 	public void setCity(String city) {
 		this.city = city;
 	}
+
 	public String getDistrict() {
 		return district;
 	}
+
 	public void setDistrict(String district) {
 		this.district = district;
 	}
+
 	public String getCommunity() {
 		return community;
 	}
+
 	public void setCommunity(String community) {
 		this.community = community;
 	}
 
-	public long getDataUsed() {
-		return dataUsed;
-	}
-
-	public void setDataUsed(long dataUsed) {
-		this.dataUsed = dataUsed;
-	}
-	
 }

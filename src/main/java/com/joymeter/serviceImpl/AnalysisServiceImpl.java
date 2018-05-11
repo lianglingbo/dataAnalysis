@@ -30,8 +30,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public void event(String dataStr) {
-		if (StringUtils.isEmpty(dataStr) || druidUrl.equals(""))
-			return;
+		if (StringUtils.isEmpty(dataStr) || druidUrl.equals(""))return;
 		try {
 			JSONObject jsonData = JSONObject.parseObject(dataStr);
 			String serverId = jsonData.getString("serverId");
@@ -57,8 +56,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public void updateStatus(String data) {
-		if (StringUtils.isEmpty(data))
-			return;
+		if (StringUtils.isEmpty(data))return;
 
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
@@ -77,8 +75,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public List<HashMap<String, Object>> getOffline(String params) {
-		if (StringUtils.isEmpty(params))
-			return null;
+		if (StringUtils.isEmpty(params))return null;
 
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(params);
@@ -98,14 +95,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public List<DeviceInfo> getOfflineDevice(String params) {
-		if (StringUtils.isEmpty(params))
-			return null;
+		if (StringUtils.isEmpty(params))return null;
 
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(params);
-			DeviceInfo record = new DeviceInfo(jsonObject);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 
-			return recordMapper.getByParams(record);
+			return recordMapper.getByParams(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -113,13 +109,21 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 	/**
-	 *注册设备相关信息 
+	 * 注册设备相关信息
 	 *
-	 *@param data
+	 * @param data
 	 */
 	@Override
 	public void register(String data) {
-		
+		if (StringUtils.isEmpty(data))return;
+
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(data);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+			recordMapper.insert(deviceInfo);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
 	}
 
 	/**
@@ -129,8 +133,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public void updateSIM(String data) {
-		// TODO Auto-generated method stub
-		
+		if (StringUtils.isEmpty(data))return;
+
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(data);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+			recordMapper.updateSim(deviceInfo);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
 	}
 
 }

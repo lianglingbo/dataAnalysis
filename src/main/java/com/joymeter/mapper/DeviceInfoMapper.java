@@ -16,7 +16,7 @@ import com.joymeter.entity.DeviceInfo;
 import com.joymeter.provider.DeviceInfoProvider;
 
 public interface DeviceInfoMapper {
-	@Select("SELECT * FROM test_record")
+	@Select("SELECT * FROM device_info")
     List<DeviceInfo> getAll();
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
@@ -25,18 +25,18 @@ public interface DeviceInfoMapper {
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectoffline")
     List<HashMap<String, Object>> getofflineCount(DeviceInfo record);
 
-    @Select("SELECT * FROM test_record WHERE deviceId = #{deviceId}")
+    @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(Long deviceId);
     
-    @Insert("INSERT INTO test_record(deviceId,gatewayId,simId,project,province,city,district,community,address,valveState,deviceState,simState,dataUsed) VALUES(#{deviceId},#{gatewayId},#{simId},#{project},#{province},#{city},#{district},#{community},#{address},#{valveState},#{deviceState},#{simState},#{dataUsed})")
-    void Insert(DeviceInfo deviceInfo);
+    @Insert("INSERT INTO device_info(deviceId,gatewayId,simId,project,province,city,district,community,address,valveState,deviceState,simState,dataUsed) VALUES(#{deviceId},#{gatewayId},#{simId},#{project},#{province},#{city},#{district},#{community},#{address},#{valveState},#{deviceState},#{simState},#{dataUsed})")
+    void insert(DeviceInfo deviceInfo);
 
-    @Update("UPDATE test_record SET deviceState=#{deviceState} WHERE deviceId =#{deviceId}")
+    @Update("UPDATE device_info SET deviceState=#{deviceState} WHERE deviceId =#{deviceId}")
     void updateDevice(DeviceInfo deviceInfo);
     
-    @Update("UPDATE test_record SET simState=#{simState},dataUsed=#{dataUsed} WHERE simId =#{simId}")
+    @Update("UPDATE device_info SET simState=#{simState},dataUsed=#{dataUsed} WHERE simId =#{simId}")
     void updateSim(DeviceInfo deviceInfo);
 
-    @Delete("DELETE FROM test_record WHERE deviceId =#{deviceId}")
+    @Delete("DELETE FROM device_info WHERE deviceId =#{deviceId}")
     void delete(Long deviceId);
 }

@@ -15,8 +15,8 @@ public class DeviceInfoProvider {
 		return new SQL() {
 			{
 				SELECT("*");
-				FROM("test_record");
-				if (deviceInfo.getProjectName() != null) {
+				FROM("device_info");
+				if (deviceInfo.getProject() != null) {
 					WHERE("projectName = #{projectName}");
 				}
 				if (deviceInfo.getProvince() != null) {
@@ -31,8 +31,8 @@ public class DeviceInfoProvider {
 				if (deviceInfo.getCommunity() != null) {
 					WHERE("community = #{community}");
 				}
-				if(deviceInfo.getDeviceState()>-1) {
-					WHERE("meterState = #{meterState}");
+				if (deviceInfo.getDeviceState() != null) {
+					WHERE("deviceState = #{deviceState}");
 				}
 			}
 		}.toString();
@@ -49,8 +49,8 @@ public class DeviceInfoProvider {
 		StringBuilder sqlb = new StringBuilder();
 		String column = null;
 		sql.append("SELECT ");
-		sqlb.append(",COUNT(*) as offline from test_record WHERE meterState = '0' ");
-		if (deviceInfo.getProjectName() != null) {
+		sqlb.append(",COUNT(*) as offline from device_info WHERE deviceState = '0' ");
+		if (deviceInfo.getProject() != null) {
 			sqlb.append("and projectName = #{projectName} ");
 			column = "province";
 		} else {
