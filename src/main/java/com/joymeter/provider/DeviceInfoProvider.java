@@ -31,7 +31,7 @@ public class DeviceInfoProvider {
 				if (deviceInfo.getCommunity() != null) {
 					WHERE("community = #{community}");
 				}
-				if(deviceInfo.getMeterState()>-1) {
+				if(deviceInfo.getDeviceState()>-1) {
 					WHERE("meterState = #{meterState}");
 				}
 			}

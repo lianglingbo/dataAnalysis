@@ -32,7 +32,7 @@ public interface DeviceInfoMapper {
     void Insert(DeviceInfo deviceInfo);
 
     @Update("UPDATE test_record SET deviceState=#{deviceState} WHERE deviceId =#{deviceId}")
-    void update(DeviceInfo deviceInfo);
+    void updateDevice(DeviceInfo deviceInfo);
     
     @Update("UPDATE test_record SET simState=#{simState},dataUsed=#{dataUsed} WHERE simId =#{simId}")
     void updateSim(DeviceInfo deviceInfo);

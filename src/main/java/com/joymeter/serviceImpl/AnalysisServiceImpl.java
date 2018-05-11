@@ -64,7 +64,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo record = new DeviceInfo(jsonObject);
 
-			recordMapper.update(record);
+			recordMapper.updateDevice(record);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}

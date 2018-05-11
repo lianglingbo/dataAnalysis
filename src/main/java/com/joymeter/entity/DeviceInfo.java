@@ -78,12 +78,12 @@ public class DeviceInfo {
 		this.valveState = valveState;
 	}
 
-	public int getMeterState() {
+	public int getDeviceState() {
 		return deviceState;
 	}
 
-	public void setMeterState(int meterState) {
-		this.deviceState = meterState;
+	public void setDeviceState(int deviceState) {
+		this.deviceState = deviceState;
 	}
 
 	public int getSimState() {
