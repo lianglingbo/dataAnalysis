@@ -1,6 +1,7 @@
 package com.joymeter.provider;
 
 import org.apache.ibatis.jdbc.SQL;
+import org.springframework.util.StringUtils;
 
 import com.joymeter.entity.DeviceInfo;
 
@@ -16,22 +17,22 @@ public class DeviceInfoProvider {
 			{
 				SELECT("*");
 				FROM("device_info");
-				if (deviceInfo.getProject() != null) {
+				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
 					WHERE("project = #{project}");
 				}
-				if (deviceInfo.getProvince() != null) {
+				if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
 					WHERE("province = #{province}");
 				}
-				if (deviceInfo.getCity() != null) {
+				if (!StringUtils.isEmpty(deviceInfo.getCity())) {
 					WHERE("city = #{city}");
 				}
-				if (deviceInfo.getDistrict() != null) {
+				if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
 					WHERE("district = #{district}");
 				}
-				if (deviceInfo.getCommunity() != null) {
+				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
 					WHERE("community = #{community}");
 				}
-				if (deviceInfo.getDeviceState() != null) {
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
 					WHERE("deviceState = #{deviceState}");
 				}
 			}
@@ -50,21 +51,21 @@ public class DeviceInfoProvider {
 		String column = null;
 		sql.append("SELECT ");
 		sqlb.append(",COUNT(*) as offline from device_info WHERE deviceState = '0' ");
-		if (deviceInfo.getProject() != null) {
+		if (!StringUtils.isEmpty(deviceInfo.getProject())) {
 			sqlb.append("and project = #{project} ");
 			column = "province";
 		} else {
 			column = "project";
 		}
-		if (deviceInfo.getProvince() != null) {
+		if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
 			sqlb.append("and province = #{province} ");
 			column = "city";
 		}
-		if (deviceInfo.getCity() != null) {
+		if (!StringUtils.isEmpty(deviceInfo.getCity())) {
 			sqlb.append("and city = #{city} ");
 			column = "district";
 		}
-		if (deviceInfo.getDistrict() != null) {
+		if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
 			sqlb.append("and district = #{district} ");
 			column = "community";
 		}

@@ -18,7 +18,7 @@ import com.joymeter.util.PropertiesUtils;
 @Service
 public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
-	private DeviceInfoMapper deviceInfoMapper;
+	private DeviceInfoMapper recordMapper;
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
 	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
 
@@ -62,7 +62,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo record = new DeviceInfo(jsonObject);
 
-			deviceInfoMapper.updateDevice(record);
+			recordMapper.updateDevice(record);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -81,7 +81,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			JSONObject jsonObject = JSONObject.parseObject(params);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 
-			return deviceInfoMapper.getofflineCount(deviceInfo);
+			return recordMapper.getofflineCount(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -101,7 +101,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			JSONObject jsonObject = JSONObject.parseObject(params);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 
-			return deviceInfoMapper.getByParams(deviceInfo);
+			return recordMapper.getByParams(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -120,7 +120,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
-			deviceInfoMapper.insert(deviceInfo);
+			recordMapper.insert(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -138,7 +138,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
-			deviceInfoMapper.updateSim(deviceInfo);
+			recordMapper.updateSim(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
