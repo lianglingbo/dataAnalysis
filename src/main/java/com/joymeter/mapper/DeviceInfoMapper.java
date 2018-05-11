@@ -28,7 +28,7 @@ public interface DeviceInfoMapper {
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(Long deviceId);
     
-    @Insert("INSERT INTO device_info(deviceId,gatewayId,simId,project,province,city,district,community,address,valveState,deviceState,simState,dataUsed) VALUES(#{deviceId},#{gatewayId},#{simId},#{project},#{province},#{city},#{district},#{community},#{address},#{valveState},#{deviceState},#{simState},#{dataUsed})")
+    @Insert("INSERT INTO device_info(deviceId,gatewayId,simId,project,province,city,district,community,address,valveState,deviceState,readState,simState,dataUsed) VALUES(#{deviceId},#{gatewayId},#{simId},#{project},#{province},#{city},#{district},#{community},#{address},#{valveState},#{deviceState},#{readState},#{simState},#{dataUsed})")
     void insert(DeviceInfo deviceInfo);
 
     @Update("UPDATE device_info SET deviceState=#{deviceState} WHERE deviceId =#{deviceId}")

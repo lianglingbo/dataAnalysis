@@ -12,6 +12,7 @@ public class DeviceInfo {
 	private String district;
 	private String community;
 	private String address;
+	private String readState;
 	private String valveState;
 	private String deviceState;
 	private String simState;
@@ -32,6 +33,7 @@ public class DeviceInfo {
 		this.district = jsonObject.getString("district");
 		this.community = jsonObject.getString("community");
 		this.address = jsonObject.getString("address");
+		this.readState = jsonObject.getString("readState");
 		this.valveState = jsonObject.getString("valveState");
 		this.deviceState = jsonObject.getString("deviceState");
 		this.simState = jsonObject.getString("simState");
@@ -44,6 +46,14 @@ public class DeviceInfo {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	public String getReadState() {
+		return readState;
+	}
+
+	public void setReadState(String readState) {
+		this.readState = readState;
 	}
 
 	public String getSimId() {

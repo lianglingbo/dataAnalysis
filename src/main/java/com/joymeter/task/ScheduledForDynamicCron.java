@@ -102,10 +102,10 @@ public class ScheduledForDynamicCron {
 			rArray = JSONArray.parseArray(
 					HttpClient.sendPost(queryUrl, String.format(QUERY_DEVICEID_STATUS, job.get("deviceId"))));
 			if (JSONObject.parseObject(rArray.getString(0)).get("event").equals("offline")) {
-				deviceInfo.setDeviceState("1");
+				deviceInfo.setDeviceState("0");
 				offlinecount++;
 			} else {
-				deviceInfo.setDeviceState("0");
+				deviceInfo.setDeviceState("1");
 			}
 			deviceInfoMapper.updateDevice(deviceInfo);
 		}
