@@ -20,10 +20,10 @@ public interface DeviceInfoMapper {
     List<DeviceInfo> getAll();
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
-    List<DeviceInfo> getByParams(DeviceInfo record);
+    List<DeviceInfo> getByParams(DeviceInfo deviceInfo);
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectoffline")
-    List<HashMap<String, Object>> getofflineCount(DeviceInfo record);
+    List<HashMap<String, Object>> getofflineCount(DeviceInfo deviceInfo);
 
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(Long deviceId);

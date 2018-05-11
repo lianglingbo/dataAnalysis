@@ -17,7 +17,7 @@ public class DeviceInfoProvider {
 				SELECT("*");
 				FROM("device_info");
 				if (deviceInfo.getProject() != null) {
-					WHERE("projectName = #{projectName}");
+					WHERE("project = #{project}");
 				}
 				if (deviceInfo.getProvince() != null) {
 					WHERE("province = #{province}");
@@ -51,10 +51,10 @@ public class DeviceInfoProvider {
 		sql.append("SELECT ");
 		sqlb.append(",COUNT(*) as offline from device_info WHERE deviceState = '0' ");
 		if (deviceInfo.getProject() != null) {
-			sqlb.append("and projectName = #{projectName} ");
+			sqlb.append("and project = #{project} ");
 			column = "province";
 		} else {
-			column = "projectName";
+			column = "project";
 		}
 		if (deviceInfo.getProvince() != null) {
 			sqlb.append("and province = #{province} ");
