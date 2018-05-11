@@ -83,7 +83,7 @@ public class ScheduledForDynamicCron {
     public int getOfflineCount() {
     	String result = HttpClient.sendPost(queryUrl,QUERY_OFFLINE_DEVICEID);  //获取离线设备Id
         JSONArray jarray = JSONArray.parseArray(result);
-        if(jarray.isEmpty()) return 0;
+        if(jarray==null||jarray.isEmpty()) return 0;
         int offlinecount = 0;
         JSONObject job;
         JSONArray rArray;
