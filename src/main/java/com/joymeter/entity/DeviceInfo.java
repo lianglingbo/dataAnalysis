@@ -151,5 +151,4 @@ public class DeviceInfo {
 	public void setCommunity(String community) {
 		this.community = community;
 	}
-
 }

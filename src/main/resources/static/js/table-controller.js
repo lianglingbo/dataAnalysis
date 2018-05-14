@@ -65,7 +65,7 @@ let initSelects = function (e) {
 
     data.data = JSON.stringify(params);
     //获取数据
-    $.axspost("http://192.168.31.26:18080/monitor/getOffline",data,function (d) {
+    $.axspost("/monitor/getOffline",data,function (d) {
         let jsonData = eval(d);
         let sort = [];
         let columns = [{checkbox:true}];
@@ -98,7 +98,7 @@ let showDevices = function(){
     });
     params.deviceState = 0;
     data.data = JSON.stringify(params);
-    $.axspost("http://192.168.31.26:18080/monitor/getOfflineDevice",data,function (d) {
+    $.axspost("/monitor/getOfflineDevice",data,function (d) {
         let jsonData = eval(d);
         let columns = [{checkbox:true}];
 
@@ -106,10 +106,10 @@ let showDevices = function(){
         columns.push({field:'gatewayId',title:'网关编号'});
         columns.push({field:'simId',title:"SIM卡ID"});
         columns.push({field:'address',title:"地址"});
-        columns.push({field:'readState',title:'抄表状态'});
-        columns.push({field:'deviceState',title:'设备状态'});
-        columns.push({field:'valveState',title:'阀门状态'});
-        columns.push({field:'simState',title:'SIM卡状态'});
+        columns.push({field:'readState',title:'抄表状态',align: 'center',formatter: 'readStatusFormatter'});
+        columns.push({field:'deviceState',title:'设备状态',align: 'center',formatter: 'deviceStatusFormatter'});
+        columns.push({field:'valveState',title:'阀门状态',align: 'center',formatter: 'valveStatusFormatter'});
+        columns.push({field:'simState',title:'SIM卡状态',align: 'center',formatter: 'simStatusFormatter'});
         columns.push({field:'dataUsed',title:'已使用的流量'});
 
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
@@ -135,11 +135,15 @@ let TableInit = function(){
             rowStyle: function (row, index) {
                 //这里有5个取值代表5中颜色['active', 'success', 'info', 'warning', 'danger'];
                 let strclass = "";
-                if (row.offline > 0) {
+                if (row.offline >0 && row.offline <=10) {
+                    strclass = 'info';
+                }else if (row.offline >10 && row.offline <=30) {
+                    strclass = 'warning';
+                }else if (row.offline >30) {
                     strclass = 'danger';
                 }
                 else {
-                    return {};
+                	return {};
                 }
                 return { classes: strclass }
             },
@@ -150,6 +154,36 @@ let TableInit = function(){
         });
     };
     return oTableInit;
+};
+
+//格式化状态
+function readStatusFormatter(value, row, index) {
+    if (value === "1") {
+        return '<span class="label label-danger">失败</span>';
+    } else {
+        return '<span class="label label-success">成功</span>';
+    }
+};
+function valveStatusFormatter(value, row, index) {
+    if (value === "1") {
+        return '<span class="label label-success">开</span>';
+    } else {
+        return '<span class="label label-default">关</span>';
+    }
+};
+function deviceStatusFormatter(value, row, index) {
+    if (value === "1") {
+        return '<span class="label label-success">在线</span>';
+    } else {
+        return '<span class="label label-default">离线</span>';
+    }
+};
+function simStatusFormatter(value, row, index) {
+    if (value === "1") {
+        return '<span class="label label-warning">欠费</span>';
+    } else {
+        return '<span class="label label-info">正常</span>';
+    }
 };
 
 
