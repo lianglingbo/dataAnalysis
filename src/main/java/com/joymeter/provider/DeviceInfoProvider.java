@@ -54,20 +54,20 @@ public class DeviceInfoProvider {
 		if (!StringUtils.isEmpty(deviceInfo.getProject())) {
 			sqlb.append("and project = #{project} ");
 			column = "province";
+			if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
+				sqlb.append("and province = #{province} ");
+				column = "city";
+				if (!StringUtils.isEmpty(deviceInfo.getCity())) {
+					sqlb.append("and city = #{city} ");
+					column = "district";
+					if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
+						sqlb.append("and district = #{district} ");
+						column = "community";
+					}
+				}
+			}
 		} else {
 			column = "project";
-		}
-		if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
-			sqlb.append("and province = #{province} ");
-			column = "city";
-		}
-		if (!StringUtils.isEmpty(deviceInfo.getCity())) {
-			sqlb.append("and city = #{city} ");
-			column = "district";
-		}
-		if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
-			sqlb.append("and district = #{district} ");
-			column = "community";
 		}
 		return sql.append(column).append(sqlb.append(" Group By " + column)).toString();
 	}

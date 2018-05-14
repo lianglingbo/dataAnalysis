@@ -12,7 +12,7 @@ public interface AnalysisService {
 	
 	void updateSIM(String data);
 	
-	void updateStatus(String data);
+	void updateState(String data);
 	
 	List<HashMap<String, Object>> getOffline(String data);
 	

@@ -55,14 +55,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param data
 	 */
 	@Override
-	public void updateStatus(String data) {
+	public void updateState(String data) {
 		if (StringUtils.isEmpty(data))return;
 
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
-			DeviceInfo record = new DeviceInfo(jsonObject);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 
-			deviceInfoMapper.updateDevice(record);
+			deviceInfoMapper.updateDevice(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
