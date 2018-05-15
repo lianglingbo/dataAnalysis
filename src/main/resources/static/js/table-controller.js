@@ -102,15 +102,15 @@ let showDevices = function(){
         let jsonData = eval(d);
         let columns = [{checkbox:true}];
 
-        columns.push({field:'deviceId',title:"设备编号"});
-        columns.push({field:'gatewayId',title:'网关编号'});
-        columns.push({field:'simId',title:"SIM卡ID"});
-        columns.push({field:'address',title:"地址"});
+        columns.push({field:'deviceId',title:"设备编号",align: 'center'});
+        columns.push({field:'gatewayId',title:'网关编号',align: 'center'});
+        columns.push({field:'simId',title:"SIM卡ID",align: 'center'});
+        columns.push({field:'address',title:"地址",align: 'center'});
         columns.push({field:'readState',title:'抄表状态',align: 'center',formatter: 'readStatusFormatter'});
         columns.push({field:'deviceState',title:'设备状态',align: 'center',formatter: 'deviceStatusFormatter'});
         columns.push({field:'valveState',title:'阀门状态',align: 'center',formatter: 'valveStatusFormatter'});
         columns.push({field:'simState',title:'SIM卡状态',align: 'center',formatter: 'simStatusFormatter'});
-        columns.push({field:'dataUsed',title:'已使用的流量'});
+        columns.push({field:'dataUsed',title:'已使用的流量',align: 'center'});
 
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
     },function () {

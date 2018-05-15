@@ -151,4 +151,13 @@ public class DeviceInfo {
 	public void setCommunity(String community) {
 		this.community = community;
 	}
+
+	@Override
+	public String toString() {
+		return "DeviceInfo [deviceId=" + deviceId + ", simId=" + simId + ", gatewayId=" + gatewayId + ", project="
+				+ project + ", province=" + province + ", city=" + city + ", district=" + district + ", community="
+				+ community + ", address=" + address + ", readState=" + readState + ", valveState=" + valveState
+				+ ", deviceState=" + deviceState + ", simState=" + simState + ", dataUsed=" + dataUsed + "]";
+	}
+	
 }
