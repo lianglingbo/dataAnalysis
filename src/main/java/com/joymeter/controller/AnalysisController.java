@@ -24,16 +24,19 @@ public class AnalysisController {
 	}
 	
 	@RequestMapping("/event")
+	@ResponseBody
     public void addData(@RequestParam("data") String data) {
 		analysisService.event(data);
     }
 	
 	@RequestMapping("/register")
+	@ResponseBody
     public void register(@RequestParam("data") String data) {
 		analysisService.register(data);
     }
 	
 	@RequestMapping("/updateSIM")
+	@ResponseBody
 	public void updateSIM(@RequestParam("data")String data) {
 		analysisService.updateSIM(data);
 	}
