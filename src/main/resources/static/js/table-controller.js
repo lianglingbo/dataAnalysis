@@ -135,9 +135,7 @@ let TableInit = function(){
             rowStyle: function (row, index) {
                 //这里有5个取值代表5中颜色['active', 'success', 'info', 'warning', 'danger'];
                 let strclass = "";
-                if (row.offline >0 && row.offline <=10) {
-                    strclass = 'info';
-                }else if (row.offline >10 && row.offline <=30) {
+                if (row.offline >0 && row.offline <=30) {
                     strclass = 'warning';
                 }else if (row.offline >30) {
                     strclass = 'danger';
