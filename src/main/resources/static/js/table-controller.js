@@ -146,9 +146,6 @@ let TableInit = function(){
                 return { classes: strclass }
             },
             columns:[],
-            onExpandRow: function (index, row, $detail) {
-                oTableInit.SubTableInit(index, row, $detail);
-            }
         });
     };
     return oTableInit;
