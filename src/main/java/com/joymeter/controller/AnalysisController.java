@@ -38,11 +38,6 @@ public class AnalysisController {
 		analysisService.updateSIM(data);
 	}
 	
-	@RequestMapping("/updateState")
-	public void updateStatus(@RequestParam("data")String data) {
-		analysisService.updateState(data);
-	}
-	
 	@RequestMapping("/getOffline")
 	@ResponseBody
 	public List<HashMap<String, Object>> getOffline(@RequestParam("data")String data){
