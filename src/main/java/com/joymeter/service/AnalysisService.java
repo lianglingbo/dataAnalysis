@@ -8,9 +8,9 @@ import com.joymeter.entity.DeviceInfo;
 public interface AnalysisService {
 	void addData(String data);
 	
-	void register(String data);
+	void register(DeviceInfo deviceInfo);
 	
-	void updateSim(String data);
+	void updateSim(DeviceInfo deviceInfo);
 	
 	void updateState(String data);
 	

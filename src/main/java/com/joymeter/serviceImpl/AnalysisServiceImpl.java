@@ -46,8 +46,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 					|| StringUtils.isEmpty(event) || datetime <= 0)
 				return;
 
-			logger.log(Level.INFO,dataStr);
-			//DataCache.add(dataStr);
+			//logger.log(Level.INFO,dataStr);
+			DataCache.add(dataStr);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -140,12 +140,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param data
 	 */
 	@Override
-	public void register(String data) {
-		if (StringUtils.isEmpty(data))return;
+	public void register(DeviceInfo deviceInfo) {
+		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
+				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
+				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
+				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress()))
+			return;
 
-		logger.log(Level.INFO, data);
+		logger.log(Level.INFO, deviceInfo.toString());
 		try {
-			DeviceInfo deviceInfo = new DeviceInfo(JSONObject.parseObject(data));
 			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
 				deviceInfoMapper.insert(deviceInfo);
 			}else {
@@ -159,15 +162,16 @@ public class AnalysisServiceImpl implements AnalysisService {
 	/**
 	 * 更新SIM卡的流量
 	 * 
-	 * @param data
+	 * @param deviceInfo
 	 */
 	@Override
-	public void updateSim(String data) {
-		if (StringUtils.isEmpty(data))return;
+	public void updateSim(DeviceInfo deviceInfo) {
+		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getSimId()) 
+				|| StringUtils.isEmpty(deviceInfo.getSimState())|| StringUtils.isEmpty(deviceInfo.getDataUsed()))
+			return;
 
-		logger.log(Level.INFO, data);
+		logger.log(Level.INFO, deviceInfo.toString());
 		try {
-			DeviceInfo deviceInfo = new DeviceInfo(JSONObject.parseObject(data));
 			deviceInfoMapper.updateSim(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);

@@ -33,14 +33,14 @@ public class AnalysisController {
 	
 	@RequestMapping("/register")
 	@ResponseBody
-    public void register(@RequestBody String data) {
-		analysisService.register(data);
+    public void register(@RequestBody DeviceInfo deviceInfo) {
+		analysisService.register(deviceInfo);
     }
 	
 	@RequestMapping("/updateSim")
 	@ResponseBody
-	public void updateSIM(@RequestBody String data) {
-		analysisService.updateSim(data);
+	public void updateSIM(@RequestBody DeviceInfo deviceInfo) {
+		analysisService.updateSim(deviceInfo);
 	}
 	
 	@RequestMapping("/getOfflineNum")

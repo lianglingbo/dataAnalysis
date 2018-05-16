@@ -1,5 +1,7 @@
 package com.joymeter.entity;
 
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSONObject;
 
 public class DeviceInfo {

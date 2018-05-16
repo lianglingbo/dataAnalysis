@@ -1,10 +1,5 @@
 package com.joymeter.provider;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
 

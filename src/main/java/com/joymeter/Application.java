@@ -18,13 +18,13 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        /*try {
+        try {
         	Runnable appScheduler = () -> {
                 Scheduler.GetInstance().start();
             };
             ThreadsExecutor.GetPoolExecutorService().execute(appScheduler);
 		} catch (Exception e) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, e);
-		}*/
+		}
     }
 }

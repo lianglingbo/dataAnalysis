@@ -6,14 +6,6 @@ server:
   port: 18080
 spring:
   datasource:
-    password: Joymeter@123
     url: jdbc:mysql://localhost:3306/deviceData
     username: root
-  thymeleaf:
-    cache: true
-    encoding: UTF-8
-    mode: HTML5
-    prefix: classpath:/templates/
-    servlet:
-      content-type: text/html
-    suffix: .html
+    password: Joymeter@123
