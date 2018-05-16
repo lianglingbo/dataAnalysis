@@ -66,6 +66,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 
+			logger.log(Level.INFO,data);
 			deviceInfoMapper.updateDevice(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
@@ -93,17 +94,19 @@ public class AnalysisServiceImpl implements AnalysisService {
 	/**
 	 * 根据参数获取离线数量
 	 * 
-	 * @param params
+	 * @param data
 	 */
 	@Override
-	public List<HashMap<String, Object>> getOffline(String params) {
-		if (StringUtils.isEmpty(params))return null;
+	public List<HashMap<String, Object>> getOffline(String data) {
+		if (StringUtils.isEmpty(data))return null;
 
+		logger.log(Level.INFO,data);
 		try {
-			JSONObject jsonObject = JSONObject.parseObject(params);
+			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
-
-			return deviceInfoMapper.getofflineCount(deviceInfo);
+			List<HashMap<String, Object>> result = deviceInfoMapper.getofflineCount(deviceInfo);
+			logger.log(Level.INFO, result.toString());
+			return result;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -113,14 +116,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	/**
 	 * 根据参数获取离线设备详细信息
 	 * 
-	 * @param params
+	 * @param data
 	 */
 	@Override
-	public List<DeviceInfo> getOfflineDevice(String params) {
-		if (StringUtils.isEmpty(params))return null;
+	public List<DeviceInfo> getOfflineDevice(String data) {
+		if (StringUtils.isEmpty(data))return null;
 
+		logger.log(Level.INFO,data);
 		try {
-			JSONObject jsonObject = JSONObject.parseObject(params);
+			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 
 			return deviceInfoMapper.getByParams(deviceInfo);

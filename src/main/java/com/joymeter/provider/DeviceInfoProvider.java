@@ -111,7 +111,6 @@ public class DeviceInfoProvider {
 		} else {
 			column = "project";
 		}
-		Logger.getLogger(DeviceInfoProvider.class.getName()).log(Level.INFO, sql.append(column).append(sqlb.append(" Group By " + column)).toString());
 		return sql.append(column).append(sqlb.append(" Group By " + column)).toString();
 	}
 }

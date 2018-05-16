@@ -32,13 +32,13 @@ public interface DeviceInfoMapper {
     @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address})")
     void insert(DeviceInfo deviceInfo);
 
-    @Update("UPDATE device_info SET deviceState=#{deviceState} WHERE deviceId =#{deviceId}")
+    @Update("UPDATE device_info SET deviceState=#{deviceState} WHERE deviceId=#{deviceId}")
     void updateDevice(DeviceInfo deviceInfo);
     
     @UpdateProvider(type = DeviceInfoProvider.class,method="updateDeviceInfo")
     void updateDeviceInfo(DeviceInfo deviceInfo);
     
-    @Update("UPDATE device_info SET simState=#{simState},dataUsed=#{dataUsed} WHERE simId =#{simId}")
+    @Update("UPDATE device_info SET simId=#{simId},simState=#{simState},dataUsed=#{dataUsed} WHERE deviceId=#{deviceId}")
     void updateSim(DeviceInfo deviceInfo);
 
     @Delete("DELETE FROM device_info WHERE deviceId =#{deviceId}")

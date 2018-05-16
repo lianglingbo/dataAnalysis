@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,13 +33,13 @@ public class AnalysisController {
 	
 	@RequestMapping("/register")
 	@ResponseBody
-    public void register(@RequestParam("data") String data) {
+    public void register(@RequestBody String data) {
 		analysisService.register(data);
     }
 	
 	@RequestMapping("/updateSim")
 	@ResponseBody
-	public void updateSIM(@RequestParam("data")String data) {
+	public void updateSIM(@RequestBody String data) {
 		analysisService.updateSim(data);
 	}
 	
