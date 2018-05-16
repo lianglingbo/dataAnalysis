@@ -1,11 +1,53 @@
 package com.joymeter.provider;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
 
 import com.joymeter.entity.DeviceInfo;
 
 public class DeviceInfoProvider {
+	/**
+	 * 动态生成更新数据SQL
+	 * 
+	 * @param deviceInfo
+	 * @return
+	 */
+	public String updateDeviceInfo(DeviceInfo deviceInfo) {
+		return new SQL() {
+			{
+				UPDATE("device_info");
+				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
+					SET("gatewayId = #{gatewayId}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
+					SET("project = #{project}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
+					SET("province = #{province}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCity())) {
+					SET("city = #{city}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
+					SET("district = #{district}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
+					SET("community = #{community}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
+					SET("address = #{address}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
+					WHERE("deviceId = #{deviceId}");
+				}
+			}
+		}.toString();
+	}
 	/**
 	 * 动态生成查询数据SQL
 	 * 
@@ -69,6 +111,7 @@ public class DeviceInfoProvider {
 		} else {
 			column = "project";
 		}
+		Logger.getLogger(DeviceInfoProvider.class.getName()).log(Level.INFO, sql.append(column).append(sqlb.append(" Group By " + column)).toString());
 		return sql.append(column).append(sqlb.append(" Group By " + column)).toString();
 	}
 }

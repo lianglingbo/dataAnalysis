@@ -14,7 +14,7 @@ import com.joymeter.service.AnalysisService;
 
 @CrossOrigin("*")
 @Controller
-@RequestMapping("joy")
+@RequestMapping("monitor")
 public class AnalysisController {
 	@Autowired
 	private AnalysisService analysisService;
@@ -24,16 +24,10 @@ public class AnalysisController {
 		return "offlinetable";
 	}
 	
-	@RequestMapping("/addData")
-	@ResponseBody
-    public void addData(@RequestParam("data") String data) {
-		analysisService.event(data);
-    }
-	
 	@RequestMapping("/event")
 	@ResponseBody
     public void event(@RequestParam("data") String data) {
-		analysisService.event(data);
+		analysisService.addData(data);
     }
 	
 	@RequestMapping("/register")
@@ -45,7 +39,7 @@ public class AnalysisController {
 	@RequestMapping("/updateSim")
 	@ResponseBody
 	public void updateSIM(@RequestParam("data")String data) {
-		analysisService.updateSIM(data);
+		analysisService.updateSim(data);
 	}
 	
 	@RequestMapping("/getOfflineNum")

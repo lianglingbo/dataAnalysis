@@ -6,11 +6,11 @@ import java.util.List;
 import com.joymeter.entity.DeviceInfo;
 
 public interface AnalysisService {
-	void event(String data);
+	void addData(String data);
 	
 	void register(String data);
 	
-	void updateSIM(String data);
+	void updateSim(String data);
 	
 	void updateState(String data);
 	

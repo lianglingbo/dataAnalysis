@@ -1,13 +1,10 @@
 package com.joymeter.serviceImpl;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ScheduledExecutorTask;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +32,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param dataStr
 	 */
 	@Override
-	public void event(String dataStr) {
+	public void addData(String dataStr) {
 		if (StringUtils.isEmpty(dataStr))return;
 		try {
 			JSONObject jsonData = JSONObject.parseObject(dataStr);
@@ -142,10 +139,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 	public void register(String data) {
 		if (StringUtils.isEmpty(data))return;
 
+		logger.log(Level.INFO, data);
 		try {
-			JSONObject jsonObject = JSONObject.parseObject(data);
-			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
-			deviceInfoMapper.insert(deviceInfo);
+			DeviceInfo deviceInfo = new DeviceInfo(JSONObject.parseObject(data));
+			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
+				deviceInfoMapper.insert(deviceInfo);
+			}else {
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -157,12 +158,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param data
 	 */
 	@Override
-	public void updateSIM(String data) {
+	public void updateSim(String data) {
 		if (StringUtils.isEmpty(data))return;
 
+		logger.log(Level.INFO, data);
 		try {
-			JSONObject jsonObject = JSONObject.parseObject(data);
-			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+			DeviceInfo deviceInfo = new DeviceInfo(JSONObject.parseObject(data));
 			deviceInfoMapper.updateSim(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);

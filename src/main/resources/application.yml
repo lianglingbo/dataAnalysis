@@ -4,11 +4,9 @@ server:
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
     min-response-size: 1024
   port: 18080
-  servlet:
-    context-path: /redis
 spring:
   datasource:
-    password: joymeter@123
+    password: Joymeter@123
     url: jdbc:mysql://localhost:3306/deviceData
     username: root
   thymeleaf:
