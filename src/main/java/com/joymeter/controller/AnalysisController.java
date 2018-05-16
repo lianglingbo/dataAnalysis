@@ -2,8 +2,6 @@ package com.joymeter.controller;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,19 +30,25 @@ public class AnalysisController {
 		analysisService.event(data);
     }
 	
+	@RequestMapping("/event")
+	@ResponseBody
+    public void event(@RequestParam("data") String data) {
+		analysisService.event(data);
+    }
+	
 	@RequestMapping("/register")
 	@ResponseBody
     public void register(@RequestParam("data") String data) {
 		analysisService.register(data);
     }
 	
-	@RequestMapping("/updateSIM")
+	@RequestMapping("/updateSim")
 	@ResponseBody
 	public void updateSIM(@RequestParam("data")String data) {
 		analysisService.updateSIM(data);
 	}
 	
-	@RequestMapping(".getOfflineNum")
+	@RequestMapping("/getOfflineNum")
 	@ResponseBody
 	public int getOfflineNum() {
 		return analysisService.getOfflineNum();
