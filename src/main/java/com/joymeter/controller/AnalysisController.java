@@ -27,7 +27,7 @@ public class AnalysisController {
 	
 	@RequestMapping("/event")
 	@ResponseBody
-    public void event(@RequestParam("data") String data) {
+    public void event(@RequestBody String data) {
 		analysisService.addData(data);
     }
 	
