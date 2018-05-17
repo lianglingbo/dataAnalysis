@@ -34,9 +34,6 @@ public interface DeviceInfoMapper {
     
     @UpdateProvider(type = DeviceInfoProvider.class,method="updateDeviceInfo")
     void updateDeviceInfo(DeviceInfo deviceInfo);
-    
-    @Update("UPDATE device_info SET simId=#{simId},simState=#{simState},dataUsed=#{dataUsed} WHERE deviceId=#{deviceId}")
-    void updateSim(DeviceInfo deviceInfo);
 
     @Delete("DELETE FROM device_info WHERE deviceId =#{deviceId}")
     void delete(Long deviceId);

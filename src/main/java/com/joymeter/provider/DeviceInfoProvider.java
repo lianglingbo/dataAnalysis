@@ -16,7 +16,7 @@ public class DeviceInfoProvider {
 		return new SQL() {
 			{
 				UPDATE("device_info");
-				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
+				if (!StringUtils.isEmpty(deviceInfo.getGatewayId())) {
 					SET("gatewayId = #{gatewayId}");
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
@@ -34,7 +34,7 @@ public class DeviceInfoProvider {
 				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
 					SET("community = #{community}");
 				}
-				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
+				if (!StringUtils.isEmpty(deviceInfo.getAddress())) {
 					SET("address = #{address}");
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
@@ -48,6 +48,15 @@ public class DeviceInfoProvider {
 					if(deviceInfo.getReadState()=="1") {
 						SET("readFaile = readFaile+1");
 					}
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getSimId())) {
+					SET("simId=#{simId}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getSimState())) {
+					SET("simState=#{simState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDataUsed())) {
+					SET("dataUsed=#{dataUsed}");
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
 					WHERE("deviceId = #{deviceId}");

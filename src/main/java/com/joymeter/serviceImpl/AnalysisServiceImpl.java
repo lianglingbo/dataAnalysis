@@ -151,7 +151,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 		logger.log(Level.INFO, deviceInfo.toString());
 		try {
-			deviceInfoMapper.updateSim(deviceInfo);
+			deviceInfoMapper.updateDeviceInfo(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
