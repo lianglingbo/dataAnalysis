@@ -5,9 +5,6 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
@@ -21,7 +18,7 @@ public interface DeviceInfoMapper {
     List<DeviceInfo> getAll();
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
-    List<DeviceInfo> getByParams(DeviceInfo deviceInfo);
+    List<HashMap<String, Object>> getByParams(DeviceInfo deviceInfo);
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectcount")
 	int getCount(DeviceInfo deviceInfo);

@@ -111,6 +111,7 @@ let showDevices = function(){
         columns.push({field:'valveState',title:'阀门状态',align: 'center',formatter: 'valveStatusFormatter'});
         columns.push({field:'simState',title:'SIM卡状态',align: 'center',formatter: 'simStatusFormatter'});
         columns.push({field:'dataUsed',title:'已使用的流量',align: 'center'});
+        columns.push({field:'readFaile',title:'抄表失败次数',align: 'center'});
 
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
     },function () {
@@ -129,7 +130,7 @@ let TableInit = function(){
             pageSize: 10,                       //每页的记录行数（*）
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             clickToSelect:true,
-            showRefresh: true,                  //是否显示刷新按钮
+            showColumns: true,                  //是否显示刷新按钮
             showExport: true,                     //是否显示导出
             exportDataType: "selected",              //basic', 'all', 'selected'.
             rowStyle: function (row, index) {

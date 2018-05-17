@@ -14,5 +14,5 @@ public interface AnalysisService {
 	
 	List<HashMap<String, Object>> getOffline(String data);
 	
-	List<DeviceInfo> getOfflineDevice(String data);
+	List<HashMap<String, Object>> getOfflineDevice(String data);
 }

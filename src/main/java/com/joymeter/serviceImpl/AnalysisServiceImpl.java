@@ -8,14 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.joymeter.cache.DataCache;
 import com.joymeter.entity.DeviceInfo;
 import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.service.AnalysisService;
-import com.joymeter.util.HttpClient;
-import com.joymeter.util.PropertiesUtils;
 
 @Service
 public class AnalysisServiceImpl implements AnalysisService {
@@ -48,12 +45,16 @@ public class AnalysisServiceImpl implements AnalysisService {
 			
 			DataCache.add(dataStr);
 			
+			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
 			deviceInfo.setDeviceId(deviceId);
 			if("offline".equals(event)) {
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDevice(deviceInfo);
-			}else if ("online".equals(event)) {
+			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)) {
+				if ("data".equals(event)) {
+					deviceInfo.setReadState("0");
+				}
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDevice(deviceInfo);
 			}else if ("close".equals(event)) {
@@ -61,9 +62,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfoMapper.updateDevice(deviceInfo);
 			}else if ("open".equals(event)) {
 				deviceInfo.setValveState("1");
-				deviceInfoMapper.updateDevice(deviceInfo);
-			}else if ("data".equals(event)) {
-				deviceInfo.setReadState("0");
 				deviceInfoMapper.updateDevice(deviceInfo);
 			}else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
@@ -100,7 +98,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param data
 	 */
 	@Override
-	public List<DeviceInfo> getOfflineDevice(String data) {
+	public List<HashMap<String, Object>> getOfflineDevice(String data) {
 		if (StringUtils.isEmpty(data))return null;
 
 		logger.log(Level.INFO,data);

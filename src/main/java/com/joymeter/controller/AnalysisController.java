@@ -51,7 +51,7 @@ public class AnalysisController {
 	
 	@RequestMapping("/getOfflineDevice")
 	@ResponseBody
-	public List<DeviceInfo> getOfflineDevice(@RequestParam("data")String data){
+	public List<HashMap<String, Object>> getOfflineDevice(@RequestParam("data")String data){
 		return analysisService.getOfflineDevice(data);
 	}
 }

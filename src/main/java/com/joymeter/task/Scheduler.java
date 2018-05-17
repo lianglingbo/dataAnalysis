@@ -8,12 +8,7 @@ package com.joymeter.task;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.alibaba.fastjson.JSONObject;
 import com.joymeter.cache.DataCache;
-import com.joymeter.entity.DeviceInfo;
-import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
 
