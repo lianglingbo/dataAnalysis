@@ -31,9 +31,6 @@ public interface DeviceInfoMapper {
     
     @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address})")
     void insert(DeviceInfo deviceInfo);
-
-    @UpdateProvider(type = DeviceInfoProvider.class,method="updateDevice")
-    void updateDevice(DeviceInfo deviceInfo);
     
     @UpdateProvider(type = DeviceInfoProvider.class,method="updateDeviceInfo")
     void updateDeviceInfo(DeviceInfo deviceInfo);

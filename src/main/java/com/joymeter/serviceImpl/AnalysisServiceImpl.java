@@ -50,22 +50,22 @@ public class AnalysisServiceImpl implements AnalysisService {
 			deviceInfo.setDeviceId(deviceId);
 			if("offline".equals(event)) {
 				deviceInfo.setDeviceState("0");
-				deviceInfoMapper.updateDevice(deviceInfo);
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)) {
 				if ("data".equals(event)) {
 					deviceInfo.setReadState("0");
 				}
 				deviceInfo.setDeviceState("1");
-				deviceInfoMapper.updateDevice(deviceInfo);
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
-				deviceInfoMapper.updateDevice(deviceInfo);
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("open".equals(event)) {
 				deviceInfo.setValveState("1");
-				deviceInfoMapper.updateDevice(deviceInfo);
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
-				deviceInfoMapper.updateDevice(deviceInfo);
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);

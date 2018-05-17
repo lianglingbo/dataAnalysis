@@ -7,34 +7,6 @@ import com.joymeter.entity.DeviceInfo;
 
 public class DeviceInfoProvider {
 	/**
-	 * 动态生成更新设备状态、阀门状态SQL
-	 * 
-	 * @param deviceInfo
-	 * @return
-	 */
-	public String updateDevice(DeviceInfo deviceInfo) {
-		return new SQL() {
-			{
-				UPDATE("device_info");
-				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
-					SET("deviceState = #{deviceState}");
-				}
-				if (!StringUtils.isEmpty(deviceInfo.getValveState())) {
-					SET("valveState = #{valveState}");
-				}
-				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
-					SET("readState = #{readState}");
-					if(deviceInfo.getReadState()=="1") {
-						SET("readFaile = readFaile+1");
-					}
-				}
-				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
-					WHERE("deviceId = #{deviceId}");
-				}
-			}
-		}.toString();
-	}
-	/**
 	 * 动态生成更新数据SQL
 	 * 
 	 * @param deviceInfo
@@ -64,6 +36,18 @@ public class DeviceInfoProvider {
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
 					SET("address = #{address}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
+					SET("deviceState = #{deviceState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getValveState())) {
+					SET("valveState = #{valveState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
+					SET("readState = #{readState}");
+					if(deviceInfo.getReadState()=="1") {
+						SET("readFaile = readFaile+1");
+					}
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
 					WHERE("deviceId = #{deviceId}");
