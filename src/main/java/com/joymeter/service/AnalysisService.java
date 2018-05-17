@@ -12,10 +12,6 @@ public interface AnalysisService {
 	
 	void updateSim(DeviceInfo deviceInfo);
 	
-	void updateState(String data);
-	
-	int getOfflineNum();
-	
 	List<HashMap<String, Object>> getOffline(String data);
 	
 	List<DeviceInfo> getOfflineDevice(String data);

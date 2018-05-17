@@ -43,12 +43,6 @@ public class AnalysisController {
 		analysisService.updateSim(deviceInfo);
 	}
 	
-	@RequestMapping("/getOfflineNum")
-	@ResponseBody
-	public int getOfflineNum() {
-		return analysisService.getOfflineNum();
-	}
-	
 	@RequestMapping("/getOffline")
 	@ResponseBody
 	public List<HashMap<String, Object>> getOffline(@RequestParam("data")String data){

@@ -23,8 +23,11 @@ public interface DeviceInfoMapper {
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
     List<DeviceInfo> getByParams(DeviceInfo deviceInfo);
 	
+	@SelectProvider(type = DeviceInfoProvider.class,method="selectcount")
+	int getCount(DeviceInfo deviceInfo);
+	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectoffline")
-    List<HashMap<String, Object>> getofflineCount(DeviceInfo deviceInfo);
+    List<HashMap<String, Object>> getofflineGroup(DeviceInfo deviceInfo);
 
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(String deviceId);
@@ -32,7 +35,7 @@ public interface DeviceInfoMapper {
     @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address})")
     void insert(DeviceInfo deviceInfo);
 
-    @Update("UPDATE device_info SET deviceState=#{deviceState} WHERE deviceId=#{deviceId}")
+    @UpdateProvider(type = DeviceInfoProvider.class,method="updateDevice")
     void updateDevice(DeviceInfo deviceInfo);
     
     @UpdateProvider(type = DeviceInfoProvider.class,method="updateDeviceInfo")

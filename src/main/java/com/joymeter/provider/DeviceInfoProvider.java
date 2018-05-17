@@ -7,6 +7,34 @@ import com.joymeter.entity.DeviceInfo;
 
 public class DeviceInfoProvider {
 	/**
+	 * 动态生成更新设备状态、阀门状态SQL
+	 * 
+	 * @param deviceInfo
+	 * @return
+	 */
+	public String updateDevice(DeviceInfo deviceInfo) {
+		return new SQL() {
+			{
+				UPDATE("device_info");
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
+					SET("deviceState = #{deviceState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getValveState())) {
+					SET("valveState = #{valveState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
+					SET("readState = #{readState}");
+					if(deviceInfo.getReadState()=="1") {
+						SET("readFaile = readFaile+1");
+					}
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
+					WHERE("deviceId = #{deviceId}");
+				}
+			}
+		}.toString();
+	}
+	/**
 	 * 动态生成更新数据SQL
 	 * 
 	 * @param deviceInfo
@@ -75,9 +103,51 @@ public class DeviceInfoProvider {
 			}
 		}.toString();
 	}
+	
+	/**
+	 * 动态生成查询数量SQL
+	 * 
+	 * @param deviceInfo
+	 * @return
+	 */
+	public String selectcount(DeviceInfo deviceInfo) {
+		return new SQL() {
+			{
+				SELECT("count(*)");
+				FROM("device_info");
+				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
+					WHERE("project = #{project}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
+					WHERE("province = #{province}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCity())) {
+					WHERE("city = #{city}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
+					WHERE("district = #{district}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
+					WHERE("community = #{community}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getAddress())) {
+					WHERE("address = #{address}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
+					WHERE("deviceState = #{deviceState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
+					WHERE("readState = #{readState}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getValveState())) {
+					WHERE("valveState = #{valveState}");
+				}
+			}
+		}.toString();
+	}
 
 	/**
-	 * 动态生成查询离线数量SQL
+	 * 动态生成查询离线数量聚合SQL
 	 * 
 	 * @param deviceInfo
 	 * @return

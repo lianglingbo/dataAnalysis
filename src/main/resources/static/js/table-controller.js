@@ -155,28 +155,28 @@ let TableInit = function(){
 function readStatusFormatter(value) {
     if (value === "1") {
         return '<span class="label label-danger">失败</span>';
-    } else {
+    } else if(value === "0"){
         return '<span class="label label-success">成功</span>';
     }
 };
 function valveStatusFormatter(value) {
     if (value === "1") {
         return '<span class="label label-success">开</span>';
-    } else {
+    } else if(value === "0"){
         return '<span class="label label-default">关</span>';
     }
 };
 function deviceStatusFormatter(value) {
     if (value === "1") {
         return '<span class="label label-success">在线</span>';
-    } else {
+    } else if(value === "0"){
         return '<span class="label label-default">离线</span>';
     }
 };
 function simStatusFormatter(value) {
     if (value === "1") {
         return '<span class="label label-warning">欠费</span>';
-    } else {
+    } else if(value === "0"){
         return '<span class="label label-info">正常</span>';
     }
 };
