@@ -58,7 +58,7 @@ public class ScheduledForDynamicCron {
 	}
 
 	/**
-	 * 计算离线率，存入Druid 1.查询设备总数量
+	 * 计算离线率，从mysql中查询离线设备个数与设备总数存入Druid 
 	 */
 	public void setOfflineRate() {
 		try {

@@ -74,7 +74,7 @@ let initSelects = function (e) {
         }
         let html = "<option value=\"\"></option>";
         $.each(sort,function (idx,item) {
-            html +="<option value=\"\">" + item+"</option>";
+        	html +="<option value=\"\">" + item+"</option>";
         });
         selects.eq(index).empty();
         selects.eq(index).append(html);
@@ -151,6 +151,7 @@ let TableInit = function(){
     };
     return oTableInit;
 };
+
 
 //格式化状态
 function readStatusFormatter(value) {

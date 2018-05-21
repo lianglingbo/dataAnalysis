@@ -73,7 +73,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 	/**
-	 * 根据参数获取离线数量
+	 * 根据参数获取离线设备
 	 * 
 	 * @param data
 	 */
@@ -120,13 +120,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public void register(DeviceInfo deviceInfo) {
+		logger.log(Level.INFO, deviceInfo.toString());
 		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
 				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress()))
 			return;
 
-		logger.log(Level.INFO, deviceInfo.toString());
 		try {
 			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
 				deviceInfoMapper.insert(deviceInfo);
