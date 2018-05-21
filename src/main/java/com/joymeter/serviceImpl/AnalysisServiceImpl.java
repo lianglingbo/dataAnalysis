@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,7 +21,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
 	private DeviceInfoMapper deviceInfoMapper;
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
-
+	private final static Logger updateSimLogger = Logger.getLogger("updateSim");
+	private final static Logger registerLogger = Logger.getLogger("register");
+	private final static Logger updateDeviceLogger = Logger.getLogger("updateDevice");
 	/**
 	 * 保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
@@ -51,24 +55,29 @@ public class AnalysisServiceImpl implements AnalysisService {
 			if("offline".equals(event)) {
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
 			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)) {
 				if ("data".equals(event)) {
 					deviceInfo.setReadState("0");
 				}
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
 			}else if ("open".equals(event)) {
 				deviceInfo.setValveState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
 			}else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			updateDeviceLogger.log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -80,7 +89,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public List<HashMap<String, Object>> getOffline(String data) {
 		if (StringUtils.isEmpty(data))return null;
-
 		logger.log(Level.INFO,data);
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
@@ -116,11 +124,11 @@ public class AnalysisServiceImpl implements AnalysisService {
 	/**
 	 * 注册设备相关信息
 	 *
-	 * @param data
+	 * @param
 	 */
 	@Override
 	public void register(DeviceInfo deviceInfo) {
-		logger.log(Level.INFO, deviceInfo.toString());
+		registerLogger.log(Level.INFO, deviceInfo.toString());
 		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
@@ -134,7 +142,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			registerLogger.log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -145,15 +153,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public void updateSim(DeviceInfo deviceInfo) {
-		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getSimId()) 
+		updateSimLogger.log(Level.INFO, deviceInfo.toString());
+		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getSimId())
 				|| StringUtils.isEmpty(deviceInfo.getSimState())|| StringUtils.isEmpty(deviceInfo.getDataUsed()))
 			return;
-
-		logger.log(Level.INFO, deviceInfo.toString());
 		try {
 			deviceInfoMapper.updateDeviceInfo(deviceInfo);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			updateSimLogger.log(Level.SEVERE, null, e);
 		}
 	}
 

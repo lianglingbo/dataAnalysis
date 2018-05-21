@@ -11,7 +11,9 @@ import org.apache.ibatis.annotations.UpdateProvider;
 
 import com.joymeter.entity.DeviceInfo;
 import com.joymeter.provider.DeviceInfoProvider;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface DeviceInfoMapper {
 	@Select("SELECT * FROM device_info")
     List<DeviceInfo> getAll();
