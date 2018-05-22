@@ -56,7 +56,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
-			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)) {
+			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)||"push".equals(event)) {
 				if ("data".equals(event)) {
 					deviceInfo.setReadState("0");
 				}
