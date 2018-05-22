@@ -20,10 +20,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
 	private DeviceInfoMapper deviceInfoMapper;
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
-	private final static Logger updateSimLogger = Logger.getLogger("updateSim");
-	private final static Logger registerLogger = Logger.getLogger("register");
-	private final static Logger updateDeviceLogger = Logger.getLogger("updateDevice");
-	private final static Logger addDataLogger = Logger.getLogger("addData");
+	private static final Logger updateSimLogger = Logger.getLogger("updateSim");
+	private static final Logger registerLogger = Logger.getLogger("register");
+	private static final Logger updateDeviceLogger = Logger.getLogger("updateDevice");
+	private static final Logger addDataLogger = Logger.getLogger("addData");
 	/**
 	 * 保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
