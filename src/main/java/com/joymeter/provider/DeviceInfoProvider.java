@@ -93,6 +93,9 @@ public class DeviceInfoProvider {
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
 					WHERE("deviceState = #{deviceState}");
 				}
+				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
+					WHERE("readState = #{readState}");
+				}
 			}
 		}.toString();
 	}
@@ -170,5 +173,40 @@ public class DeviceInfoProvider {
 			column = "project";
 		}
 		return sql.append(column).append(sqlb.append(" Group By " + column)).toString();
+	}
+
+	/**
+	 * 态生成查询抄表失败聚合SQL
+	 * readState = 1 为失败
+	 * @param deviceInfo
+	 * @return
+	 */
+	public String selectReadFailed(DeviceInfo deviceInfo) {
+		StringBuilder sql = new StringBuilder();
+		StringBuilder sqlb = new StringBuilder();
+		String column = null;
+		sql.append("SELECT ");
+		sqlb.append(",COUNT(*) as failed from device_info WHERE readState = '1' ");
+		if (!StringUtils.isEmpty(deviceInfo.getProject())) {
+			sqlb.append("and project = #{project} ");
+			column = "province";
+			if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
+				sqlb.append("and province = #{province} ");
+				column = "city";
+				if (!StringUtils.isEmpty(deviceInfo.getCity())) {
+					sqlb.append("and city = #{city} ");
+					column = "district";
+					if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
+						sqlb.append("and district = #{district} ");
+						column = "community";
+					}
+				}
+			}
+		} else {
+			column = "project";
+		}
+		String resultSql = sql.append(column).append(sqlb.append(" Group By " + column)).toString();
+		System.out.println(resultSql);
+		return resultSql;
 	}
 }

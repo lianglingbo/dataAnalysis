@@ -24,7 +24,7 @@ public class AnalysisController {
 	public String index(){
 		return "offlinetable";
 	}
-	
+
 	@RequestMapping("/event")
 	@ResponseBody
     public void event(@RequestBody String data) {
@@ -48,10 +48,15 @@ public class AnalysisController {
 	public List<HashMap<String, Object>> getOffline(@RequestParam("data")String data){
 		return analysisService.getOffline(data);
 	}
-	
-	@RequestMapping("/getOfflineDevice")
+	//查询抄表失败的设备
+	@RequestMapping("/getReadFailed")
 	@ResponseBody
-	public List<HashMap<String, Object>> getOfflineDevice(@RequestParam("data")String data){
-		return analysisService.getOfflineDevice(data);
+	public List<HashMap<String, Object>> getReadFailed(@RequestParam("data")String data){
+		return analysisService.getReadFailed(data);
+	}
+	@RequestMapping("/getDeviceByParams")
+	@ResponseBody
+	public List<HashMap<String, Object>> getDeviceByParams(@RequestParam("data")String data){
+		return analysisService.getDeviceByParams(data);
 	}
 }

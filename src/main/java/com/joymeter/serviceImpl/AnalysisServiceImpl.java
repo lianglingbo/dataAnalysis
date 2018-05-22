@@ -101,12 +101,32 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 	/**
+	 * 获取抄表失败的设备数量
+	 * @param data
+	 * @return
+	 */
+	@Override
+	public List<HashMap<String, Object>> getReadFailed(String data) {
+		if (StringUtils.isEmpty(data))return null;
+		logger.log(Level.INFO,data);
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(data);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+			return deviceInfoMapper.getReadFailedGroup(deviceInfo);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return null;
+	}
+
+
+	/**
 	 * 根据参数获取离线设备详细信息
 	 * 
 	 * @param data
 	 */
 	@Override
-	public List<HashMap<String, Object>> getOfflineDevice(String data) {
+	public List<HashMap<String, Object>> getDeviceByParams(String data) {
 		if (StringUtils.isEmpty(data))return null;
 
 		logger.log(Level.INFO,data);
@@ -120,6 +140,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 		return null;
 	}
+
 
 	/**
 	 * 注册设备相关信息

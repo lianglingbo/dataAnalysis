@@ -98,7 +98,7 @@ let showDevices = function(){
     });
     params.deviceState = 0;
     data.data = JSON.stringify(params);
-    $.axspost("/monitor/getOfflineDevice",data,function (d) {
+    $.axspost("/monitor/getDeviceByParams",data,function (d) {
         let jsonData = eval(d);
         let columns = [{checkbox:true}];
 

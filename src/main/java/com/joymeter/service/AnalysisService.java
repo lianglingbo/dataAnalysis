@@ -14,5 +14,8 @@ public interface AnalysisService {
 	
 	List<HashMap<String, Object>> getOffline(String data);
 	
-	List<HashMap<String, Object>> getOfflineDevice(String data);
+	List<HashMap<String, Object>> getDeviceByParams(String data);
+
+	//查询抄表失败聚合SQL
+	List<HashMap<String, Object>> getReadFailed(String data);
 }

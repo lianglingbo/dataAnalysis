@@ -27,6 +27,10 @@ public interface DeviceInfoMapper {
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectoffline")
     List<HashMap<String, Object>> getofflineGroup(DeviceInfo deviceInfo);
 
+	//查询抄表失败聚合SQL
+    @SelectProvider(type = DeviceInfoProvider.class,method="selectReadFailed")
+    List<HashMap<String, Object>> getReadFailedGroup(DeviceInfo deviceInfo);
+
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(String deviceId);
     
