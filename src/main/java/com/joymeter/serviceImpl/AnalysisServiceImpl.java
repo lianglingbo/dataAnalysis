@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.joymeter.util.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -117,6 +118,24 @@ public class AnalysisServiceImpl implements AnalysisService {
 			logger.log(Level.SEVERE, null, e);
 		}
 		return null;
+	}
+
+	/**
+	 * 从druid中获取设备的历史事件信息
+	 * @param data
+	 * @return
+	 */
+	@Override
+	public String getDeviceEvenFromDruid(String data) {
+		try {
+			String queryUrl = "http://192.168.31.26:8082/druid/v2/sql/";
+			String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,__time  from dataTest where deviceId = "+data+"  order by __time desc\"}";
+			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);
+			return  result;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+			return null;
+		}
 	}
 
 

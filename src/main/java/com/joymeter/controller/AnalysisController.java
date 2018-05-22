@@ -59,4 +59,13 @@ public class AnalysisController {
 	public List<HashMap<String, Object>> getDeviceByParams(@RequestParam("data")String data){
 		return analysisService.getDeviceByParams(data);
 	}
+	/**
+	 * 从druid中获取设备的历史事件信息
+	 */
+	@RequestMapping("/getDeviceEvenFromDruid")
+	@ResponseBody
+	public String getDeviceEvenFromDruid(@RequestParam("data")String data){
+		System.out.println(data);
+		return analysisService.getDeviceEvenFromDruid(data);
+	}
 }

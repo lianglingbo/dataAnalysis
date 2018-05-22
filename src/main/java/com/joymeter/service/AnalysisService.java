@@ -18,4 +18,6 @@ public interface AnalysisService {
 
 	//查询抄表失败聚合SQL
 	List<HashMap<String, Object>> getReadFailed(String data);
+
+	String getDeviceEvenFromDruid(String data);
 }
