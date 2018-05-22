@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -24,6 +23,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private final static Logger updateSimLogger = Logger.getLogger("updateSim");
 	private final static Logger registerLogger = Logger.getLogger("register");
 	private final static Logger updateDeviceLogger = Logger.getLogger("updateDevice");
+	private final static Logger addDataLogger = Logger.getLogger("addData");
 	/**
 	 * 保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
@@ -45,7 +45,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 					|| StringUtils.isEmpty(event) || datetime <= 0)
 				return;
 
-			logger.log(Level.INFO,dataStr);
+			addDataLogger.log(Level.INFO,dataStr);
 			
 			DataCache.add(dataStr);
 			
