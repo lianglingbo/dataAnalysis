@@ -31,8 +31,8 @@ $(function () {
 let showDevices = function(){
     var deviceId = $(" #deviceId ").val();
     //加单引号解决out of range 的问题
-    var dd = "\'" +deviceId+"\'";
-    var data = {"data":dd};
+    var tempdate = "\'" +deviceId+"\'";
+    var data = {"data":tempdate};
     $.axspost("/monitor/getDeviceEvenFromDruid",data,function (d) {
         let jsonData = eval(d);
 
