@@ -2,6 +2,8 @@ package com.joymeter.entity;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.sql.Timestamp;
+
 public class DeviceInfo {
 	private String deviceId;
 	private String simId;
@@ -17,6 +19,15 @@ public class DeviceInfo {
 	private String deviceState;
 	private String simState;
 	private String dataUsed;
+	private Timestamp updateTime;
+
+	public Timestamp getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Timestamp updateTime) {
+		this.updateTime = updateTime;
+	}
 
 	public DeviceInfo() {
 

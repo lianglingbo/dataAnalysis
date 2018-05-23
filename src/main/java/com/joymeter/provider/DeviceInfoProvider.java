@@ -5,6 +5,10 @@ import org.springframework.util.StringUtils;
 
 import com.joymeter.entity.DeviceInfo;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class DeviceInfoProvider {
 	/**
 	 * 动态生成更新数据SQL
@@ -13,7 +17,13 @@ public class DeviceInfoProvider {
 	 * @return
 	 */
 	public String updateDeviceInfo(DeviceInfo deviceInfo) {
-		return new SQL() {
+		//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）
+		Date date = new Date();
+		String nowTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);//将时间格式转换成符合Timestamp要求的格式.
+		Timestamp updatetime =Timestamp.valueOf(nowTime);//把时间转换
+		deviceInfo.setUpdateTime(updatetime);
+
+		String sql = new SQL() {
 			{
 				UPDATE("device_info");
 				if (!StringUtils.isEmpty(deviceInfo.getGatewayId())) {
@@ -45,7 +55,7 @@ public class DeviceInfoProvider {
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
 					SET("readState = #{readState}");
-					if(deviceInfo.getReadState()=="1") {
+					if (deviceInfo.getReadState() == "1") {
 						SET("readFaile = readFaile+1");
 					}
 				}
@@ -59,10 +69,13 @@ public class DeviceInfoProvider {
 					SET("dataUsed=#{dataUsed}");
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
+					SET("updateTime=#{updateTime}");
 					WHERE("deviceId = #{deviceId}");
 				}
 			}
 		}.toString();
+		System.out.println(sql);
+		return sql ;
 	}
 	/**
 	 * 动态生成查询数据SQL
@@ -205,8 +218,6 @@ public class DeviceInfoProvider {
 		} else {
 			column = "project";
 		}
-		String resultSql = sql.append(column).append(sqlb.append(" Group By " + column +  " order by failed desc ")).toString();
-		System.out.println(resultSql);
-		return resultSql;
+		return sql.append(column).append(sqlb.append(" Group By " + column +  " order by failed desc ")).toString();
 	}
 }
