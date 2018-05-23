@@ -128,8 +128,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public String getDeviceEvenFromDruid(String data) {
 		try {
-			String queryUrl = "http://192.168.31.26:8082/druid/v2/sql/";
-			String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,__time  from dataTest where deviceId = "+data+"  order by __time desc\"}";
+			String queryUrl = "http://localhost:8082/druid/v2/sql/";
+			String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,__time  from dataInfo where deviceId = "+data+"  order by __time desc\"}";
 			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);
 			return  result;
 		} catch (Exception e) {

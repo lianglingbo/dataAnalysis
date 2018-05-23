@@ -172,7 +172,7 @@ public class DeviceInfoProvider {
 		} else {
 			column = "project";
 		}
-		return sql.append(column).append(sqlb.append(" Group By " + column)).toString();
+		return sql.append(column).append(sqlb.append(" Group By " + column + " order by offline desc ")).toString();
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class DeviceInfoProvider {
 		} else {
 			column = "project";
 		}
-		String resultSql = sql.append(column).append(sqlb.append(" Group By " + column)).toString();
+		String resultSql = sql.append(column).append(sqlb.append(" Group By " + column +  " order by failed desc ")).toString();
 		System.out.println(resultSql);
 		return resultSql;
 	}
