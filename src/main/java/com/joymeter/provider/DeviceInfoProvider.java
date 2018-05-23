@@ -69,12 +69,17 @@ public class DeviceInfoProvider {
 					SET("dataUsed=#{dataUsed}");
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
-					SET("updateTime=#{updateTime}");
-					WHERE("deviceId = #{deviceId}");
+					//如果更新事件是offline，也就是deviceState=0，则不修改updatetime；反之修改
+					if("0".equals(deviceInfo.getDeviceState())){
+						WHERE("deviceId = #{deviceId}");
+					}else {
+						SET("updateTime=#{updateTime}");
+						WHERE("deviceId = #{deviceId}");
+					}
+
 				}
 			}
 		}.toString();
-		System.out.println(sql);
 		return sql ;
 	}
 	/**

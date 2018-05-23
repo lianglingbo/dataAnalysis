@@ -63,19 +63,19 @@ public class AnalysisServiceImpl implements AnalysisService {
 				}
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}else if ("open".equals(event)) {
 				deviceInfo.setValveState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
+				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}
 		} catch (Exception e) {
 			updateDeviceLogger.log(Level.SEVERE, null, e);
