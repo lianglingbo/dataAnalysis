@@ -129,7 +129,7 @@ public class HttpClient {
             result = EntityUtils.toString(httpEntity, "UTF-8");
             //logger.log(Level.INFO, "获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage()+"请求内容为："+result);
         } finally {
             try {
                 if (response != null) response.close();

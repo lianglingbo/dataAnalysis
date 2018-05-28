@@ -56,29 +56,23 @@ public class AnalysisServiceImpl implements AnalysisService {
 			if("offline".equals(event)) {
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+"even:"+event);
 			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)||"push".equals(event)) {
 				if ("data".equals(event)) {
 					deviceInfo.setReadState("0");
 				}
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
-			}else if ("open".equals(event)) {
 				deviceInfo.setValveState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				updateDeviceLogger.log(Level.INFO,"更新设备状态,deviceId:"+deviceId+" even:"+event);
 			}
 		} catch (Exception e) {
-			updateDeviceLogger.log(Level.SEVERE, null, e);
+			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
 	}
 
@@ -96,7 +90,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 			return deviceInfoMapper.getofflineGroup(deviceInfo);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.log(Level.SEVERE, data, e);
 		}
 		return null;
 	}
@@ -115,7 +109,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 			return deviceInfoMapper.getReadFailedGroup(deviceInfo);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.log(Level.SEVERE, data, e);
 		}
 		return null;
 	}
@@ -127,13 +121,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public String getDeviceEvenFromDruid(String data) {
+		String queryUrl = "http://localhost:8082/druid/v2/sql/";
+		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo where deviceId = "+data+"  order by __time desc limit 5000 \"}";
 		try {
-			String queryUrl = "http://localhost:8082/druid/v2/sql/";
-			String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo where deviceId = "+data+"  order by __time desc\"}";
 			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);
 			return  result;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.log(Level.SEVERE, QUERY_HIST_DATA, e);
 			return null;
 		}
 	}
@@ -155,9 +149,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 			return deviceInfoMapper.getByParams(deviceInfo);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.log(Level.SEVERE, data, e);
+			return null;
 		}
-		return null;
+
 	}
 
 
@@ -182,7 +177,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}
 		} catch (Exception e) {
-			registerLogger.log(Level.SEVERE, null, e);
+			registerLogger.log(Level.SEVERE, deviceInfo.toString(), e);
 		}
 	}
 
@@ -200,7 +195,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		try {
 			deviceInfoMapper.updateDeviceInfo(deviceInfo);
 		} catch (Exception e) {
-			updateSimLogger.log(Level.SEVERE, null, e);
+			updateSimLogger.log(Level.SEVERE, deviceInfo.toString(), e);
 		}
 	}
 
