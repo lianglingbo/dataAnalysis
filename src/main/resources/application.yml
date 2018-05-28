@@ -4,7 +4,20 @@ server:
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
     min-response-size: 1024
   port: 18080
+#配置多环境,修改active属性即可
 spring:
+  profiles:
+    active: product
+---
+spring:
+  profiles: PC
+  datasource:
+    url: jdbc:mysql://192.168.199.242:3306/deviceData?useSSL=false
+    username: liang
+    password: 123
+---
+spring:
+  profiles: product
   datasource:
     url: jdbc:mysql://localhost:3306/deviceData?useSSL=false
     username: root
