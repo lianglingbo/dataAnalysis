@@ -1,5 +1,7 @@
 package com.joymeter.serviceImpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -59,6 +61,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)||"push".equals(event)) {
 				if ("data".equals(event)) {
 					deviceInfo.setReadState("0");
+					//增加水表用量,数据源,筛选条件:时间0点到6点,事件data,设备类型type3200JLAA无线冷水表,3201有线冷水表,32冷水表
+					//时间戳转换为时间
+					SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
+					String sd = sdf.format(new Date(datetime));
+
+
 				}
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
