@@ -1,5 +1,6 @@
 package com.joymeter.serviceImpl;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,7 +8,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.joymeter.task.Scheduler;
 import com.joymeter.util.HttpClient;
+import com.joymeter.util.PropertiesUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -22,11 +25,20 @@ import com.joymeter.service.AnalysisService;
 public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
 	private DeviceInfoMapper deviceInfoMapper;
+
+	private static String postWMUrl = PropertiesUtils.getProperty("postWMUrl", "");
+	private static String queryUrl = PropertiesUtils.getProperty("queryUrl", "");
+	private static int watermeterTime = Integer.valueOf(PropertiesUtils.getProperty("watermeterTime", ""));
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
 	private static final Logger updateSimLogger = Logger.getLogger("updateSim");
 	private static final Logger registerLogger = Logger.getLogger("register");
 	private static final Logger updateDeviceLogger = Logger.getLogger("updateDevice");
 	private static final Logger addDataLogger = Logger.getLogger("addData");
+
+
+
+
+
 	/**
 	 * 保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
@@ -42,6 +54,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			String deviceId = jsonData.getString("deviceId");
 			String deviceType = jsonData.getString("type");
 			String event = jsonData.getString("event");
+			String totaldata = jsonData.getString("data");
 			long datetime = Long.valueOf(jsonData.getString("datetime"));
 
 			if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType)
@@ -63,8 +76,44 @@ public class AnalysisServiceImpl implements AnalysisService {
 					deviceInfo.setReadState("0");
 					//增加水表用量,数据源,筛选条件:时间0点到6点,事件data,设备类型type3200JLAA无线冷水表,3201有线冷水表,32冷水表
 					//时间戳转换为时间
-					SimpleDateFormat sdf=new SimpleDateFormat("HH:mm:ss");
-					String sd = sdf.format(new Date(datetime));
+					try{
+						SimpleDateFormat sdf=new SimpleDateFormat("HH");
+						int currenHour =  Integer.valueOf(sdf.format(new Date(datetime)));
+						//凌晨0点到6点
+						if(currenHour >= 0 && currenHour <= watermeterTime){
+							if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
+								/**
+								 * 时间，设备类型都符合，添加到watermeter数据源中
+								 * 1.查询当前设备当天第一条数据
+								 * 2.如果有结果，获取totaldata，和当前用量，计算出用量差
+								 * 3.如果没有结果，此数据为新数据，currentdata为0
+								 *
+								 */
+								//String QUERY_USED_DATA = "{\"query\":\"select  totaldata,deviceId,__time  from watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '6' HOUR order by __time desc limit 1 \"}";
+								String QUERY_USED_DATA = "{\"query\":\"select  totaldata,deviceId ,__time  from watermeter where deviceId = "+deviceId+" and __time >= CURRENT_TIMESTAMP - INTERVAL '6' HOUR order by __time asc limit 1 \"}";
+								String result = HttpClient.sendPost(queryUrl, QUERY_USED_DATA);
+								String currentdata;
+								if (result.length()<5){
+									//返回结果为空
+									 currentdata ="0";
+								}else{
+									String  lasttotaldata= result.contains("totaldata") ? result.substring(result.indexOf(":") + 1, result.indexOf(",")) : "0";
+									BigDecimal b = new BigDecimal(totaldata).subtract(new BigDecimal(lasttotaldata));
+									if((b.compareTo(BigDecimal.ZERO)) == -1) {
+										//结果小于0，不合理
+										currentdata ="0";
+									}else{
+										currentdata = b.toString();
+									}
+								}
+								String postData = "{\"type\":\"" + deviceType+ "\",\"totaldata\":\"" + totaldata + "\",\"currentdata\":\"" + currentdata + "\",\"serverId\":\"" + serverId + "\",\"deviceId\":\"" + deviceId + "\",\"datetime\":\"" + datetime + "\"}";
+								HttpClient.sendPost(postWMUrl, postData); // 向Druid发送数据
+								addDataLogger.log(Level.INFO,"插入watermeter"+dataStr);
+							}
+						}
+					}catch (Exception e){
+						addDataLogger.log(Level.INFO,e+"插入watermeter数据源异常"+dataStr);
+					}
 
 
 				}
@@ -129,7 +178,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public String getDeviceEvenFromDruid(String data) {
-		String queryUrl = "http://localhost:8082/druid/v2/sql/";
 		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo where deviceId = "+data+"  order by __time desc limit 5000 \"}";
 		try {
 			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);

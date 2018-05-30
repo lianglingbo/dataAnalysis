@@ -36,6 +36,7 @@ public class ScheduledForDynamicCron {
 
 		getTotalDataByType();
 		setOfflineRate();
+
 	}
 
 	/**
@@ -49,8 +50,10 @@ public class ScheduledForDynamicCron {
 				result = HttpClient.sendPost(queryUrl, String.format(QUERY_TYPE_DATA, type));
 				data = result.contains("sumdata") ? result.substring(result.indexOf(":") + 1, result.indexOf("}"))
 						: "0";
-				HttpClient.sendPost(postEnUrl, "{\"type\":\"" + type + "\",\"data\":\"" + data + "\",\"datetime\":\""
-						+ System.currentTimeMillis() + "\"}");
+				String sendJson = "{\"type\":\"" + type + "\",\"data\":\"" + data + "\",\"datetime\":\""
+						+ System.currentTimeMillis() + "\"}";
+				HttpClient.sendPost(postEnUrl, sendJson );
+				logger.log(Level.SEVERE, sendJson, "执行定时任务");
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, null, e);
 			}
@@ -66,9 +69,11 @@ public class ScheduledForDynamicCron {
 			int totalNum = deviceInfoMapper.getCount(deviceInfo);
 			deviceInfo.setDeviceState("0");
 			int offNum = deviceInfoMapper.getCount(deviceInfo);
+			String sendJson ="{\"type\":\"" + ' ' + "\",\"offNum\":\"" + offNum + "\",\"totalNum\":\""
+					+ totalNum + "\",\"datetime\":\"" + System.currentTimeMillis() + "\"}";
 			// 设备类型暂时传空
-			HttpClient.sendPost(postOfUrl, "{\"type\":\"" + ' ' + "\",\"offNum\":\"" + offNum + "\",\"totalNum\":\""
-					+ totalNum + "\",\"datetime\":\"" + System.currentTimeMillis() + "\"}");
+			HttpClient.sendPost(postOfUrl, sendJson );
+			logger.log(Level.SEVERE, sendJson, "执行定时任务");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
