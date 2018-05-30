@@ -188,8 +188,36 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 	}
 
+    /**
+     * 查询最近7天可疑用水的水表
+     *
+     * SELECT max("currentdata") as maxUse ,deviceId FROM "watermeter"
+     * WHERE "__time" >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and currentdata > 0  group by "deviceId" order by max("currentdata") desc
+     *
+     * @param deviceId
+     * @return
+     */
+    @Override
+    public String getWaterMeterFromDruid(String deviceId) {
+        String QUERY_WATER_DATA;
+        if(StringUtils.isEmpty(deviceId)){
+             QUERY_WATER_DATA ="{\"query\":\"select deviceId ,max(currentdata) as maxUse   from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY and  currentdata > 0  group by deviceId order by max(currentdata) desc limit 5000 \"}";
+        }else {
+             QUERY_WATER_DATA ="{\"query\":\"select deviceId,currentdata,totaldata,( __time + INTERVAL '8' HOUR) as utf8time  from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and deviceId = '"+deviceId+"' order by __time desc limit 5000 \"}";
+            System.out.println(QUERY_WATER_DATA);
+        }
+        try {
+            String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
+            System.out.println(result);
+            return  result;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
+            return null;
+        }
+    }
 
-	/**
+
+    /**
 	 * 根据参数获取离线设备详细信息
 	 * 
 	 * @param data

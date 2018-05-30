@@ -20,4 +20,8 @@ public interface AnalysisService {
 	List<HashMap<String, Object>> getReadFailed(String data);
 
 	String getDeviceEvenFromDruid(String data);
+
+	//查询最近7天可疑用水的水表
+	String getWaterMeterFromDruid(String deviceId);
+
 }

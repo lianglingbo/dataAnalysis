@@ -65,7 +65,18 @@ public class AnalysisController {
 	@RequestMapping("/getDeviceEvenFromDruid")
 	@ResponseBody
 	public String getDeviceEvenFromDruid(@RequestParam("data")String data){
-		System.out.println(data);
 		return analysisService.getDeviceEvenFromDruid(data);
+	}
+
+	/**
+	 * 从druid中获取近7天可疑用水信息
+	 * @param deviceId
+	 * @return
+	 */
+	@RequestMapping("/getWaterMeterFromDruid")
+	@ResponseBody
+	public String getWaterMeterFromDruid( String deviceId) {
+		System.out.println(deviceId);
+		return analysisService.getWaterMeterFromDruid(deviceId);
 	}
 }
