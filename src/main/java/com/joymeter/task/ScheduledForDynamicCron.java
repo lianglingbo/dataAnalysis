@@ -34,7 +34,10 @@ public class ScheduledForDynamicCron {
 				|| (types == null || (types != null && types.length == 0)))
 			return;
 
-		getTotalDataByType();
+		//屏蔽用量统计，让出资源 5.30
+		//getTotalDataByType();
+
+
 		setOfflineRate();
 
 	}

@@ -93,7 +93,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 								String QUERY_USED_DATA = "{\"query\":\"select  totaldata,deviceId ,__time  from watermeter where deviceId = "+deviceId+" and __time >= CURRENT_TIMESTAMP - INTERVAL '6' HOUR order by __time asc limit 1 \"}";
 								String result = HttpClient.sendPost(queryUrl, QUERY_USED_DATA);
 								String currentdata;
-								if (result.length()<5){
+								if (result.length()<10){
 									//返回结果为空
 									 currentdata ="0";
 								}else{
@@ -108,7 +108,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 								}
 								String postData = "{\"type\":\"" + deviceType+ "\",\"totaldata\":\"" + totaldata + "\",\"currentdata\":\"" + currentdata + "\",\"serverId\":\"" + serverId + "\",\"deviceId\":\"" + deviceId + "\",\"datetime\":\"" + datetime + "\"}";
 								HttpClient.sendPost(postWMUrl, postData); // 向Druid发送数据
-								addDataLogger.log(Level.INFO,"插入watermeter"+dataStr);
+								addDataLogger.log(Level.INFO,"插入watermeter"+postData);
 							}
 						}
 					}catch (Exception e){
