@@ -12,17 +12,39 @@
     <script src="js/tableExport.min.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/extensions/export/bootstrap-table-export.min.js"></script>
 
+
 	<title>水表用水量信息</title>
 </head>
 <body>
 <div class="panel-body" style="padding-bottom:0;">
 	<div class="form-group">
-			<div class="col-sm-1">
-				<button type="button" id="nextButton"   class="btn btn-info" onclick="getDeviceId()">查询</button>
-			</div>
+        <div class="col-sm-10 col-md-8">
+             <div class="col-sm-2">
+                 <button type="button"   class="btn btn-info" onclick="getWaterMeterFromDruid()">每日用水量统计</button>
+             </div>
+            <div class="col-sm-2">
+                <button type="button"   class="btn btn-info" onclick="getWaterMeterCountFromDruid()">更新频率统计</button>
+            </div>
+            <div class="col-sm-2">
+                 <button type="button"  class="btn btn-info" onclick="getExceptionWaterMeter()">异常用水统计</button>
+            </div>
+            <div class="col-sm-2">
+                <button type="button"   class="btn btn-danger" onclick="getDeviceInfoFromDruid()">查询水表历史记录</button>
+            </div>
+        </div>
 	</div>
 	<table id = "table"></table>
+    <div class="row">
+        <div id="main" style="width: 800px;height:300px;"></div>
+
+    </div>
 </div>
+
+
+
+
+
+<script src="js/echarts.js"></script>
 <script src="js/table-watermeter.js"></script>
 </body>
 </html>

@@ -41,6 +41,7 @@ let showDevices = function(){
         columns.push({field:'deviceId',title:"设备编号",align: 'center'});
         columns.push({field:'serverId',title:'服务器编号',align: 'center'});
         columns.push({field:'event',title:"事件",align: 'center'});
+        columns.push({field:'data',title:"数据",align: 'center'});
         columns.push({field:'utf8time',title:"时间",align: 'center'});
 
 

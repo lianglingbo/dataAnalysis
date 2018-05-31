@@ -69,14 +69,48 @@ public class AnalysisController {
 	}
 
 	/**
-	 * 从druid中获取近7天可疑用水信息
-	 * @param deviceId
+	 * 从druid中获取近7天凌晨用水信息，用量
+	 * @param
 	 * @return
 	 */
 	@RequestMapping("/getWaterMeterFromDruid")
 	@ResponseBody
-	public String getWaterMeterFromDruid( String deviceId) {
-		System.out.println(deviceId);
-		return analysisService.getWaterMeterFromDruid(deviceId);
+	public String getWaterMeterFromDruid(  ) {
+		return analysisService.getWaterMeterFromDruid();
 	}
+
+    /**
+     * 从druid中获取近7天凌晨用水信息,频率
+     * @param
+     * @return
+     */
+    @RequestMapping("/getWaterMeterCountFromDruid")
+    @ResponseBody
+    public String getWaterMeterCountFromDruid(  ) {
+        return analysisService.getWaterMeterCountFromDruid();
+    }
+
+
+    /**
+     * 从druid中获取近7天可疑用水信息
+     * @param
+     * @return
+     */
+    @RequestMapping("/getExceptionWaterMeter")
+    @ResponseBody
+    public String getExceptionWaterMeter( ) {
+	    return analysisService.getExceptionWaterMeter();
+    }
+
+    /**
+     * 根据deviceId查询watermeter用水情况列表
+     * @param deviceId
+     * @return
+     */
+    @RequestMapping("/getDeviceInfoFromDruid")
+    @ResponseBody
+    public String getDeviceInfoFromDruid(String deviceId) {
+        return analysisService.getDeviceInfoFromDruid(deviceId);
+    }
+
 }

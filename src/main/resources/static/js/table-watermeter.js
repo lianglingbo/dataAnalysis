@@ -2,6 +2,7 @@ $(function () {
     let oTable = new TableInit();
     oTable.Init();
 
+
     /**
      * ajax封装
      * url 发送请求的地址
@@ -25,71 +26,84 @@ $(function () {
             }
         });
     };
-    showDevices();
+    getWaterMeterFromDruid();
 
 });
 
-let showDevices = function(){
-    var deviceId = $(" #deviceId ").val();
-    //加单引号解决out of range 的问题
-    var tempdate = "\'" +deviceId+"\'";
-    var data = {"data":tempdate};
-    $.axspost("/monitor/getWaterMeterFromDruid",data,function (d) {
-        let jsonData = eval(d);
-
-        let columns = [{checkbox:true}];
-
-        columns.push({
-            field:'deviceId',
-            title:"设备编号",
-            align: 'center'
-
-        });
-        columns.push({field:'maxUse',title:'用量',align: 'center'});
-
-
-
-        $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
-    },function () {
-
-    })
-};
-
-//   按钮点击事件
-let getDeviceId  = function () {
+//查设备详情
+let getDeviceInfoFromDruid = function(){
     var selectContent = $('#table').bootstrapTable('getSelections')[0];
     if(typeof(selectContent) == 'undefined') {
-        selectContent=null;
-        showDevices();
+
         return false;
     }else{
         console.info(selectContent);
-
-        // $('#item_project_modal').modal('show');     // 项目立项面板
-        $.axspost("/monitor/getWaterMeterFromDruid",selectContent,function (d) {
+        // $('#item_project_modal').modal('show');     //  面板
+        $.axspost("/monitor/getDeviceInfoFromDruid",selectContent,function (d) {
             let jsonData = eval(d);
-
             let columns = [{checkbox:true}];
-
             columns.push({
                 field:'deviceId',
                 title:"设备编号",
                 align: 'center'
-
             });
-            columns.push({field:'currentdata',title:'当日用量',align: 'center'});
-            columns.push({field:'totaldata',title:'总量',align: 'center'});
+            columns.push({field:'currentdata',title:'当日凌晨用量',align: 'center',formatter: 'waterFormatter'});
+            columns.push({field:'totaldata',title:'累计总量',align: 'center'});
             columns.push({field:'utf8time',title:'时间',align: 'center'});
-
-
             $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
         },function () {
-
         })
 
 
     }
+    getDeviceInfoFromDruidToEchars();
+};
+
+//   按钮点击事件,查询最近7天水表，用量
+let getWaterMeterFromDruid  = function () {
+        $.axspost("/monitor/getWaterMeterFromDruid",null,function (d) {
+            let jsonData = eval(d);
+            let columns = [{checkbox:true}];
+            columns.push({field:'deviceId', title:"设备编号", align: 'center'});
+            columns.push({field:'maxUse',title:'当日凌晨用量',align: 'center'});
+            $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
+        },function () {
+        })
+
 }
+
+//   按钮点击事件,查询最近7天水表，频率
+let getWaterMeterCountFromDruid  = function () {
+    $.axspost("/monitor/getWaterMeterCountFromDruid",null,function (d) {
+        let jsonData = eval(d);
+        let columns = [{checkbox:true}];
+        columns.push({field:'deviceId', title:"设备编号", align: 'center'});
+        columns.push({field:'useCount',title:'更新次数',align: 'center'});
+        $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
+    },function () {
+    })
+
+}
+
+//   按钮点击事件,查询最近7天可疑用水的水表
+let getExceptionWaterMeter  = function () {
+        // $('#item_project_modal').modal('show');     //  面板
+        $.axspost("/monitor/getExceptionWaterMeter", null, function (d) {
+            let jsonData = eval(d);
+            let columns = [{checkbox: true}];
+            columns.push({
+                field: 'deviceId',
+                title: "设备编号",
+                align: 'center'
+            });
+            columns.push({field: 'exceptCount', title: '异常次数', align: 'center'});
+            $('#table').bootstrapTable("refreshOptions", {columns: columns, data: jsonData});
+        }, function () {
+        })
+
+
+}
+
 
 let TableInit = function(){
     let oTableInit = {};
@@ -116,4 +130,178 @@ let TableInit = function(){
 };
 
 
+//格式化状态
+function waterFormatter(value) {
+    if (value==-1) {
+        return '<span class="label label-danger">异常</span>';
+    }else{
+        return value;
+    }
+};
+
+
+//加载数据到前台图表
+//查设备详情
+let getDeviceInfoFromDruidToEchars = function(){
+    var selectContent = $('#table').bootstrapTable('getSelections')[0];
+    if(typeof(selectContent) == 'undefined') {
+
+        return false;
+    }else{
+        console.info(selectContent);
+        // $('#item_project_modal').modal('show');     //  面板
+        $.axspost("/monitor/getDeviceInfoFromDruid",selectContent,function (d) {
+            let jsonData = eval(d);
+            var usedata = [];
+            var time = [];
+            for(var index in jsonData){
+                time.push(jsonData[index].utf8time);
+                usedata.push(jsonData[index].currentdata);
+            };
+
+
+            option = {
+                title: {
+                    text: '动态数据 + 时间坐标轴'
+                },
+                tooltip: {
+                    trigger: 'axis'//鼠标跟随效果
+                },
+                legend: {
+                    data:[] //中间的小图标
+                },
+                //右上角工具条
+                toolbox: {
+                    show: true,
+                    feature: {
+                        mark: {show: true},
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                xAxis: {
+                    type: 'value',
+                    data:time
+                },
+                yAxis: {
+
+                },
+                series: [
+                    {
+                    name: '用量',
+                    type: 'line', symbol: 'emptydiamond',    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                     //stack: '总量',
+                    data: usedata
+                },
+                    {
+                        name: '时间',
+                        type: 'line',
+                        symbol: 'emptydiamond',    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                        //stack: '总量',
+                        data:time
+
+                    }
+                ]
+            };
+
+            var myChart = echarts.init(document.getElementById('main'));
+            myChart.setOption(option);
+
+        },function () {
+        })
+
+
+    }
+};
+
+//图表
+var echarsfun = function () {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    function randomData() {
+        now = now + 1;
+        value = value + Math.random() * 21 - 10;
+        return {
+            name: now.toString(),
+            value: [
+                now,
+                Math.random() * 100
+            ]
+        }
+    }
+
+    var data = [];
+    var now = +0;
+    var oneDay = 1;
+    var value = Math.random() * 1000;
+    for (var i = 0; i < 7; i++) {
+        data.push(randomData());
+    }
+
+    option = {
+        title: {
+            text: '动态数据 + 时间坐标轴'
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params) {
+                params = params[0];
+                var date = new Date(params.name);
+                return params.value[1];
+            },
+            axisPointer: {
+                animation: false
+            }
+        },
+        xAxis: {
+            type: 'value',
+        },
+        yAxis: {
+            type: 'value',
+        },
+        series: [{
+            name: '模拟数据',
+            type: 'line',
+            showSymbol: false,
+            hoverAnimation: false,
+            //stack: '总量',
+            data: data
+        }]
+    };
+
+    setInterval(function () {
+
+        for (var i = 0; i < 1; i++) {
+            data.shift();
+            data.push(randomData());
+        }
+
+        myChart.setOption({
+            series: [{
+                name: '模拟数据',
+                type: 'line',
+                showSymbol: false,
+                hoverAnimation: false,
+                //stack: '总量',
+                data: data
+            }]
+        });
+        myChart.setOption({
+            xAxis: [{
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                min: +data[0].name,
+                max: +20
+            }]
+        });
+    }, 1000);
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+}
 

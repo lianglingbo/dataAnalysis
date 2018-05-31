@@ -21,7 +21,17 @@ public interface AnalysisService {
 
 	String getDeviceEvenFromDruid(String data);
 
-	//查询最近7天可疑用水的水表
-	String getWaterMeterFromDruid(String deviceId);
+	//查询最近7天可疑用水的水表,用量
+	String getWaterMeterFromDruid( );
+
+	//查询最近7天可疑用水的水表,频率
+	String getWaterMeterCountFromDruid( );
+
+	//查询异常水表,新数据data小于老数据data
+    String getExceptionWaterMeter();
+
+    //根据deviceId查询watermeter用水情况列表
+	String getDeviceInfoFromDruid(String deviceId);
+
 
 }
