@@ -145,30 +145,24 @@ function waterFormatter(value) {
 let getDeviceInfoFromDruidToEchars = function(){
     var selectContent = $('#table').bootstrapTable('getSelections')[0];
     if(typeof(selectContent) == 'undefined') {
-
         return false;
     }else{
-        console.info(selectContent);
         // $('#item_project_modal').modal('show');     //  面板
         $.axspost("/monitor/getDeviceInfoFromDruid",selectContent,function (d) {
             let jsonData = eval(d);
             var usedata = [];
             var time = [];
+            //时间和用量单独拿出放入数组
             for(var index in jsonData){
                 time.push(jsonData[index].utf8time);
                 usedata.push(jsonData[index].currentdata);
             };
-
-
             option = {
                 title: {
-                    text: '动态数据 + 时间坐标轴'
+                    text: '夜间用量'
                 },
                 tooltip: {
                     trigger: 'axis'//鼠标跟随效果
-                },
-                legend: {
-                    data:[] //中间的小图标
                 },
                 //右上角工具条
                 toolbox: {
@@ -176,17 +170,15 @@ let getDeviceInfoFromDruidToEchars = function(){
                     feature: {
                         mark: {show: true},
                         dataView: {show: true, readOnly: false},
-                        magicType: {show: true, type: ['line', 'bar']},
-                        restore: {show: true},
-                        saveAsImage: {show: true}
+                        magicType: {show: true, type: ['line', 'bar']}
                     }
                 },
                 xAxis: {
-                    type: 'value',
+                    type: 'category',
                     data:time
                 },
                 yAxis: {
-
+                    type: 'value'
                 },
                 series: [
                     {
@@ -194,114 +186,14 @@ let getDeviceInfoFromDruidToEchars = function(){
                     type: 'line', symbol: 'emptydiamond',    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
                      //stack: '总量',
                     data: usedata
-                },
-                    {
-                        name: '时间',
-                        type: 'line',
-                        symbol: 'emptydiamond',    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
-                        //stack: '总量',
-                        data:time
-
-                    }
+                }
                 ]
             };
-
-            var myChart = echarts.init(document.getElementById('main'));
+            var myChart = echarts.init(document.getElementById('lineChart'));
             myChart.setOption(option);
-
-        },function () {
-        })
-
-
+            //触发模态框
+            $('#myModal').modal('show');
+        },function () {})
     }
 };
-
-//图表
-var echarsfun = function () {
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-
-    function randomData() {
-        now = now + 1;
-        value = value + Math.random() * 21 - 10;
-        return {
-            name: now.toString(),
-            value: [
-                now,
-                Math.random() * 100
-            ]
-        }
-    }
-
-    var data = [];
-    var now = +0;
-    var oneDay = 1;
-    var value = Math.random() * 1000;
-    for (var i = 0; i < 7; i++) {
-        data.push(randomData());
-    }
-
-    option = {
-        title: {
-            text: '动态数据 + 时间坐标轴'
-        },
-        tooltip: {
-            trigger: 'axis',
-            formatter: function (params) {
-                params = params[0];
-                var date = new Date(params.name);
-                return params.value[1];
-            },
-            axisPointer: {
-                animation: false
-            }
-        },
-        xAxis: {
-            type: 'value',
-        },
-        yAxis: {
-            type: 'value',
-        },
-        series: [{
-            name: '模拟数据',
-            type: 'line',
-            showSymbol: false,
-            hoverAnimation: false,
-            //stack: '总量',
-            data: data
-        }]
-    };
-
-    setInterval(function () {
-
-        for (var i = 0; i < 1; i++) {
-            data.shift();
-            data.push(randomData());
-        }
-
-        myChart.setOption({
-            series: [{
-                name: '模拟数据',
-                type: 'line',
-                showSymbol: false,
-                hoverAnimation: false,
-                //stack: '总量',
-                data: data
-            }]
-        });
-        myChart.setOption({
-            xAxis: [{
-                type: 'value',
-                splitLine: {
-                    show: false
-                },
-                min: +data[0].name,
-                max: +20
-            }]
-        });
-    }, 1000);
-
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-}
 

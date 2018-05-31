@@ -34,10 +34,20 @@
         </div>
 	</div>
 	<table id = "table"></table>
-    <div class="row">
-        <div id="main" style="width: 800px;height:300px;"></div>
 
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade text-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="display: inline-block; width: auto;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div id="lineChart" style="width: 800px;height:300px;" style="display:none"></div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
     </div>
+
 </div>
 
 
