@@ -40,9 +40,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 
 	/**
-	 * 保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
+	 * 1.保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
-	 *
+	 * 2.数据源新增字段，eventinfo，记录event事件的data值（为字符串类型的时候，不能存入druid，druid中设置data属性为double类型）
+	 *   数据源新增时，判断事件，如果event 不为 data ，则将其data值存入eventinfo中
 	 * @param dataStr
 	 */
 	@Override
@@ -60,9 +61,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 			if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType)
 					|| StringUtils.isEmpty(event) || datetime <= 0)
 				return;
-
 			addDataLogger.log(Level.INFO,dataStr);
-			
+			//如果event 不为 data ，则将其data值存入eventinfo中
+			if(!"data".equals(event)){
+				jsonData.put("eventinfo",totaldata);
+				dataStr = jsonData.toJSONString();
+			}
 			DataCache.add(dataStr);
 			
 			//更新抄表状态、设备状态、阀门状态
@@ -85,7 +89,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 								/**
 								 * 时间，设备类型都符合，添加到watermeter数据源中
 								 * 1.查询当前设备当天第一条数据
-								 * 2.如果有结果，获取totaldata，和当前用量，计算出用量差
+								 * 2.如果有结果，获取totaldata，和当前用量，计算出用量差 ，如果小于0，标记为-1
 								 * 3.如果没有结果，此数据为新数据，currentdata为0
 								 *
 								 */
@@ -100,10 +104,19 @@ public class AnalysisServiceImpl implements AnalysisService {
 									String  lasttotaldata= result.contains("totaldata") ? result.substring(result.indexOf(":") + 1, result.indexOf(",")) : "0";
 									BigDecimal b = new BigDecimal(totaldata).subtract(new BigDecimal(lasttotaldata));
 									if((b.compareTo(BigDecimal.ZERO)) == -1) {
-										//结果小于0，不合理
-										currentdata ="0";
+										//与首次data比较 结果小于0，不合理，标记为-1
+										currentdata ="-1";
 									}else{
-										currentdata = b.toString();
+										//与上次data结果比较，如果小于0，不合理，标记为-1
+										String QUERY_LAST_DATA = "{\"query\":\"select  totaldata,deviceId  from watermeter where deviceId = "+deviceId+" order by __time  desc  limit 1 \"}";
+										String dataResult = HttpClient.sendPost(queryUrl, QUERY_LAST_DATA);
+										String  ldata= dataResult.contains("totaldata") ? dataResult.substring(result.indexOf(":") + 1, dataResult.indexOf(",")) : "0";
+										BigDecimal tmp = new BigDecimal(totaldata).subtract(new BigDecimal(ldata));
+										if((tmp.compareTo(BigDecimal.ZERO)) == -1) {
+											currentdata ="-1";
+										}else {
+											currentdata = b.toString();
+										}
 									}
 								}
 								String postData = "{\"type\":\"" + deviceType+ "\",\"totaldata\":\"" + totaldata + "\",\"currentdata\":\"" + currentdata + "\",\"serverId\":\"" + serverId + "\",\"deviceId\":\"" + deviceId + "\",\"datetime\":\"" + datetime + "\"}";
@@ -178,7 +191,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public String getDeviceEvenFromDruid(String data) {
-		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo where deviceId = "+data+"  order by __time desc limit 5000 \"}";
+		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,data,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo where deviceId = "+data+"  order by __time desc limit 5000 \"}";
 		try {
 			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);
 			return  result;
@@ -189,26 +202,20 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
     /**
-     * 查询最近7天可疑用水的水表
+     * 查询最近7天可疑用水的水表,用量
      *
      * SELECT max("currentdata") as maxUse ,deviceId FROM "watermeter"
      * WHERE "__time" >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and currentdata > 0  group by "deviceId" order by max("currentdata") desc
      *
-     * @param deviceId
+     * @param
      * @return
      */
     @Override
-    public String getWaterMeterFromDruid(String deviceId) {
-        String QUERY_WATER_DATA;
-        if(StringUtils.isEmpty(deviceId)){
-             QUERY_WATER_DATA ="{\"query\":\"select deviceId ,max(currentdata) as maxUse   from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY and  currentdata > 0  group by deviceId order by max(currentdata) desc limit 5000 \"}";
-        }else {
-             QUERY_WATER_DATA ="{\"query\":\"select deviceId,currentdata,totaldata,( __time + INTERVAL '8' HOUR) as utf8time  from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and deviceId = '"+deviceId+"' order by __time desc limit 5000 \"}";
-            System.out.println(QUERY_WATER_DATA);
-        }
+    public String getWaterMeterFromDruid() {
+        String QUERY_WATER_DATA ="{\"query\":\"select deviceId ,max(currentdata) as maxUse   from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY and  currentdata > 0  group by deviceId order by max(currentdata) desc limit 500 \"}";
+
         try {
             String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
-            System.out.println(result);
             return  result;
         } catch (Exception e) {
             logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
@@ -216,8 +223,56 @@ public class AnalysisServiceImpl implements AnalysisService {
         }
     }
 
+	//查询最近7天可疑用水的水表,频率
+	@Override
+	public String getWaterMeterCountFromDruid() {
+		String QUERY_WATER_DATA ="{\"query\":\"select deviceId ,count(1) as useCount   from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY and  currentdata > 0  group by deviceId order by count(1) desc limit 500 \"}";
 
-    /**
+		try {
+			String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
+			return  result;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
+			return null;
+		}
+	}
+
+	/**
+	 * 查询异常水表,新数据data小于老数据data，currentdata标记为-1的水表
+	 * @return
+	 */
+	@Override
+	public String getExceptionWaterMeter() {
+		String QUERY_WATER_DATA ="{\"query\":\"select deviceId,count(1) as exceptCount  from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and  currentdata = '-1' group by deviceId order by exceptCount desc limit 500 \"}";
+		try {
+			String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
+			return  result;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
+			return null;
+		}
+	}
+
+	/**
+	 * 根据deviceId查询watermeter用水情况列表
+	 * @param deviceId
+	 * @return
+	 */
+	@Override
+	public String getDeviceInfoFromDruid(String deviceId) {
+		String QUERY_WATER_DATA ="{\"query\":\"select deviceId,currentdata,totaldata,( __time + INTERVAL '8' HOUR) as utf8time  from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and deviceId = '"+deviceId+"'   order by __time  limit 5000 \"}";
+		try {
+			String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
+			return  result;
+		} catch (Exception e) {
+			System.out.println(QUERY_WATER_DATA+e);
+			logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
+			return null;
+		}
+	}
+
+
+	/**
 	 * 根据参数获取离线设备详细信息
 	 * 
 	 * @param data
