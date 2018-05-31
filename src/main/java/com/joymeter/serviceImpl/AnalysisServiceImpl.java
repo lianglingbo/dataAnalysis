@@ -218,8 +218,12 @@ public class AnalysisServiceImpl implements AnalysisService {
         try {
             String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
             //将json转为对象，遍历每个对象，再增加设备得项目信息
-			JSONArray array = JSONObject.parseArray(result);
-
+			JSONArray jsonArray = JSONObject.parseArray(result);
+			for (Object object:jsonArray) {
+				JSONObject jsonObject = JSONObject.parseObject(object.toString());
+				String deviceId = jsonObject.getString("deviceId");
+				System.out.println(deviceId);
+			}
 
 
 
