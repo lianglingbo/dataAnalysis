@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.alibaba.fastjson.JSONArray;
 import com.joymeter.task.Scheduler;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
@@ -216,6 +217,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 
         try {
             String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
+            //将json转为对象，遍历每个对象，再增加设备得项目信息
+			JSONArray array = JSONObject.parseArray(result);
+
+
+
+
             return  result;
         } catch (Exception e) {
             logger.log(Level.SEVERE, QUERY_WATER_DATA, e);

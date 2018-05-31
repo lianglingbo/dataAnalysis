@@ -56,6 +56,7 @@ let getDeviceInfoFromDruid = function(){
 
 
     }
+    //展示折线图
     getDeviceInfoFromDruidToEchars();
 };
 
