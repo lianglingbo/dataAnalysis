@@ -64,29 +64,29 @@ public class AnalysisController {
 	 */
 	@RequestMapping("/getDeviceEvenFromDruid")
 	@ResponseBody
-	public String getDeviceEvenFromDruid(@RequestParam("data")String data){
+	public String getDeviceEvenFromDruid(@RequestParam("data") String data){
 		return analysisService.getDeviceEvenFromDruid(data);
 	}
 
 	/**
-	 * 从druid中获取近7天凌晨用水信息，用量
+	 * 从druid中获取某天凌晨用水信息，用量
 	 * @param
 	 * @return
 	 */
 	@RequestMapping("/getWaterMeterFromDruid")
 	@ResponseBody
-	public String getWaterMeterFromDruid(  ) {
-		return analysisService.getWaterMeterFromDruid();
+	public String getWaterMeterFromDruid(@RequestParam("time") String time) {
+		return analysisService.getWaterMeterFromDruid(time);
 	}
 
     /**
-     * 从druid中获取近7天凌晨用水信息,频率
+     * 从druid中获取某天凌晨用水信息,频率
      * @param
      * @return
      */
     @RequestMapping("/getWaterMeterCountFromDruid")
     @ResponseBody
-    public String getWaterMeterCountFromDruid(  ) {
+    public String getWaterMeterCountFromDruid() {
         return analysisService.getWaterMeterCountFromDruid();
     }
 
@@ -98,7 +98,7 @@ public class AnalysisController {
      */
     @RequestMapping("/getExceptionWaterMeter")
     @ResponseBody
-    public String getExceptionWaterMeter( ) {
+    public String getExceptionWaterMeter() {
 	    return analysisService.getExceptionWaterMeter();
     }
 

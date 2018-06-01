@@ -21,6 +21,8 @@ public class DeviceInfo {
 	private String dataUsed;
 	private Timestamp updateTime;
 
+
+
 	public Timestamp getUpdateTime() {
 		return updateTime;
 	}

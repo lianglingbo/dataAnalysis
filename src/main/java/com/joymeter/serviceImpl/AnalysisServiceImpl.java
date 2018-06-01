@@ -8,10 +8,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.alibaba.fastjson.JSONArray;
-import com.joymeter.task.Scheduler;
+import com.joymeter.entity.WaterMeterUse;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
+import com.joymeter.util.TimeTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -35,9 +37,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static final Logger registerLogger = Logger.getLogger("register");
 	private static final Logger updateDeviceLogger = Logger.getLogger("updateDevice");
 	private static final Logger addDataLogger = Logger.getLogger("addData");
-
-
-
+	private List jsonArray;
 
 
 	/**
@@ -192,7 +192,68 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public String getDeviceEvenFromDruid(String data) {
-		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,data,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo where deviceId = "+data+"  order by __time desc limit 5000 \"}";
+		if (StringUtils.isEmpty(data))return null;
+		JSONObject jsonData = JSONObject.parseObject(data);
+		String deviceId = jsonData.getString("deviceId");
+		String serverId = jsonData.getString("serverId");
+		String type = jsonData.getString("type");
+		String event = jsonData.getString("event");
+		String datetime1 = jsonData.getString("datetime1");
+		String datetime2 = jsonData.getString("datetime2");
+		//非空判断，时间减去8小时再查询，开始时间与结束时间大小比较
+		//条件拼接
+		StringBuffer sql = new StringBuffer();
+
+		if(!(StringUtils.isEmpty(deviceId)||deviceId.length()==0)){
+			sql.append("deviceId = '"+ deviceId+"' ");
+		}
+		if(!(StringUtils.isEmpty(serverId)||serverId.length()==0)){
+			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
+				//如果sql不为空，则为多条件
+				sql.append(" and  serverId = '"+ serverId +"' ");
+			}else {
+				sql.append("  where serverId = '"+ serverId +"' ");
+			}
+		}
+		if(!(StringUtils.isEmpty(type)||type.length()==0)){
+
+			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
+				//如果sql不为空，则为多条件
+				sql.append(" and  type = '"+ type+"' " );
+			}else {
+				sql.append("  where type = '"+ type +"' ");
+			}
+			
+		}
+		if(!(StringUtils.isEmpty(event)||event.length()==0)){
+
+			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
+				//如果sql不为空，则为多条件
+				sql.append(" and  event = '"+ event +"' ");
+			}else {
+				sql.append("  where event = '"+ event +"' ");
+			}
+			
+		}
+		if(!(StringUtils.isEmpty(datetime1)||datetime1.length()==0)  &&  !(StringUtils.isEmpty(datetime2)||datetime2.length()==0) ){
+			//转时差
+			//获取时间,前一天的16点为真实时间的0点，进行拼接：格式：2018-05-03T16
+			String startTime = TimeTools.getSpecifiedDayBefore(datetime1)+"T16";
+			String endTime = TimeTools.getSpecifiedDayBefore(datetime2)+"T16";
+			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
+				//如果sql不为空，则为多条件
+				sql.append(" and  __time >= '"+ startTime +"' and  __time <= '" +endTime+"' ");
+			}else {
+				sql.append("  where  __time >= '"+ startTime +"' and  __time <= '" +endTime+"' ");
+			}
+		}
+
+
+
+
+		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,eventinfo ,data,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo   "+sql.toString()+"  order by __time desc limit 500 \"}";
+		System.out.println(QUERY_HIST_DATA);
+
 		try {
 			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);
 			return  result;
@@ -203,31 +264,48 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
     /**
-     * 查询最近7天可疑用水的水表,用量
+     * 查询某天可疑用水的水表,用量
      *
      * SELECT max("currentdata") as maxUse ,deviceId FROM "watermeter"
      * WHERE "__time" >= CURRENT_TIMESTAMP - INTERVAL '7' DAY  and currentdata > 0  group by "deviceId" order by max("currentdata") desc
      *
+	 * 对时间进行处理，获取的时间需加 减去 8小时
      * @param
      * @return
      */
     @Override
-    public String getWaterMeterFromDruid() {
-        String QUERY_WATER_DATA ="{\"query\":\"select deviceId ,max(currentdata) as maxUse   from  watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '7' DAY and  currentdata > 0  group by deviceId order by max(currentdata) desc limit 500 \"}";
+    public String getWaterMeterFromDruid(String time) {
+		//获取时间,前一天的16点为真实时间的0点，进行拼接：格式：2018-05-03T16
+		String startTime = TimeTools.getSpecifiedDayBefore(time)+"T16";
+		//后一天时间
+		String endTime =time+"T16";
 
+        String QUERY_WATER_DATA ="{\"query\":\"select deviceId ,max(currentdata) as maxUse   from  watermeter where  __time >='"+startTime+"' and __time <='"+ endTime +"' and  currentdata > 0  group by deviceId order by max(currentdata) desc limit 500 \"}";
+		System.out.println(QUERY_WATER_DATA);
         try {
             String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
+            System.out.println(result);
             //将json转为对象，遍历每个对象，再增加设备得项目信息
-			JSONArray jsonArray = JSONObject.parseArray(result);
-			for (Object object:jsonArray) {
-				JSONObject jsonObject = JSONObject.parseObject(object.toString());
-				String deviceId = jsonObject.getString("deviceId");
-				System.out.println(deviceId);
+			List<WaterMeterUse> waterMeterUses = JSONObject.parseArray(result, WaterMeterUse.class);
+			//循环遍历每个对象，通过id查出项目地信息，加到对象中
+			for (WaterMeterUse waterMeterUse :waterMeterUses ) {
+				//查询
+				DeviceInfo deviceInfo = deviceInfoMapper.getOne(waterMeterUse.getDeviceId());
+				if(StringUtils.isEmpty(deviceInfo)){
+					logger.log(Level.SEVERE,"查询设备"+waterMeterUse.getDeviceId()+"结果为空");
+					continue;
+				}
+				waterMeterUse.setProject(deviceInfo.getProject());
+				waterMeterUse.setProvince(deviceInfo.getProvince());
+				waterMeterUse.setCity(deviceInfo.getCity());
+				waterMeterUse.setDistrict(deviceInfo.getDistrict());
+				waterMeterUse.setCommunity(deviceInfo.getCommunity());
+				waterMeterUse.setAddress(deviceInfo.getAddress());
+
 			}
+			String s = JSONArray.toJSONString(waterMeterUses);
 
-
-
-            return  result;
+			return  s;
         } catch (Exception e) {
             logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
             return null;

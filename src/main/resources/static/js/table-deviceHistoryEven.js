@@ -29,10 +29,32 @@ $(function () {
 });
 
 let showDevices = function(){
+    //获取参数
     var deviceId = $(" #deviceId ").val();
+    var serverId = $(" #serverId ").val();
+    var type = $(" #type ").val();
+    var event = $(" #event ").val();
+    var datetime1 = $(" #datetime1 ").val();
+    var datetime2 = $(" #datetime2 ").val();
+
     //加单引号解决out of range 的问题
-    var tempdate = "\'" +deviceId+"\'";
-    var data = {"data":tempdate};
+    //deviceId = "\'" +deviceId+"\'";
+
+    var infos = {
+        "deviceId":deviceId,
+        "serverId":serverId,
+        "type":type,
+        "event":event,
+        "datetime1":datetime1,
+        "datetime2":datetime2,
+    };
+    if(datetime2 < datetime1){
+        alert("时间选择错误");
+        return;
+    }
+    var data = {};
+    data.data = JSON.stringify(infos);
+
     $.axspost("/monitor/getDeviceEvenFromDruid",data,function (d) {
         let jsonData = eval(d);
 
@@ -41,6 +63,7 @@ let showDevices = function(){
         columns.push({field:'deviceId',title:"设备编号",align: 'center'});
         columns.push({field:'serverId',title:'服务器编号',align: 'center'});
         columns.push({field:'event',title:"事件",align: 'center'});
+        columns.push({field:'eventinfo',title:"事件信息",align: 'center'});
         columns.push({field:'data',title:"数据",align: 'center'});
         columns.push({field:'utf8time',title:"时间",align: 'center'});
 

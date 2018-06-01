@@ -26,15 +26,15 @@ $(function () {
             }
         });
     };
-    getWaterMeterFromDruid();
 
 });
 
 //查设备详情
 let getDeviceInfoFromDruid = function(){
+
     var selectContent = $('#table').bootstrapTable('getSelections')[0];
     if(typeof(selectContent) == 'undefined') {
-
+        alert("请选择一条记录");
         return false;
     }else{
         console.info(selectContent);
@@ -60,11 +60,25 @@ let getDeviceInfoFromDruid = function(){
     getDeviceInfoFromDruidToEchars();
 };
 
-//   按钮点击事件,查询最近7天水表，用量
+//   按钮点击事件 指定时间后查询，用量
 let getWaterMeterFromDruid  = function () {
-        $.axspost("/monitor/getWaterMeterFromDruid",null,function (d) {
+    //获取时间
+    var time = $('#datetime').val();
+    if(time.length > 0){
+        timeJson = {time:time};
+    }else{
+        alert('请选择查询日期');
+        return;
+    }
+        $.axspost("/monitor/getWaterMeterFromDruid",timeJson,function (d) {
             let jsonData = eval(d);
             let columns = [{checkbox:true}];
+            columns.push({field:'project', title:"项目", align: 'center'});
+            columns.push({field:'province', title:"省", align: 'center'});
+            columns.push({field:'city', title:"市", align: 'center'});
+            columns.push({field:'district', title:"区", align: 'center'});
+            columns.push({field:'community', title:"小区", align: 'center'});
+            columns.push({field:'address', title:"地址", align: 'center'});
             columns.push({field:'deviceId', title:"设备编号", align: 'center'});
             columns.push({field:'maxUse',title:'当日凌晨用量',align: 'center'});
             $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
