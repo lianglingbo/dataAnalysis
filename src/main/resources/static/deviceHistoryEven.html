@@ -18,74 +18,56 @@
 	<title>设备日志轨迹追踪</title>
 </head>
 <body>
-<div class="panel-body" style="padding-bottom:0;">
-	<div class="form-group">
-		<div class="col-sm-12">
-			<div class="col-sm-3">
+<div style="width:20%;height:100%;padding-bottom:100%;float:left;">
+			<div  >
 				<div class="input-group" >
-					<span class="input-group-addon">设备编号:deviceId</span>
+					<span class="input-group-addon">设备编号</span>
 					<input type="text" id="deviceId" class="form-control" placeholder="deviceId">
 				</div>
 			</div>
-
-			<div class="col-sm-3">
-				<div class="input-group" >
-					<span class="input-group-addon">服务编号:serverId</span>
-					<input type="text" id="serverId" class="form-control" placeholder="serverId">
-				</div>
+			<div class="input-group"  >
+				<span class="input-group-addon">事件类型</span>
+				<select name="event" id="event" class="selectpicker show-tick form-control"   data-first-option="false"  required data-live-search="true">
+					<option value=''>请选择事件类型</option>
+					<option value='data'>data</option>
+					<option value='data_failed'>data_failed</option>
+					<option value='online'>online</option>
+					<option value='offline'>offline</option>
+					<option value='keepalive'>keepalive</option>
+					<option value='open'>open</option>
+					<option value='open_failed'>open_failed</option>
+					<option value='close'>close</option>
+					<option value='close_failed'>close_failed</option>
+					<option value='error'>error</option>
+					<option value='unknown'>unknown</option>
+				</select>
 			</div>
-
-			<div class="col-sm-3">
-				<div class="input-group" >
-					<span class="input-group-addon">事件:event</span>
-					<input type="text" id="event" class="form-control" placeholder="event">
-				</div>
-			</div>
-
-			<div class="col-sm-3">
-				<div class="input-group" >
-					<span class="input-group-addon">类型:type</span>
-					<input type="text" id="type" class="form-control" placeholder="type">
-				</div>
-			</div>
-
-		</div>
-		<div class="col-sm-12">
-			<div class="col-sm-5">
 				<!-- 时间控件-->
 				<!--指定 date标记-->
-				<div class='input-group date col-sm-5' id='mydatetimepicker1'>
+				<div class='input-group date ' id='mydatetimepicker1'>
 					<span class="input-group-addon">开始时间</span>
 					<input type='text' class="form-control" id="datetime1"/>
 					<span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
 				</div>
-			</div>
-
-
-			<div class="col-sm-5">
 				<!-- 时间控件-->
 				<!--指定 date标记-->
-				<div class='input-group date col-sm-5' id='mydatetimepicker2'>
+				<div class='input-group date  ' id='mydatetimepicker2'>
 					<span class="input-group-addon">结束时间</span>
 					<input type='text' class="form-control" id="datetime2"/>
 					<span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
 				</div>
-			</div>
-
-
-
-			<div class="col-sm-1">
-				<button type="button" id="query"   class="btn btn-info" onclick="showDevices()">查询</button>
-			</div>
-
-		</div>
-
-
+	<div  >
+		<button type="button" id="clear"   class="btn btn-info" onclick="clearAll()">清空</button>
+		<button type="button" id="query"   class="btn btn-info" onclick="showDevices()">查询</button>
 	</div>
+
+
+</div>
+<div style="float:left;width:80%;height:100%;padding-bottom:100%;">
 	<table id = "table"></table>
 </div>
 <script src="js/table-deviceHistoryEven.js"></script>

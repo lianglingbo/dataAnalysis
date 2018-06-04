@@ -27,12 +27,20 @@ $(function () {
     };
 
 });
+//清空按钮
+let clearAll = function () {
+
+    $("#event").val('');
+    $("#deviceId").val('');
+    $(" #datetime1 ").val('');
+    $(" #datetime2 ").val('');
+
+}
 
 let showDevices = function(){
     //获取参数
     var deviceId = $(" #deviceId ").val();
-    var serverId = $(" #serverId ").val();
-    var type = $(" #type ").val();
+    //获取下拉框的值
     var event = $(" #event ").val();
     var datetime1 = $(" #datetime1 ").val();
     var datetime2 = $(" #datetime2 ").val();
@@ -42,13 +50,11 @@ let showDevices = function(){
 
     var infos = {
         "deviceId":deviceId,
-        "serverId":serverId,
-        "type":type,
         "event":event,
         "datetime1":datetime1,
         "datetime2":datetime2,
     };
-    if(datetime2 < datetime1){
+    if(datetime2 < datetime1 && datetime2.length != 0){
         alert("时间选择错误");
         return;
     }
@@ -84,9 +90,9 @@ let TableInit = function(){
             pageNumber: 1,                       //初始化加载第一页，默认第一页
             pageSize: 10,                       //每页的记录行数（*）
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
-            clickToSelect:true,
-            showColumns: true,                  //是否显示刷新按钮
-            showExport: true,                     //是否显示导出
+            clickToSelect:false,
+            showColumns: false,                  //是否显示刷新按钮
+            showExport: false,                     //是否显示导出
             exportDataType: "selected",              //basic', 'all', 'selected'.
 
             columns:[],

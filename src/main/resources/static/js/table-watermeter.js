@@ -1,4 +1,4 @@
-$(function () {
+$(function() {
     let oTable = new TableInit();
     oTable.Init();
 
@@ -11,17 +11,19 @@ $(function () {
      * successfn 成功回调函数
      * errorfn 失败回调函数
      */
-    $.axspost=function(url, data, successfn, errorfn) {
-        data = (data==null || data==="" || typeof(data)==="undefined")? {data: ""} : data;
+    $.axspost = function(url, data, successfn, errorfn) {
+        data = (data == null || data === "" || typeof(data) === "undefined") ? {
+            data: ""
+        } : data;
         $.ajax({
             type: "post",
             data: data,
             url: url,
             dataType: "json",
-            success: function(d){
+            success: function(d) {
                 successfn(d);
             },
-            error: function(e){
+            error: function(e) {
                 errorfn(e);
             }
         });
@@ -30,29 +32,46 @@ $(function () {
 });
 
 //查设备详情
-let getDeviceInfoFromDruid = function(){
+let getDeviceInfoFromDruid = function() {
 
     var selectContent = $('#table').bootstrapTable('getSelections')[0];
-    if(typeof(selectContent) == 'undefined') {
+    if (typeof(selectContent) == 'undefined') {
         alert("请选择一条记录");
         return false;
-    }else{
+    } else {
         console.info(selectContent);
         // $('#item_project_modal').modal('show');     //  面板
-        $.axspost("/monitor/getDeviceInfoFromDruid",selectContent,function (d) {
+        $.axspost("/monitor/getDeviceInfoFromDruid", selectContent, function(d) {
             let jsonData = eval(d);
-            let columns = [{checkbox:true}];
+            let columns = [{
+                checkbox: true
+            }];
             columns.push({
-                field:'deviceId',
-                title:"设备编号",
+                field: 'deviceId',
+                title: "设备编号",
                 align: 'center'
             });
-            columns.push({field:'currentdata',title:'当日凌晨用量',align: 'center',formatter: 'waterFormatter'});
-            columns.push({field:'totaldata',title:'累计总量',align: 'center'});
-            columns.push({field:'utf8time',title:'时间',align: 'center'});
-            $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
-        },function () {
-        })
+            columns.push({
+                field: 'currentdata',
+                title: '当日凌晨用量',
+                align: 'center',
+                formatter: 'waterFormatter'
+            });
+            columns.push({
+                field: 'totaldata',
+                title: '累计总量',
+                align: 'center'
+            });
+            columns.push({
+                field: 'utf8time',
+                title: '时间',
+                align: 'center'
+            });
+            $('#table').bootstrapTable("refreshOptions", {
+                columns: columns,
+                data: jsonData
+            });
+        }, function() {})
 
 
     }
@@ -61,84 +80,153 @@ let getDeviceInfoFromDruid = function(){
 };
 
 //   按钮点击事件 指定时间后查询，用量
-let getWaterMeterFromDruid  = function () {
+let getWaterMeterFromDruid = function() {
     //获取时间
     var time = $('#datetime').val();
-    if(time.length > 0){
-        timeJson = {time:time};
-    }else{
+    if (time.length > 0) {
+        timeJson = {
+            time: time
+        };
+    } else {
         alert('请选择查询日期');
         return;
     }
-        $.axspost("/monitor/getWaterMeterFromDruid",timeJson,function (d) {
-            let jsonData = eval(d);
-            let columns = [{checkbox:true}];
-            columns.push({field:'project', title:"项目", align: 'center'});
-            columns.push({field:'province', title:"省", align: 'center'});
-            columns.push({field:'city', title:"市", align: 'center'});
-            columns.push({field:'district', title:"区", align: 'center'});
-            columns.push({field:'community', title:"小区", align: 'center'});
-            columns.push({field:'address', title:"地址", align: 'center'});
-            columns.push({field:'deviceId', title:"设备编号", align: 'center'});
-            columns.push({field:'maxUse',title:'当日凌晨用量',align: 'center'});
-            $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
-        },function () {
-        })
+    $.axspost("/monitor/getWaterMeterFromDruid", timeJson, function(d) {
+        let jsonData = eval(d);
+        let columns = [{
+            checkbox: true
+        }];
+        columns.push({
+            field: 'project',
+            title: "项目",
+            align: 'center'
+        });
+        columns.push({
+            field: 'province',
+            title: "省",
+            align: 'center'
+        });
+        columns.push({
+            field: 'city',
+            title: "市",
+            align: 'center'
+        });
+        columns.push({
+            field: 'district',
+            title: "区",
+            align: 'center'
+        });
+        columns.push({
+            field: 'community',
+            title: "小区",
+            align: 'center'
+        });
+        columns.push({
+            field: 'address',
+            title: "地址",
+            align: 'center'
+        });
+        columns.push({
+            field: 'deviceId',
+            title: "设备编号",
+            align: 'center'
+        });
+        columns.push({
+            field: 'maxUse',
+            title: '当日凌晨用量',
+            align: 'center'
+        });
+        $('#table').bootstrapTable("refreshOptions", {
+            columns: columns,
+            data: jsonData
+        });
+    }, function() {})
 
 }
 
 //   按钮点击事件,查询最近7天水表，频率
-let getWaterMeterCountFromDruid  = function () {
-    $.axspost("/monitor/getWaterMeterCountFromDruid",null,function (d) {
+let getWaterMeterCountFromDruid = function() {
+    $.axspost("/monitor/getWaterMeterCountFromDruid", null, function(d) {
         let jsonData = eval(d);
-        let columns = [{checkbox:true}];
-        columns.push({field:'deviceId', title:"设备编号", align: 'center'});
-        columns.push({field:'useCount',title:'更新次数',align: 'center'});
-        $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
-    },function () {
-    })
+        let columns = [{
+            checkbox: true
+        }];
+        columns.push({
+            field: 'deviceId',
+            title: "设备编号",
+            align: 'center'
+        });
+        columns.push({
+            field: 'useCount',
+            title: '更新次数',
+            align: 'center'
+        });
+        $('#table').bootstrapTable("refreshOptions", {
+            columns: columns,
+            data: jsonData
+        });
+    }, function() {})
 
 }
 
 //   按钮点击事件,查询最近7天可疑用水的水表
-let getExceptionWaterMeter  = function () {
-        // $('#item_project_modal').modal('show');     //  面板
-        $.axspost("/monitor/getExceptionWaterMeter", null, function (d) {
-            let jsonData = eval(d);
-            let columns = [{checkbox: true}];
-            columns.push({
-                field: 'deviceId',
-                title: "设备编号",
-                align: 'center'
-            });
-            columns.push({field: 'exceptCount', title: '异常次数', align: 'center'});
-            $('#table').bootstrapTable("refreshOptions", {columns: columns, data: jsonData});
-        }, function () {
-        })
+let getExceptionWaterMeter = function() {
+    // $('#item_project_modal').modal('show');     //  面板
+    $.axspost("/monitor/getExceptionWaterMeter", null, function(d) {
+        let jsonData = eval(d);
+        let columns = [{
+            checkbox: true
+        }];
+        columns.push({
+            field: 'deviceId',
+            title: "设备编号",
+            align: 'center'
+        });
+        columns.push({
+            field: 'exceptCount',
+            title: '异常次数',
+            align: 'center'
+        });
+        $('#table').bootstrapTable("refreshOptions", {
+            columns: columns,
+            data: jsonData
+        });
+    }, function() {})
 
 
 }
 
 
-let TableInit = function(){
+let TableInit = function() {
     let oTableInit = {};
-    oTableInit.Init = function(){
+    oTableInit.Init = function() {
         $('#table').bootstrapTable({
-            search: true,                     // 搜索框
+            search: true,
+            // 搜索框
 
-            singleSelect: true,              // 单选checkbox
-            pagination: true,                   //是否显示分页（*）
-            queryParams: oTableInit.queryParams,//传递参数（*）
-            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,                       //初始化加载第一页，默认第一页
-            pageSize: 10,                       //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
-            clickToSelect:true,
-            showColumns: true,                  //是否显示刷新按钮
-            showExport: true,                     //是否显示导出
-            exportDataType: "selected",              //basic', 'all', 'selected'.
+            singleSelect: true,
+            // 单选checkbox
+            pagination: true,
+            //是否显示分页（*）
+            queryParams: oTableInit.queryParams,
+            //传递参数（*）
+            sidePagination: "client",
+            //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,
+            //初始化加载第一页，默认第一页
+            pageSize: 10,
+            //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],
+            //可供选择的每页的行数（*）
+            clickToSelect: true,
+            showColumns: true,
+            //是否显示刷新按钮
+            showExport: true,
+            //是否显示导出
+            exportDataType: "selected",
+            //basic', 'all', 'selected'.
 
-            columns:[],
+            columns: [],
         });
     };
     return oTableInit;
@@ -146,10 +234,11 @@ let TableInit = function(){
 
 
 //格式化状态
+
 function waterFormatter(value) {
-    if (value==-1) {
+    if (value == -1) {
         return '<span class="label label-danger">异常</span>';
-    }else{
+    } else {
         return value;
     }
 };
@@ -157,18 +246,18 @@ function waterFormatter(value) {
 
 //加载数据到前台图表
 //查设备详情
-let getDeviceInfoFromDruidToEchars = function(){
+let getDeviceInfoFromDruidToEchars = function() {
     var selectContent = $('#table').bootstrapTable('getSelections')[0];
-    if(typeof(selectContent) == 'undefined') {
+    if (typeof(selectContent) == 'undefined') {
         return false;
-    }else{
+    } else {
         // $('#item_project_modal').modal('show');     //  面板
-        $.axspost("/monitor/getDeviceInfoFromDruid",selectContent,function (d) {
+        $.axspost("/monitor/getDeviceInfoFromDruid", selectContent, function(d) {
             let jsonData = eval(d);
             var usedata = [];
             var time = [];
             //时间和用量单独拿出放入数组
-            for(var index in jsonData){
+            for (var index in jsonData) {
                 time.push(jsonData[index].utf8time);
                 usedata.push(jsonData[index].currentdata);
             };
@@ -177,38 +266,45 @@ let getDeviceInfoFromDruidToEchars = function(){
                     text: '夜间用量'
                 },
                 tooltip: {
-                    trigger: 'axis'//鼠标跟随效果
+                    trigger: 'axis' //鼠标跟随效果
                 },
                 //右上角工具条
                 toolbox: {
                     show: true,
                     feature: {
-                        mark: {show: true},
-                        dataView: {show: true, readOnly: false},
-                        magicType: {show: true, type: ['line', 'bar']}
+                        mark: {
+                            show: true
+                        },
+                        dataView: {
+                            show: true,
+                            readOnly: false
+                        },
+                        magicType: {
+                            show: true,
+                            type: ['line', 'bar']
+                        }
                     }
                 },
                 xAxis: {
                     type: 'category',
-                    data:time
+                    data: time
                 },
                 yAxis: {
                     type: 'value'
                 },
-                series: [
-                    {
+                series: [{
                     name: '用量',
-                    type: 'line', symbol: 'emptydiamond',    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
-                     //stack: '总量',
+                    type: 'line',
+                    symbol: 'emptydiamond',
+                    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                    //stack: '总量',
                     data: usedata
-                }
-                ]
+                }]
             };
             var myChart = echarts.init(document.getElementById('lineChart'));
             myChart.setOption(option);
             //触发模态框
             $('#myModal').modal('show');
-        },function () {})
+        }, function() {})
     }
 };
-

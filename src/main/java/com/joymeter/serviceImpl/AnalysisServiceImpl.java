@@ -195,8 +195,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 		if (StringUtils.isEmpty(data))return null;
 		JSONObject jsonData = JSONObject.parseObject(data);
 		String deviceId = jsonData.getString("deviceId");
-		String serverId = jsonData.getString("serverId");
-		String type = jsonData.getString("type");
 		String event = jsonData.getString("event");
 		String datetime1 = jsonData.getString("datetime1");
 		String datetime2 = jsonData.getString("datetime2");
@@ -205,25 +203,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		StringBuffer sql = new StringBuffer();
 
 		if(!(StringUtils.isEmpty(deviceId)||deviceId.length()==0)){
-			sql.append("deviceId = '"+ deviceId+"' ");
-		}
-		if(!(StringUtils.isEmpty(serverId)||serverId.length()==0)){
-			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
-				//如果sql不为空，则为多条件
-				sql.append(" and  serverId = '"+ serverId +"' ");
-			}else {
-				sql.append("  where serverId = '"+ serverId +"' ");
-			}
-		}
-		if(!(StringUtils.isEmpty(type)||type.length()==0)){
-
-			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
-				//如果sql不为空，则为多条件
-				sql.append(" and  type = '"+ type+"' " );
-			}else {
-				sql.append("  where type = '"+ type +"' ");
-			}
-			
+			sql.append("where deviceId = '"+ deviceId+"' ");
 		}
 		if(!(StringUtils.isEmpty(event)||event.length()==0)){
 
@@ -247,10 +227,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 				sql.append("  where  __time >= '"+ startTime +"' and  __time <= '" +endTime+"' ");
 			}
 		}
-
-
-
-
 		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,eventinfo ,data,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo   "+sql.toString()+"  order by __time desc limit 500 \"}";
 		System.out.println(QUERY_HIST_DATA);
 
