@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
 import com.alibaba.fastjson.JSONArray;
+import com.joymeter.entity.UsageHour;
 import com.joymeter.entity.WaterMeterUse;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
@@ -29,15 +30,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
 	private DeviceInfoMapper deviceInfoMapper;
 
-	private static String postWMUrl = PropertiesUtils.getProperty("postWMUrl", "");
 	private static String queryUrl = PropertiesUtils.getProperty("queryUrl", "");
-	private static int watermeterTime = Integer.valueOf(PropertiesUtils.getProperty("watermeterTime", ""));
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
 	private static final Logger updateSimLogger = Logger.getLogger("updateSim");
 	private static final Logger registerLogger = Logger.getLogger("register");
 	private static final Logger updateDeviceLogger = Logger.getLogger("updateDevice");
 	private static final Logger addDataLogger = Logger.getLogger("addData");
-	private List jsonArray;
+
+
 
 
 	/**
@@ -45,6 +45,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
 	 * 2.数据源新增字段，eventinfo，记录event事件的data值（为字符串类型的时候，不能存入druid，druid中设置data属性为double类型）
 	 *   数据源新增时，判断事件，如果event 不为 data ，则将其data值存入eventinfo中
+	 * 3.新增方法setusageHour() ,mysql新增表：usage_hour；统计每日凌晨0到6点，每个小时的用水量；
+	 * 	 每天凌晨，每个整点写入一次数据，最后生成完整信息；mysql中只存当天数据，每天统计结束后，将信息放入druid中；
+	 * 	 防止最后有空数据：每次收到数据后，把后面几个小时内容都填充；如果上一小时数据为空，填充所有
+	 *   每天定时，清空usage_hour表
+	 *   最后把记录存进druid
+	 *
 	 * @param dataStr
 	 */
 	@Override
@@ -77,62 +83,165 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)||"push".equals(event)) {
+				//能收到上面三种事件，说明设备在线
+				deviceInfo.setDeviceState("1");
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				if ("data".equals(event)) {
+					//能收到读表data数据，说明读表成功
 					deviceInfo.setReadState("0");
-					//增加水表用量,数据源,筛选条件:时间0点到6点,事件data,设备类型type3200JLAA无线冷水表,3201有线冷水表,32冷水表
-					//时间戳转换为时间
+					//开始判断凌晨用水情况
 					try{
-						SimpleDateFormat sdf=new SimpleDateFormat("HH");
-						int currenHour =  Integer.valueOf(sdf.format(new Date(datetime)));
-						//凌晨0点到6点
-						if(currenHour >= 0 && currenHour <= watermeterTime){
+						//获取date时间
+						SimpleDateFormat sdfh=new SimpleDateFormat("HH");
+						int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
+						//测试用
+						//每天23:40清空mysql;重要！！寫在定時任務中
+						//【3】凌晨0点到6点：整点统计用水量
+						if(currenHour >= 0 && currenHour < 6){
+							//判断类型为水表的数据
 							if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
-								/**
-								 * 时间，设备类型都符合，添加到watermeter数据源中
-								 * 1.查询当前设备当天第一条数据
-								 * 2.如果有结果，获取totaldata，和当前用量，计算出用量差 ，如果小于0，标记为-1
-								 * 3.如果没有结果，此数据为新数据，currentdata为0
-								 *
-								 */
-								//String QUERY_USED_DATA = "{\"query\":\"select  totaldata,deviceId,__time  from watermeter where  __time >= CURRENT_TIMESTAMP - INTERVAL '6' HOUR order by __time desc limit 1 \"}";
-								String QUERY_USED_DATA = "{\"query\":\"select  totaldata,deviceId ,__time  from watermeter where deviceId = "+deviceId+" and __time >= CURRENT_TIMESTAMP - INTERVAL '6' HOUR order by __time asc limit 1 \"}";
-								String result = HttpClient.sendPost(queryUrl, QUERY_USED_DATA);
-								String currentdata;
-								if (result.length()<10){
-									//返回结果为空
-									 currentdata ="0";
-								}else{
-									String  lasttotaldata= result.contains("totaldata") ? result.substring(result.indexOf(":") + 1, result.indexOf(",")) : "0";
-									BigDecimal b = new BigDecimal(totaldata).subtract(new BigDecimal(lasttotaldata));
-									if((b.compareTo(BigDecimal.ZERO)) == -1) {
-										//与首次data比较 结果小于0，不合理，标记为-1
-										currentdata ="-1";
+								//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
+								UsageHour usageHour = new UsageHour();
+								usageHour.setDeviceId(deviceId);
+								if(currenHour >=0 && currenHour <1){
+									//1点插入，值到one，two，three，four，five，six；
+									usageHour.setOne(totaldata);
+								}else if(currenHour >=1 && currenHour <2){
+									//2点，插入之前，先判断1点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
+									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+									if(StringUtils.isEmpty(selectResult)){
+										//結果爲空
+										usageHour.setOne(totaldata);
 									}else{
-										//与上次data结果比较，如果小于0，不合理，标记为-1
-										String QUERY_LAST_DATA = "{\"query\":\"select  totaldata,deviceId  from watermeter where deviceId = "+deviceId+" order by __time  desc  limit 1 \"}";
-										String dataResult = HttpClient.sendPost(queryUrl, QUERY_LAST_DATA);
-										String  ldata= dataResult.contains("totaldata") ? dataResult.substring(result.indexOf(":") + 1, dataResult.indexOf(",")) : "0";
-										BigDecimal tmp = new BigDecimal(totaldata).subtract(new BigDecimal(ldata));
-										if((tmp.compareTo(BigDecimal.ZERO)) == -1) {
-											currentdata ="-1";
+										//結果不爲空，判斷上一小時是否有數據
+										String lastusage = selectResult.getOne();
+										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+											//初始化所有數據
+											usageHour.setOne(totaldata);
 										}else {
-											currentdata = b.toString();
+											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+											if(comp == 1){
+												//更新状态为1：异常
+												usageHour.setStatus("1");
+											}else {
+												//更新状态为0：正常
+												usageHour.setStatus("0");
+											}
+											//后续时间点数据的初始化
+											usageHour.setTwo(totaldata);
+										}
+									}
+								}else if(currenHour >=2 && currenHour <3){
+									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+									if(StringUtils.isEmpty(selectResult)){
+										//結果爲空
+										usageHour.setOne(totaldata);
+									}else{
+										//結果不爲空，判斷上一小時是否有數據
+										String lastusage = selectResult.getTwo();
+										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+											//初始化所有數據
+											usageHour.setOne(totaldata);
+										}else {
+											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+											if(comp == 1){
+												//更新状态为1：异常
+												usageHour.setStatus("1");
+											}else {
+												//更新状态为0：正常
+												usageHour.setStatus("0");
+											}
+											//后续时间点数据的初始化
+											usageHour.setThree(totaldata);
+										}
+									}
+								}else if(currenHour >=3 && currenHour <4){
+									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+									if(StringUtils.isEmpty(selectResult)){
+										//結果爲空
+										usageHour.setOne(totaldata);
+									}else{
+										//結果不爲空，判斷上一小時是否有數據
+										String lastusage = selectResult.getThree();
+										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+											//初始化所有數據
+											usageHour.setOne(totaldata);
+										}else {
+											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+											if(comp == 1){
+												//更新状态为1：异常
+												usageHour.setStatus("1");
+											}else {
+												//更新状态为0：正常
+												usageHour.setStatus("0");
+											}
+											//后续时间点数据的初始化;
+											usageHour.setFour(totaldata);
+										}
+									}
+
+								}else if(currenHour >=4 && currenHour <5){
+									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+									if(StringUtils.isEmpty(selectResult)){
+										//結果爲空
+										usageHour.setOne(totaldata);
+									}else{
+										//結果不爲空，判斷上一小時是否有數據
+										String lastusage = selectResult.getFour();
+										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+											//初始化所有數據
+											usageHour.setOne(totaldata);
+										}else {
+											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+											if(comp == 1){
+												//更新状态为1：异常
+												usageHour.setStatus("1");
+											}else {
+												//更新状态为0：正常
+												usageHour.setStatus("0");
+											}
+											//后续时间点数据的初始化
+											usageHour.setFive(totaldata);
+										}
+									}
+								}else if(currenHour >=5 && currenHour <6){
+									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+									if(StringUtils.isEmpty(selectResult)){
+										//結果爲空
+										usageHour.setOne(totaldata);
+									}else{
+										//結果不爲空，判斷上一小時是否有數據
+										String lastusage = selectResult.getFive();
+										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+											//初始化所有數據
+											usageHour.setOne(totaldata);
+										}else {
+											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+											if(comp == 1){
+												//更新状态为1：异常
+												usageHour.setStatus("1");
+											}else {
+												//更新状态为0：正常
+												usageHour.setStatus("0");
+											}
+											//后续时间点数据的初始化
+											usageHour.setSix(totaldata);
 										}
 									}
 								}
-								String postData = "{\"type\":\"" + deviceType+ "\",\"totaldata\":\"" + totaldata + "\",\"currentdata\":\"" + currentdata + "\",\"serverId\":\"" + serverId + "\",\"deviceId\":\"" + deviceId + "\",\"datetime\":\"" + datetime + "\"}";
-								HttpClient.sendPost(postWMUrl, postData); // 向Druid发送数据
-								addDataLogger.log(Level.INFO,"插入watermeter"+postData);
+								//插入mysql
+								deviceInfoMapper.insertIntoUsageHour(usageHour);
 							}
 						}
 					}catch (Exception e){
-						addDataLogger.log(Level.INFO,e+"插入watermeter数据源异常"+dataStr);
+						addDataLogger.log(Level.INFO,e+"凌晨用水统计方法异常"+dataStr);
 					}
-
-
 				}
-				deviceInfo.setDeviceState("1");
-				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
@@ -146,6 +255,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
 	}
+
+
 
 	/**
 	 * 根据参数获取离线设备
@@ -179,6 +290,25 @@ public class AnalysisServiceImpl implements AnalysisService {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
 			return deviceInfoMapper.getReadFailedGroup(deviceInfo);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, data, e);
+		}
+		return null;
+	}
+
+	/***
+	 * 查询可疑用水情况
+	 * @param data
+	 * @return
+	 */
+	@Override
+	public List<HashMap<String, Object>> getUsageStatusFailed(String data) {
+		if (StringUtils.isEmpty(data))return null;
+		logger.log(Level.INFO,data);
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(data);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+			return deviceInfoMapper.selectUsageStatusFailed(deviceInfo);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, data, e);
 		}
@@ -357,6 +487,28 @@ public class AnalysisServiceImpl implements AnalysisService {
 			return null;
 		}
 
+	}
+
+
+	/**
+	 * 获取可疑用水的用水和项目信息
+	 * @param data
+	 * @return
+	 */
+	@Override
+	public List<HashMap<String, Object>> getUsageWithProjectByParams(String data) {
+		if (StringUtils.isEmpty(data))return null;
+
+		logger.log(Level.INFO,data);
+		try {
+			JSONObject jsonObject = JSONObject.parseObject(data);
+			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+
+			return deviceInfoMapper.getUsageWithProjectByParams(deviceInfo);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, data, e);
+			return null;
+		}
 	}
 
 

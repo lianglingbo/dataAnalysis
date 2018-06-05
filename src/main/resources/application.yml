@@ -12,9 +12,9 @@ spring:
 spring:
   profiles: PC
   datasource:
-    url: jdbc:mysql://192.168.199.242:3306/deviceData?useSSL=false
-    username: liang
-    password: 123
+    url: jdbc:mysql://192.168.31.26:3306/deviceData?useSSL=false
+    username: root
+    password: Joymeter@123
 ---
 spring:
   profiles: product

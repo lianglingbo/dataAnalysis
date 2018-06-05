@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" name="viewport" content="width=device-width" />
+	<script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.css"  rel="stylesheet"/>
+	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+
+    <script src="js/tableExport.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/extensions/export/bootstrap-table-export.min.js"></script>
+
+	<title>可疑用水列表</title>
+</head>
+<body>
+<div class="panel-body" style="padding-bottom:0;">
+	<div class="form-group">
+		<label class="col-sm-1 control-label"><i>*</i>所在地址</label>
+		<div class="col-sm-2">
+			<label class="control-label">项目</label>
+			<select name="input_project" id="input_project" class="form-control" onchange="initSelects(this)">
+				<option value=""></option>
+			</select>
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">省</label>
+			<select name="input_province" id="input_province" class="form-control" onchange="initSelects(this)">
+				<option value=""></option>
+			</select>
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">市</label>
+			<select name="input_city" id="input_city" class="form-control" onchange="initSelects(this)">
+				<option value=""></option>
+			</select>
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">区</label>
+			<select name="input_district" id="input_district" class="form-control" onchange="initSelects(this)">
+				<option value=""></option>
+			</select>
+		</div>
+		<div class="col-sm-2">
+			<label class="control-label">小区</label>
+			<select name="input_community" id="input_community" class="form-control" onchange="showDevices()">
+				<option value=""></option>
+			</select>
+		</div>
+	</div>
+	<table id = "table"></table>
+</div>
+	<script src="js/table-usage.js"></script>
+</body>
+</html>

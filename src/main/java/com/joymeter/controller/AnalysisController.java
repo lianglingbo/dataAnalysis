@@ -54,11 +54,27 @@ public class AnalysisController {
 	public List<HashMap<String, Object>> getReadFailed(@RequestParam("data")String data){
 		return analysisService.getReadFailed(data);
 	}
+
+	//查询可疑用水的设备
+	@RequestMapping("/getUsageStatusFailed")
+	@ResponseBody
+	public List<HashMap<String, Object>> getUsageStatusFailed(@RequestParam("data")String data){
+		return analysisService.getUsageStatusFailed(data);
+	}
+
+	//查询可疑用水的详细信息
+	@RequestMapping("/getUsageWithProjectByParams")
+	@ResponseBody
+	public List<HashMap<String, Object>> getUsageWithProjectByParams(@RequestParam("data")String data){
+		return analysisService.getUsageWithProjectByParams(data);
+	}
+
 	@RequestMapping("/getDeviceByParams")
 	@ResponseBody
 	public List<HashMap<String, Object>> getDeviceByParams(@RequestParam("data")String data){
 		return analysisService.getDeviceByParams(data);
 	}
+
 	/**
 	 * 从druid中获取设备的历史事件信息
 	 */

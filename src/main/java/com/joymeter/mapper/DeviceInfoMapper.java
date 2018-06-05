@@ -3,11 +3,8 @@ package com.joymeter.mapper;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.UpdateProvider;
+import com.joymeter.entity.UsageHour;
+import org.apache.ibatis.annotations.*;
 
 import com.joymeter.entity.DeviceInfo;
 import com.joymeter.provider.DeviceInfoProvider;
@@ -20,8 +17,14 @@ public interface DeviceInfoMapper {
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
     List<HashMap<String, Object>> getByParams(DeviceInfo deviceInfo);
-	
-	@SelectProvider(type = DeviceInfoProvider.class,method="selectcount")
+
+	//查询可疑用水详情列表
+    @SelectProvider(type = DeviceInfoProvider.class,method="selectUsageWithProjectByParams")
+    List<HashMap<String, Object>> getUsageWithProjectByParams(DeviceInfo deviceInfo);
+
+
+
+    @SelectProvider(type = DeviceInfoProvider.class,method="selectcount")
 	int getCount(DeviceInfo deviceInfo);
 	
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectoffline")
@@ -30,6 +33,10 @@ public interface DeviceInfoMapper {
 	//查询抄表失败聚合SQL
     @SelectProvider(type = DeviceInfoProvider.class,method="selectReadFailed")
     List<HashMap<String, Object>> getReadFailedGroup(DeviceInfo deviceInfo);
+
+    //查询可疑用水聚合SQL
+    @SelectProvider(type = DeviceInfoProvider.class,method="selectUsageStatusFailed")
+    List<HashMap<String, Object>> selectUsageStatusFailed(DeviceInfo deviceInfo);
 
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(String deviceId);
@@ -42,4 +49,16 @@ public interface DeviceInfoMapper {
 
     @Delete("DELETE FROM device_info WHERE deviceId =#{deviceId}")
     void delete(Long deviceId);
+
+    //根据设备id，整点用量到usage_hour表中，存在设备则更新，不存在则新增
+    @InsertProvider(method = "insertIntoUsageHour",type=DeviceInfoProvider.class)
+    void insertIntoUsageHour(UsageHour usageHour);
+
+    //通过deviceId查询usage_hour表
+    @Select("SELECT * FROM usage_hour WHERE deviceId = #{deviceId}")
+    UsageHour getOneUsageHour(String deviceId);
+
+    //清空usage_hour表
+    @Select("truncate table usage_hour")
+    void  truncateUsageHour();
 }

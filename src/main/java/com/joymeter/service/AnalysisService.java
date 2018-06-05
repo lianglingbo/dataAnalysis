@@ -16,8 +16,14 @@ public interface AnalysisService {
 	
 	List<HashMap<String, Object>> getDeviceByParams(String data);
 
+	//获取可疑用水的用水和项目信息
+	List<HashMap<String, Object>> getUsageWithProjectByParams(String data);
+
 	//查询抄表失败聚合SQL
 	List<HashMap<String, Object>> getReadFailed(String data);
+
+	//查询可疑用水聚合SQL
+	List<HashMap<String, Object>> getUsageStatusFailed(String data);
 
 	String getDeviceEvenFromDruid(String data);
 
@@ -32,6 +38,7 @@ public interface AnalysisService {
 
     //根据deviceId查询watermeter用水情况列表
 	String getDeviceInfoFromDruid(String deviceId);
+
 
 
 }
