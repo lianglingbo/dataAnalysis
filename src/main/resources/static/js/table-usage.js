@@ -1,3 +1,5 @@
+var meterData;
+
 $(function () {
     let oTable = new TableInit();
     oTable.Init();
@@ -87,6 +89,7 @@ let initSelects = function (e) {
     })
 };
 
+
 let showDevices = function(){
     let selects = $("select"),
         fileds = ['project','province','city','district','community'],
@@ -100,25 +103,64 @@ let showDevices = function(){
     $.axspost("/monitor/getUsageWithProjectByParams",data,function (d) {
         let jsonData = eval(d);
         let columns = [{checkbox:true}];
-        columns.push({field:'project',title:"项目",align: 'center'});
-        columns.push({field:'province',title:"省",align: 'center'});
-        columns.push({field:'city',title:"市",align: 'center'});
-        columns.push({field:'district',title:"区",align: 'center'});
-        columns.push({field:'community',title:"小区",align: 'center'});
-        columns.push({field:'address',title:"地址",align: 'center'});
-        columns.push({field:'deviceId',title:"设备编号",align: 'center'});
-        columns.push({field:'one',title:'1点',align: 'center'});
-        columns.push({field:'two',title:'2点',align: 'center'});
-        columns.push({field:'three',title:'3点',align: 'center'});
-        columns.push({field:'four',title:'4点',align: 'center'});
-        columns.push({field:'five',title:'5点',align: 'center'});
-        columns.push({field:'six',title:'6点',align: 'center'});
+        columns.push({field:'project',title:"项目",align: 'center',valign : 'middle'});
+        columns.push({field:'province',title:"省",align: 'center',valign : 'middle'});
+        columns.push({field:'city',title:"市",align: 'center',valign : 'middle'});
+        columns.push({field:'district',title:"区",align: 'center',valign : 'middle'});
+        columns.push({field:'community',title:"小区",align: 'center',valign : 'middle'});
+        columns.push({field:'address',title:"地址",align: 'center',valign : 'middle'});
+        columns.push({field:'deviceId',title:"设备编号",align: 'center',valign : 'middle'});
+        columns.push({field:'one',visible:false,valign : 'middle' });
+        columns.push({field:'two',visible:false,valign : 'middle'});
+        columns.push({field:'three',visible:false,valign : 'middle'});
+        columns.push({field:'four',visible:false,valign : 'middle'});
+        columns.push({field:'five',visible:false,valign : 'middle'});
+        columns.push({field:'six',visible:false,valign : 'middle'});
+        columns.push({field:'usagepic',title:'用量图',align: 'center',events:operateEvents,formatter:AddPicFunction,valign : 'middle'});
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
+        //将数据发给绘图方法
+        meterData = jsonData;
+        getPic(meterData);
     },function () {
-
     })
 };
+//测试绘图方法
+let  getPic = function (meterData) {
+    if(meterData!=null){
+        //获取id，循环遍历
+        $.each(meterData,function (index,obj) {
+            var deviceId = obj.deviceId;
+            var v1 = obj.one;
+            var v2 = obj.two;
+            var v3 = obj.three;
+            var v4 = obj.four;
+            var v5 = obj.five;
+            var v6 = obj.six;
+            //折线图配置
+            option = {
+                tooltip: {
+                    trigger: 'axis' //鼠标跟随效果
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['1','2','3','4','5','6']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    type: 'line',
+                    symbol: 'emptydiamond',
+                    //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                    data: [v1,v2,v3,v4,v5,v6]
+                }]
+            };
+            var myChart = echarts.init(document.getElementById(deviceId));
+            myChart.setOption(option);
+        });
+    }
 
+}
 let TableInit = function(){
     let oTableInit = {};
     oTableInit.Init = function(){
@@ -132,6 +174,7 @@ let TableInit = function(){
             clickToSelect:true,
             showColumns: true,                  //是否显示刷新按钮
             showExport: true,                     //是否显示导出
+            clickToSelect: true,                //是否启用点击选中行
             exportDataType: "selected",              //basic', 'all', 'selected'.
             rowStyle: function (row, index) {
                 //这里有5个取值代表5中颜色['active', 'success', 'info', 'warning', 'danger'];
@@ -152,3 +195,47 @@ let TableInit = function(){
     return oTableInit;
 };
 
+//表格中增加折线图
+function AddPicFunction(value,row,index) {
+    var deviceId = row.deviceId;
+    //<div id="lineChart" style="width: 800px;height:300px;" style="display:none"></div>
+    return[
+        '<div id="'+deviceId+'" style="width: 500px;height:220px;" ></div> &nbsp;&nbsp;  '
+    ].join("");
+}
+
+
+//添加事件
+window.operateEvents = {
+    "click #TableEditor":function (e,value,row,index) {
+        var v1 = row.one;
+        var v2 = row.two;
+        var v3 = row.three;
+        var v4 = row.four;
+        var v5 = row.five;
+        var v6 = row.six;
+        var deviceId = row.deviceId;
+        //折线图配置
+        option = {
+            tooltip: {
+                trigger: 'axis' //鼠标跟随效果
+            },
+            xAxis: {
+                type: 'category',
+                data: ['1','2','3','4','5','6']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                type: 'line',
+                symbol: 'emptydiamond',
+                //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
+                data: [v1,v2,v3,v4,v5,v6]
+            }]
+        };
+        var myChart = echarts.init(document.getElementById(deviceId));
+        myChart.setOption(option);
+    }
+    
+};
