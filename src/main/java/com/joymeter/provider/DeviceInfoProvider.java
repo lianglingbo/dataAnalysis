@@ -311,11 +311,7 @@ public class DeviceInfoProvider {
 	 * @return
 	 */
 	public String insertIntoUsageHour(UsageHour usageHour){
-		//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）
-		Date date = new Date();
-		String nowTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);//将时间格式转换成符合Timestamp要求的格式.
-		Timestamp updatetime =Timestamp.valueOf(nowTime);//把时间转换
-		usageHour.setUpdateTime(updatetime);
+
 
 		//设备编号不为空
 		if(!StringUtils.isEmpty(usageHour.getDeviceId())){

@@ -58,6 +58,10 @@ public interface DeviceInfoMapper {
     @Select("SELECT * FROM usage_hour WHERE deviceId = #{deviceId}")
     UsageHour getOneUsageHour(String deviceId);
 
+    //查询usage_hour 所以记录，用于备份
+    @Select("SELECT * FROM usage_hour")
+    List<UsageHour> selectAllUsgae();
+
     //清空usage_hour表
     @Select("truncate table usage_hour")
     void  truncateUsageHour();

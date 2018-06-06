@@ -1,6 +1,7 @@
 package com.joymeter.serviceImpl;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.joymeter.entity.UsageHour;
 import com.joymeter.entity.WaterMeterUse;
@@ -36,6 +38,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static final Logger registerLogger = Logger.getLogger("register");
 	private static final Logger updateDeviceLogger = Logger.getLogger("updateDevice");
 	private static final Logger addDataLogger = Logger.getLogger("addData");
+	private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
 
 
 
@@ -94,7 +97,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 						//获取date时间
 						SimpleDateFormat sdfh=new SimpleDateFormat("HH");
 						int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
-						//测试用
 						//每天23:40清空mysql;重要！！寫在定時任務中
 						//【3】凌晨0点到6点：整点统计用水量
 						if(currenHour >= 0 && currenHour < 6){
@@ -103,6 +105,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 								//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
 								UsageHour usageHour = new UsageHour();
 								usageHour.setDeviceId(deviceId);
+								//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
+								String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
+								Timestamp updatetime =Timestamp.valueOf(deviceTime);//把时间转换
+								usageHour.setUpdateTime(updatetime);
 								if(currenHour >=0 && currenHour <1){
 									//1点插入，值到one，two，three，four，five，six；
 									usageHour.setOne(totaldata);
@@ -349,7 +355,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 			//转时差
 			//获取时间,前一天的16点为真实时间的0点，进行拼接：格式：2018-05-03T16
 			String startTime = TimeTools.getSpecifiedDayBefore(datetime1)+"T16";
-			String endTime = TimeTools.getSpecifiedDayBefore(datetime2)+"T16";
+			//结束时间以明天为准，减去8小时
+			String endTime = TimeTools.getSpecifiedDayAfter(datetime2)+"T16";
 			if(!(StringUtils.isEmpty(sql)||sql.length()==0)){
 				//如果sql不为空，则为多条件
 				sql.append(" and  __time >= '"+ startTime +"' and  __time <= '" +endTime+"' ");
