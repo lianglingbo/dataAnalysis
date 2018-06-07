@@ -29,6 +29,9 @@ $(function () {
     initSelects();
 });
 
+//存储设备列表的全局变量
+var deviceData;
+
 let initSelects = function (e) {
     let selects = $("select"),
         fileds = ['project','province','city','district','community'],
@@ -82,12 +85,12 @@ let initSelects = function (e) {
         columns.push({field:fileds[index],title:titles[index]});
         columns.push({field:'failed',title:'可疑水表个数'});
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
+
     },function () {
         
     })
 };
-
-
+//展示设备列表请求
 let showDevices = function(){
     let selects = $("select"),
         fileds = ['project','province','city','district','community'],
@@ -108,34 +111,17 @@ let showDevices = function(){
         columns.push({field:'community',title:"小区",align: 'center',valign : 'middle'});
         columns.push({field:'address',title:"地址",align: 'center',valign : 'middle'});
         columns.push({field:'deviceId',title:"设备编号",align: 'center',valign : 'middle'});
-        columns.push({field:'usagepic',title:'用量图', width:550  ,hight:70,events:operateEvents,align: 'center',formatter:AddPicFunction,valign : 'middle'});
+        columns.push({field:'usagepic',title:'凌晨1-6点用量图', width:550  ,hight:70,events:getLineChartEvents,align: 'center',formatter:AddPicFunction,valign : 'middle'});
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
-        //将数据发给绘图方法
-        getPic(jsonData);
+        //将数据给全局变量,其他页面，把deviceData制空
+        deviceData=jsonData;
+        //调用模拟点击事件
+        clickAllButton();
     },function () {
     })
 };
-//测试绘图方法
-let  getPic = function (jsonData) {
 
-    if(jsonData!=null){
-        //获取id，循环遍历
-        $.each(jsonData,function (index,obj) {
-            var deviceId = obj.deviceId;
-            var v1 = obj.one;
-            var v2 = obj.two;
-            var v3 = obj.three;
-            var v4 = obj.four;
-            var v5 = obj.five;
-            var v6 = obj.six;
-            var divid = "#"+deviceId;
-            //模拟触发div的点击事件，触发events的绘图方法
-            $(divid).click();
 
-        });
-    }
-
-}
 let TableInit = function(){
     let oTableInit = {};
     oTableInit.Init = function(){
@@ -148,8 +134,10 @@ let TableInit = function(){
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             showColumns: false,
             search:true,
+            striped:true,                       //隔行颜色变化
             showExport: false,                     //是否显示导出
-            clickToSelect: false,                //是否启用点击选中行
+            clickToSelect: true,                //是否启用点击选中行
+            singleSelect:true,                  //设置 true 将禁止多选。
             exportDataType: "selected",              //basic', 'all', 'selected'.
             rowStyle: function (row, index) {
                 //这里有5个取值代表5中颜色['active', 'success', 'info', 'warning', 'danger'];
@@ -164,22 +152,66 @@ let TableInit = function(){
                 }
                 return { classes: strclass }
             },
+            //测试双击事件
+            onDblClickRow:function f(row,obj) {
+                alert("双击事件");
+            },
+            //翻页事件
+            onPageChange:function(){
+                //判断是否为device页面
+               var classOfDiv = $('.classOfDiv');
+               if(classOfDiv!=null){
+                   //已经生成了div，说明已经调了showDevice方法,在deviceId页面
+                   //调用模拟点击事件
+                   clickAllButton();
+               }
+            },
             columns:[],
         });
     };
     return oTableInit;
 };
 
+
+
+
+
+
+
+
+
+
+//模拟点击页面每个div，触发绘图方法，1.遍历deviceId 2.拿到元素模拟点击
+let  clickAllButton = function () {
+    if(deviceData!=null){
+        //获取id，循环遍历
+        $.each(deviceData,function (index,obj) {
+            var deviceId = obj.deviceId;
+            var v1 = obj.one;
+            var v2 = obj.two;
+            var v3 = obj.three;
+            var v4 = obj.four;
+            var v5 = obj.five;
+            var v6 = obj.six;
+            var divid = "#"+deviceId;
+            //模拟触发div的点击事件，触发events的绘图方法
+            $(divid).click();
+        });
+    }
+};
+
+
 //表格中增加折线图容器
 function AddPicFunction(value,row,index) {
     var deviceId = row.deviceId;
+    //根据当前页的deivceId生成动态div；
     return[
         '<div class="classOfDiv" id="'+deviceId+'" style="width: 540px;height:90px;" ></div> '
     ].join("");
 }
 
-//添加事件
-window.operateEvents = {
+//点击事件触发绘图功能
+window.getLineChartEvents = {
     "click .classOfDiv":function (e,value,row,index) {
         var v1 = row.one;
         var v2 = row.two;
@@ -194,11 +226,11 @@ window.operateEvents = {
                 trigger: 'axis' //鼠标跟随效果
             },
             xAxis: {
-                show:false,
+                show:true,
                 type: 'category',
                 splitLine:{show: false},//去除网格线
                 axisTick:{show:false},   //x// 轴刻度线
-                axisLine:{show:false},   //x轴
+                axisLine:{show:true},   //x轴
                 data: ['1','2','3','4','5','6']
             },
             yAxis: {
@@ -209,6 +241,8 @@ window.operateEvents = {
                 axisLine:{show:false}   //y轴
             },
             series: [{
+                //显示折点的值
+                itemStyle : { normal: {label : {show: true}}},
                 type: 'line',
                 symbol: 'emptydiamond',
                 //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
@@ -220,5 +254,3 @@ window.operateEvents = {
     }
 };
 
-//选中
-var selects = $('#table').bootstrapTable('getSelections');
