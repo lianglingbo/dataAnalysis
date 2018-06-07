@@ -77,8 +77,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 				jsonData.put("eventinfo",totaldata);
 				dataStr = jsonData.toJSONString();
 			}
-
-			
 			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
 			deviceInfo.setDeviceId(deviceId);
@@ -92,18 +90,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 				if ("data".equals(event)) {
 					//能收到读表data数据，说明读表成功
 					deviceInfo.setReadState("0");
+					deviceInfoMapper.updateDeviceInfo(deviceInfo);
 					//开始判断凌晨用水情况
 					try{
 						//获取date时间
 						SimpleDateFormat sdfh=new SimpleDateFormat("HH");
 						int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
-
-						//测试
-						currenHour = 5;
-
-
-
-
 						//每天清空mysql;重要！！寫在定時任務中
 						//【3】凌晨0点到6点：整点统计用水量
 						if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
@@ -283,8 +275,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 				}
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
-				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				deviceInfo.setValveState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
