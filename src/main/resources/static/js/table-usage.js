@@ -116,7 +116,7 @@ let showDevices = function(){
         columns.push({field:'four',visible:false,valign : 'middle'});
         columns.push({field:'five',visible:false,valign : 'middle'});
         columns.push({field:'six',visible:false,valign : 'middle'});
-        columns.push({field:'usagepic',title:'用量图',align: 'center',events:operateEvents,formatter:AddPicFunction,valign : 'middle'});
+        columns.push({field:'usagepic',title:'用量图', width:550  ,hight:70,align: 'center',events:operateEvents,formatter:AddPicFunction,valign : 'middle'});
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
         //将数据发给绘图方法
         meterData = jsonData;
@@ -142,11 +142,19 @@ let  getPic = function (meterData) {
                     trigger: 'axis' //鼠标跟随效果
                 },
                 xAxis: {
+                    show:false,
                     type: 'category',
+                    splitLine:{show: false},//去除网格线
+                    axisTick:{show:false},   //x// 轴刻度线
+                    axisLine:{show:false},   //x轴
                     data: ['1','2','3','4','5','6']
                 },
                 yAxis: {
-                    type: 'value'
+                    show:false,
+                    type: 'value',
+                    splitLine:{show: false},//去除网格线
+                    axisTick:{show:false},   //y轴刻度线
+                    axisLine:{show:false}   //y轴
                 },
                 series: [{
                     type: 'line',
@@ -200,42 +208,16 @@ function AddPicFunction(value,row,index) {
     var deviceId = row.deviceId;
     //<div id="lineChart" style="width: 800px;height:300px;" style="display:none"></div>
     return[
-        '<div id="'+deviceId+'" style="width: 500px;height:220px;" ></div> &nbsp;&nbsp;  '
+        '<div id="'+deviceId+'" style="width: 540px;height:90px;" ></div> '
     ].join("");
 }
-
 
 //添加事件
 window.operateEvents = {
     "click #TableEditor":function (e,value,row,index) {
-        var v1 = row.one;
-        var v2 = row.two;
-        var v3 = row.three;
-        var v4 = row.four;
-        var v5 = row.five;
-        var v6 = row.six;
-        var deviceId = row.deviceId;
-        //折线图配置
-        option = {
-            tooltip: {
-                trigger: 'axis' //鼠标跟随效果
-            },
-            xAxis: {
-                type: 'category',
-                data: ['1','2','3','4','5','6']
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [{
-                type: 'line',
-                symbol: 'emptydiamond',
-                //设置折线图中表示每个坐标点的符号 emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形
-                data: [v1,v2,v3,v4,v5,v6]
-            }]
-        };
-        var myChart = echarts.init(document.getElementById(deviceId));
-        myChart.setOption(option);
     }
     
 };
+
+//翻页事件
+$('#table').bootstrapTable('prevPage');
