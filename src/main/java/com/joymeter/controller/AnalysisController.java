@@ -36,7 +36,15 @@ public class AnalysisController {
     public void register(@RequestBody DeviceInfo deviceInfo) {
 		analysisService.register(deviceInfo);
     }
-	
+
+
+	@RequestMapping("/deleteDeviceInfoById")
+	@ResponseBody
+	public void deleteDeviceInfoById(@RequestBody DeviceInfo deviceInfo) {
+		analysisService.deleteDeviceInfoById(deviceInfo.getDeviceId());
+	}
+
+
 	@RequestMapping("/updateSim")
 	@ResponseBody
 	public void updateSIM(@RequestBody DeviceInfo deviceInfo) {

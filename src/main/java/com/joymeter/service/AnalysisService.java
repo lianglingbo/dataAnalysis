@@ -7,9 +7,12 @@ import com.joymeter.entity.DeviceInfo;
 
 public interface AnalysisService {
 	void addData(String data);
-	
+
+	//注册，添加
 	void register(DeviceInfo deviceInfo);
-	
+	//删除
+	void deleteDeviceInfoById(String deviceId);
+
 	void updateSim(DeviceInfo deviceInfo);
 	
 	List<HashMap<String, Object>> getOffline(String data);

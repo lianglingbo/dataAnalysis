@@ -47,8 +47,9 @@ public interface DeviceInfoMapper {
     @UpdateProvider(type = DeviceInfoProvider.class,method="updateDeviceInfo")
     void updateDeviceInfo(DeviceInfo deviceInfo);
 
+    //删除设备
     @Delete("DELETE FROM device_info WHERE deviceId =#{deviceId}")
-    void delete(Long deviceId);
+    void deleteDeviceInfoById(String deviceId);
 
     //根据设备id，整点用量到usage_hour表中，存在设备则更新，不存在则新增
     @InsertProvider(method = "insertIntoUsageHour",type=DeviceInfoProvider.class)

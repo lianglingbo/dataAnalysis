@@ -579,6 +579,21 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 	}
 
+	//删除设备
+	@Override
+	public void deleteDeviceInfoById(String deviceId) {
+		if("".equals(deviceId) || StringUtils.isEmpty(deviceId)){
+			return;
+		}
+		try {
+			logger.log(Level.SEVERE, "删除设备："+ deviceId);
+			deviceInfoMapper.deleteDeviceInfoById(deviceId);
+		} catch (Exception e) {
+
+		}
+	}
+
+
 	/**
 	 * 更新SIM卡的流量
 	 * 
