@@ -129,11 +129,16 @@ public class DeviceInfoProvider {
 	public String selectUsageWithProjectByParams(DeviceInfo deviceInfo) {
 		return new SQL() {
 			{
-				SELECT("t2.project,t2.province,t2.city,t2.district,t2.community,t2.address,t1.deviceId,t1.one,t1.two,t1.three,t1.four,t1.five,t1.six,t1.status,t1.updateTime");
+				SELECT("t2.project,t2.province,t2.city,t2.district,t2.community,t2.address,t1.deviceId,ROUND((t1.one - t1.zero ),3) as ones,ROUND((t1.two - t1.one ),3) as twos,ROUND((t1.three - t1.two ),3) as threes,ROUND((t1.four - t1.three ),3) as fours,ROUND((t1.five - t1.four ),3) as fives,ROUND((t1.six - t1.five ),3) as sixs   ");
 				FROM("usage_hour t1,device_info t2");
 				WHERE("t1.deviceId = t2.deviceId ");
-				//可疑标识 1
-				WHERE("t1.status = '1' ");
+				//可疑标识
+				WHERE("t1.one > t1.zero");
+				WHERE("t1.two > t1.one");
+				WHERE("t1.three > t1.two");
+				WHERE("t1.four > t1.three");
+				WHERE("t1.five > t1.four");
+				WHERE("t1.six > t1.five");
 				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
 					WHERE("t2.project = #{project}");
 				}
@@ -268,6 +273,8 @@ public class DeviceInfoProvider {
 	/**
 	 * 查询可疑用水聚合SQL
 	 * status = 1 为可疑
+	 * 可疑用水：凌晨使用量不为0
+	 * six > one
 	 * @param deviceInfo
 	 * @return
 	 */
@@ -276,7 +283,7 @@ public class DeviceInfoProvider {
 		StringBuilder sqlb = new StringBuilder();
 		String column = null;
 		sql.append("SELECT ");
-		sqlb.append(",COUNT(t1.deviceId) as failed from usage_hour t1,device_info t2  WHERE  t1.deviceId = t2.deviceId  and t1.status = '1' ");
+		sqlb.append(",COUNT(t1.deviceId) as failed from usage_hour t1,device_info t2  WHERE  t1.deviceId = t2.deviceId  and t1.one > t1.zero and t1.two > t1.one and t1.three > t1.two and t1.four > t1.three and t1.five > t1.four and t1.six > t1.five  ");
 		if (!StringUtils.isEmpty(deviceInfo.getProject())) {
 			sqlb.append("and t2.project = #{project} ");
 			column = "t2.province";
@@ -312,32 +319,43 @@ public class DeviceInfoProvider {
 	 */
 	public String insertIntoUsageHour(UsageHour usageHour){
 
+		//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）
+		Date date = new Date();
+		String nowTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(date);//将时间格式转换成符合Timestamp要求的格式.
+		Timestamp updatetime =Timestamp.valueOf(nowTime);//把时间转换
+		usageHour.setUpdateTime(updatetime);
+
+
 
 		//设备编号不为空
 		if(!StringUtils.isEmpty(usageHour.getDeviceId())){
-			if(!StringUtils.isEmpty(usageHour.getOne())){
-			//1点,收到信息后，将后续时间点用量都初始化，防止后续出现空值情况
-				String sql ="INSERT INTO usage_hour(deviceId,one,two,three,four,five,six,status,updateTime) VALUE(#{deviceId},#{one},#{one},#{one},#{one},#{one},#{one},#{status},#{updateTime}) ON DUPLICATE KEY UPDATE one = #{one},two = #{one},three = #{one},four = #{one},five = #{one},six = #{one},status = #{status} ,updateTime=#{updateTime};";
+			if(!StringUtils.isEmpty(usageHour.getZero())){
+				//0点，收到信息后，将后续时间点用量都初始化，防止后续出现空值情况
+				String sql ="INSERT INTO usage_hour(deviceId,zero,one,two,three,four,five,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{zero},#{zero},#{zero},#{zero},#{zero},#{zero},#{zero},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE zero=#{zero}, one = #{zero},two = #{zero},three = #{zero},four = #{zero},five = #{zero},six = #{zero},status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
+				return sql;
+			}else if(!StringUtils.isEmpty(usageHour.getOne())){
+			//1点,
+				String sql ="INSERT INTO usage_hour(deviceId,one,two,three,four,five,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{one},#{one},#{one},#{one},#{one},#{one},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE one = #{one},two = #{one},three = #{one},four = #{one},five = #{one},six = #{one},status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
 				return sql;
 			}else if(!StringUtils.isEmpty(usageHour.getTwo())){
 			//2点
-				String sql ="INSERT INTO usage_hour(deviceId,two,three,four,five,six,status,updateTime) VALUE(#{deviceId},#{two},#{two},#{two},#{two},#{two},#{status},#{updateTime}) ON DUPLICATE KEY UPDATE two= #{two},three = #{two},four = #{two},five = #{two},six = #{two},status = #{status} ,updateTime=#{updateTime};";
+				String sql ="INSERT INTO usage_hour(deviceId,two,three,four,five,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{two},#{two},#{two},#{two},#{two},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE two= #{two},three = #{two},four = #{two},five = #{two},six = #{two},status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
 				return sql;
 			}else if(!StringUtils.isEmpty(usageHour.getThree())){
 			//3点
-				String sql ="INSERT INTO usage_hour(deviceId,three,four,five,six,status,updateTime) VALUE(#{deviceId},#{three},#{three},#{three},#{three},#{status},#{updateTime}) ON DUPLICATE KEY UPDATE three= #{three},four = #{three},five = #{three},six = #{three} , status = #{status} ,updateTime=#{updateTime};";
+				String sql ="INSERT INTO usage_hour(deviceId,three,four,five,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{three},#{three},#{three},#{three},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE three= #{three},four = #{three},five = #{three},six = #{three} , status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
 				return sql;
 			}else if(!StringUtils.isEmpty(usageHour.getFour())){
 			//4点
-				String sql ="INSERT INTO usage_hour(deviceId,four,five,six,status,updateTime) VALUE(#{deviceId},#{four},#{four},#{four},#{status},#{updateTime}) ON DUPLICATE KEY UPDATE four= #{four},five = #{four},six = #{four},status = #{status} ,updateTime=#{updateTime};";
+				String sql ="INSERT INTO usage_hour(deviceId,four,five,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{four},#{four},#{four},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE four= #{four},five = #{four},six = #{four},status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
 				return sql;
 			}else if(!StringUtils.isEmpty(usageHour.getFive())){
 			//5点
-				String sql ="INSERT INTO usage_hour(deviceId,five,six,status,updateTime) VALUE(#{deviceId},#{five},#{five},#{status},#{updateTime}) ON DUPLICATE KEY UPDATE five= #{five},six = #{five},status = #{status} ,updateTime=#{updateTime};";
+				String sql ="INSERT INTO usage_hour(deviceId,five,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{five},#{five},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE five= #{five},six = #{five},status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
 				return sql;
 			}else if(!StringUtils.isEmpty(usageHour.getSix())){
 			//6点
-				String sql ="INSERT INTO usage_hour(deviceId,six,status,updateTime) VALUE(#{deviceId},#{six},#{status},#{updateTime}) ON DUPLICATE KEY UPDATE six= #{six},status = #{status} ,updateTime=#{updateTime};";
+				String sql ="INSERT INTO usage_hour(deviceId,six,status,deviceTime,updateTime) VALUE(#{deviceId},#{six},#{status},#{deviceTime},#{updateTime}) ON DUPLICATE KEY UPDATE six= #{six},status = #{status} ,deviceTime = #{deviceTime} ,updateTime=#{updateTime};";
 				return sql;
 			}
 

@@ -77,7 +77,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				jsonData.put("eventinfo",totaldata);
 				dataStr = jsonData.toJSONString();
 			}
-			DataCache.add(dataStr);
+
 			
 			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
@@ -97,9 +97,16 @@ public class AnalysisServiceImpl implements AnalysisService {
 						//获取date时间
 						SimpleDateFormat sdfh=new SimpleDateFormat("HH");
 						int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
-						//每天23:40清空mysql;重要！！寫在定時任務中
+
+						//测试
+						currenHour = 5;
+
+
+
+
+						//每天清空mysql;重要！！寫在定時任務中
 						//【3】凌晨0点到6点：整点统计用水量
-						if(currenHour >= 0 && currenHour < 6){
+						if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
 							//判断类型为水表的数据
 							if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
 								//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
@@ -107,23 +114,49 @@ public class AnalysisServiceImpl implements AnalysisService {
 								usageHour.setDeviceId(deviceId);
 								//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
 								String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
-								Timestamp updatetime =Timestamp.valueOf(deviceTime);//把时间转换
-								usageHour.setUpdateTime(updatetime);
-								if(currenHour >=0 && currenHour <1){
-									//1点插入，值到one，two，three，four，five，six；
-									usageHour.setOne(totaldata);
+								usageHour.setDeviceTime(Timestamp.valueOf(deviceTime));
+
+								if(currenHour >=23 ){
+									//0点插入，值到zero,one，two，three，four，five，six；
+									usageHour.setZero(totaldata);
+								}else if(currenHour >=0 && currenHour <1){
+									//1点，插入之前，先判断0点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
+									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+									if(StringUtils.isEmpty(selectResult)){
+										//上一次結果爲空，初始化
+										usageHour.setZero(totaldata);
+									}else{
+										//結果不爲空，判斷上一小時是否有數據
+										String lastusage = selectResult.getZero();
+										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+											//初始化所有數據
+											usageHour.setZero(totaldata);
+										}else {
+											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+											if(comp == 1){
+												//更新状态为1：异常
+												usageHour.setStatus("1");
+											}else {
+												//更新状态为0：正常
+												usageHour.setStatus("0");
+											}
+											//后续时间点数据的初始化
+											usageHour.setOne(totaldata);
+										}
+									}
 								}else if(currenHour >=1 && currenHour <2){
-									//2点，插入之前，先判断1点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
+									//2点，插入之前，先判断0点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
 									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
 									if(StringUtils.isEmpty(selectResult)){
 										//結果爲空
-										usageHour.setOne(totaldata);
+										usageHour.setZero(totaldata);
 									}else{
 										//結果不爲空，判斷上一小時是否有數據
 										String lastusage = selectResult.getOne();
 										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
 											//初始化所有數據
-											usageHour.setOne(totaldata);
+											usageHour.setZero(totaldata);
 										}else {
 											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
 											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
@@ -142,13 +175,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
 									if(StringUtils.isEmpty(selectResult)){
 										//結果爲空
-										usageHour.setOne(totaldata);
+										usageHour.setZero(totaldata);
 									}else{
 										//結果不爲空，判斷上一小時是否有數據
 										String lastusage = selectResult.getTwo();
 										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
 											//初始化所有數據
-											usageHour.setOne(totaldata);
+											usageHour.setZero(totaldata);
 										}else {
 											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
 											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
@@ -167,13 +200,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
 									if(StringUtils.isEmpty(selectResult)){
 										//結果爲空
-										usageHour.setOne(totaldata);
+										usageHour.setZero(totaldata);
 									}else{
 										//結果不爲空，判斷上一小時是否有數據
 										String lastusage = selectResult.getThree();
 										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
 											//初始化所有數據
-											usageHour.setOne(totaldata);
+											usageHour.setZero(totaldata);
 										}else {
 											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
 											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
@@ -193,13 +226,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
 									if(StringUtils.isEmpty(selectResult)){
 										//結果爲空
-										usageHour.setOne(totaldata);
+										usageHour.setZero(totaldata);
 									}else{
 										//結果不爲空，判斷上一小時是否有數據
 										String lastusage = selectResult.getFour();
 										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
 											//初始化所有數據
-											usageHour.setOne(totaldata);
+											usageHour.setZero(totaldata);
 										}else {
 											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
 											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
@@ -218,13 +251,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
 									if(StringUtils.isEmpty(selectResult)){
 										//結果爲空
-										usageHour.setOne(totaldata);
+										usageHour.setZero(totaldata);
 									}else{
 										//結果不爲空，判斷上一小時是否有數據
 										String lastusage = selectResult.getFive();
 										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
 											//初始化所有數據
-											usageHour.setOne(totaldata);
+											usageHour.setZero(totaldata);
 										}else {
 											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
 											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
@@ -260,6 +293,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 		} catch (Exception e) {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
+		//发送数据到druid中
+		DataCache.add(dataStr);
 	}
 
 

@@ -111,7 +111,7 @@ let showDevices = function(){
         columns.push({field:'community',title:"小区",align: 'center',valign : 'middle'});
         columns.push({field:'address',title:"地址",align: 'center',valign : 'middle'});
         columns.push({field:'deviceId',title:"设备编号",align: 'center',valign : 'middle'});
-        columns.push({field:'usagepic',title:'凌晨1-6点用量图', width:550  ,hight:70,events:getLineChartEvents,align: 'center',formatter:AddPicFunction,valign : 'middle'});
+        columns.push({field:'usagepic',title:'凌晨1-6点用量图', width:550  ,height:70,events:getLineChartEvents,align: 'center',formatter:AddPicFunction,valign : 'middle'});
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
         //将数据给全局变量,其他页面，把deviceData制空
         deviceData=jsonData;
@@ -154,7 +154,7 @@ let TableInit = function(){
             },
             //测试双击事件
             onDblClickRow:function f(row,obj) {
-                alert("双击事件");
+
             },
             //翻页事件
             onPageChange:function(){
@@ -174,25 +174,12 @@ let TableInit = function(){
 
 
 
-
-
-
-
-
-
-
 //模拟点击页面每个div，触发绘图方法，1.遍历deviceId 2.拿到元素模拟点击
 let  clickAllButton = function () {
     if(deviceData!=null){
         //获取id，循环遍历
         $.each(deviceData,function (index,obj) {
             var deviceId = obj.deviceId;
-            var v1 = obj.one;
-            var v2 = obj.two;
-            var v3 = obj.three;
-            var v4 = obj.four;
-            var v5 = obj.five;
-            var v6 = obj.six;
             var divid = "#"+deviceId;
             //模拟触发div的点击事件，触发events的绘图方法
             $(divid).click();
@@ -213,12 +200,12 @@ function AddPicFunction(value,row,index) {
 //点击事件触发绘图功能
 window.getLineChartEvents = {
     "click .classOfDiv":function (e,value,row,index) {
-        var v1 = row.one;
-        var v2 = row.two;
-        var v3 = row.three;
-        var v4 = row.four;
-        var v5 = row.five;
-        var v6 = row.six;
+        var v1 = row.ones;
+        var v2 = row.twos;
+        var v3 = row.threes;
+        var v4 = row.fours;
+        var v5 = row.fives;
+        var v6 = row.sixs;
         var deviceId = row.deviceId;
         //折线图配置
         option = {

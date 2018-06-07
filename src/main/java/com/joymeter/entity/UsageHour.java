@@ -12,6 +12,7 @@ import java.sql.Timestamp;
  **/
 public class UsageHour {
     private String deviceId;
+    private String zero;
     private String one;
     private String two;
     private String three;
@@ -19,7 +20,11 @@ public class UsageHour {
     private String five;
     private String six;
     private String status;
+    //设备数据的事件
+    private Timestamp deviceTime;
+    //操作记录的事件
     private Timestamp updateTime;
+
 
     public String getDeviceId() {
         return deviceId;
@@ -27,6 +32,14 @@ public class UsageHour {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public String getZero() {
+        return zero;
+    }
+
+    public void setZero(String zero) {
+        this.zero = zero;
     }
 
     public String getOne() {
@@ -85,6 +98,14 @@ public class UsageHour {
         this.status = status;
     }
 
+    public Timestamp getDeviceTime() {
+        return deviceTime;
+    }
+
+    public void setDeviceTime(Timestamp deviceTime) {
+        this.deviceTime = deviceTime;
+    }
+
     public Timestamp getUpdateTime() {
         return updateTime;
     }
@@ -97,6 +118,7 @@ public class UsageHour {
     public String toString() {
         return "UsageHour{" +
                 "deviceId='" + deviceId + '\'' +
+                ", zero='" + zero + '\'' +
                 ", one='" + one + '\'' +
                 ", two='" + two + '\'' +
                 ", three='" + three + '\'' +
@@ -104,6 +126,7 @@ public class UsageHour {
                 ", five='" + five + '\'' +
                 ", six='" + six + '\'' +
                 ", status='" + status + '\'' +
+                ", deviceTime=" + deviceTime +
                 ", updateTime=" + updateTime +
                 '}';
     }

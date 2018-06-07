@@ -28,8 +28,8 @@ public class MysqlTask {
     private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
 
 
-    // 定时任务每天23點40執行一次，清空usageHour表
-    @Scheduled(cron = "0 40 23 * * ?")
+    // 定时任务每天22點40執行一次，清空usageHour表
+    @Scheduled(cron = "0 40 22 * * ?")
     public void truncateUsageHour(){
         try{
             deviceInfoMapper.truncateUsageHour();
@@ -40,16 +40,16 @@ public class MysqlTask {
      }
 
     //每天执行一次，将usageHour表中数据遍历，同步到druid中;批量导入方式；
-    @Scheduled(cron = "0 0 23 * * ?")
+    @Scheduled(cron = "0 0 22 * * ?")
     public void fromUsageHourToDruid(){
         try{
             //查询mysql表中所有数据
             List<UsageHour> usageHours = deviceInfoMapper.selectAllUsgae();
             for (UsageHour usage:usageHours) {
-                String postData = JSON.toJSONString(usage);
+                //String postData = JSON.toJSONString(usage);
                 //遍历，发送给druid
-                String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
-                logger.log(Level.SEVERE,"夜间同步数据："+postData+"返回结果"+s);
+                //String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
+                //logger.log(Level.SEVERE,"夜间同步数据："+postData+"返回结果"+s);
             }
         }catch (Exception e){
             logger.log(Level.SEVERE, null, e);
