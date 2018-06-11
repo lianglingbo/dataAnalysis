@@ -43,12 +43,12 @@ public class MysqlTask {
         }
      }
 
-    //每天执行一次，将usageHour表中数据遍历，同步到druid中;批量导入方式；
+    //每天执行一次，将usageHour表中数据遍历，同步到druid中;批量导入方式；用量为0的数据不同步
     @Scheduled(cron = "0 0 22 * * ?")
     public void fromUsageHourToDruid(){
         try{
             //查询mysql表中所有数据
-            List<UsageHour> usageHours = deviceInfoMapper.selectAllUsgae();
+            List<UsageHour> usageHours = deviceInfoMapper.selectExceptionUsage();
             for (UsageHour usage:usageHours) {
                 //设置操作事件为当前时间
                 Date date = new Date();
@@ -70,6 +70,7 @@ public class MysqlTask {
                 String fours = four.subtract(three).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
                 String fives = five.subtract(four).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
                 String sixs = six.subtract(five).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+
                 //赋值
                 usage.setZero("0");
                 usage.setOne(ones);
@@ -81,8 +82,9 @@ public class MysqlTask {
                 //转json
                 String postData = JSON.toJSONString(usage);
                 //遍历，发送给druid
-                String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
-                logger.log(Level.SEVERE,"夜间同步数据："+postData+"返回结果"+s);
+               // String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
+                System.out.println(postData.toString());
+                //logger.log(Level.SEVERE,"夜间同步数据："+postData+"返回结果"+s);
             }
         }catch (Exception e){
             logger.log(Level.SEVERE, "夜间同步数据异常", e);

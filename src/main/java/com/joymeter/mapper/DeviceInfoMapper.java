@@ -63,6 +63,9 @@ public interface DeviceInfoMapper {
     @Select("SELECT * FROM usage_hour")
     List<UsageHour> selectAllUsgae();
 
+    //查询usage_hour每小时用量不为0，同步到druid中
+    @Select("SELECT * from usage_hour where (one-zero)>0 and (two-one)>0 and (three-two)>0 and (four-three)>0 and (five-four)>0 and (six-five)>0")
+    List<UsageHour> selectExceptionUsage();
     //清空usage_hour表
     @Select("truncate table usage_hour")
     void  truncateUsageHour();
