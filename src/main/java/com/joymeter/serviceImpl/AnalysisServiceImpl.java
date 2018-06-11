@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.joymeter.entity.UsageHour;
 import com.joymeter.entity.WaterMeterUse;
@@ -84,7 +82,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)||"push".equals(event)) {
-				//能收到上面三种事件，说明设备在线
+				//能收到上面四种事件，说明设备在线
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				if ("data".equals(event)) {
@@ -276,7 +274,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}else if ("close".equals(event)) {
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-			}else if ("data_failed".equals(event)) {
+			}else if("open".equals(event)){
+				deviceInfo.setValveState("1");
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+			} else if ("data_failed".equals(event)) {
 				deviceInfo.setReadState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 			}
@@ -422,7 +423,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 		System.out.println(QUERY_WATER_DATA);
         try {
             String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
-            System.out.println(result);
             //将json转为对象，遍历每个对象，再增加设备得项目信息
 			List<WaterMeterUse> waterMeterUses = JSONObject.parseArray(result, WaterMeterUse.class);
 			//循环遍历每个对象，通过id查出项目地信息，加到对象中
