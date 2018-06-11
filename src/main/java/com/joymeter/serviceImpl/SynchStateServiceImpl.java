@@ -1,5 +1,7 @@
 package com.joymeter.serviceImpl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.joymeter.entity.DeviceInfo;
 import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.service.SynchStateService;
@@ -10,6 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +56,9 @@ public class SynchStateServiceImpl implements SynchStateService {
     /**
      * 遍历方法mysql，查询druid
      * 根据结果，调响应的方法
+     * 同步状态策略：
+     *      1.若mysql的操作时间比druid中时间新，则数据以mysql为准；状态不变
+     *      2.若druid时间新，则状态不对，以druid为准；修改状态；
      * @return
      */
     @Override
@@ -67,11 +77,29 @@ public class SynchStateServiceImpl implements SynchStateService {
                 String deviceState = deviceInfo.getDeviceState();//mysql中设备状态
                 String readState = deviceInfo.getReadState();//mysql中抄表状态
                 String valveState = deviceInfo.getValveState();//mysql中阀门状态
+                Timestamp updateTime = deviceInfo.getUpdateTime();//操作时间  
 
-                String QUERY_DEVICE_DATA ="{\"query\":\"select event  from  dataInfo where  deviceId ='"+deviceId+"'  order by __time desc limit 1 \"}";
+                String QUERY_DEVICE_DATA ="{\"query\":\"select event,__time  from  dataInfo where  deviceId ='"+deviceId+"'  order by __time desc limit 1 \"}";
                 //查询druid
                 String result = HttpClient.sendPost(queryUrl, QUERY_DEVICE_DATA);
-                String event = result.contains("event") ? result.substring(result.indexOf(":") + 2, result.indexOf("}")-1) : "";
+                JSONArray array = JSONArray.parseArray(result);
+                JSONObject jsonObject = array.getJSONObject(0);
+                String event = jsonObject.getString("event");
+                String __time = jsonObject.getString("__time");
+                DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");//将时间格式转换成符合Timestamp要求的格式.
+                //druid中的时间比mysql操作时间新，则进行更新
+                try {
+                    Date druidTime = dfm.parse(__time);
+                    Date mysqlTime = updateTime;
+                    //比较大小,druid大，返回1
+                    int compareTo = druidTime.compareTo(mysqlTime);
+                    if(compareTo != 1){
+                        logger.log(Level.INFO,"解析时间,druid时间小于mysql，不更新,druid: "+result+ "  mysql:"+updateTime);
+                        break;
+                    }
+                } catch (ParseException e) {
+                    logger.log(Level.INFO,e+"解析时间异常");
+                 }
                 //进行状态的判断，对druid结果进行分析，然后更新mysql
                 if("data".equals(event)){
                     //得到数据，设备在线，抄表成功
