@@ -23,14 +23,33 @@ $(function () {
         });
     };
 
+    getTotalNum();
 });
 
 
 //查询设备总数
 var getTotalNum = function () {
     var data;
-    $.axspost("/monitor/getUsageStatusFailed",data,function(d){
-        console.log(d);
+    $.axspost("/visual/getTotalNum",data,function(d){
+        var obj = eval(d);
+        var myChart= echarts.init(document.getElementById('totalNum'));
+        var option = {
+            //option选项
+            xAxis: {
+                type: 'category',
+                data: ['总数','离线设备', '离线网关', '抄表失败', '二十四小时无数据']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [obj.noneDataCount, obj.offDeviceCount, obj.offGatewayCount, obj.readFaileCount, obj.totalCount ],
+                type: 'bar'
+            }]
+
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
     });
 };
 

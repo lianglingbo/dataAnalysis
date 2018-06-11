@@ -26,8 +26,7 @@ public class VisualInterfaceController {
     @RequestMapping("/getTotalNum")
     @ResponseBody
     public String  getTotalNum() {
-
-        return  null;
+        return visualInterfaceService.getTotalNum();
     }
 
 }
