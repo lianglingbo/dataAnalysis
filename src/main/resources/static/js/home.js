@@ -23,44 +23,117 @@ $(function () {
         });
     };
 
-    getTotalNum();
+    getTotalNumPie();
 });
 
 
-//查询设备总数
-var getTotalNum = function () {
+
+//查询设备总数饼图
+var getTotalNumPie = function () {
     var data;
     $.axspost("/visual/getTotalNum",data,function(d){
         var obj = eval(d);
-        var myChart= echarts.init(document.getElementById('totalNum'));
-          var option = {
-            //option选项
-            xAxis: {
-                type: 'category',
-                data: ['总数','离线设备', '离线网关', '抄表失败', '二十四小时无数据']
-            },
-            yAxis: {
-                type: 'value'
-            },
-            series: [{
-                data: [obj.totalCount, obj.offDeviceCount, obj.offGatewayCount, obj.readFaileCount, obj.noneDataCount ],
-                type: 'bar'
-            }]
+        var option = {
+
+
+            series: [
+                //中心
+                {
+                    type:'pie',
+                    radius: [0, '25%'],
+                    //设置饼图位置
+                    // 禁用饼状图悬浮动画效果
+                    animation: false,
+                    //设置背景颜色
+                    color: 'white',
+                    //设置显示内容
+                    label: {
+                        normal: {
+                            show:true,
+                            position: 'center',
+                            color:'#000000',
+                            textStyle:{
+                                fontSize:'25',
+                                fontWeight:'bold'
+                            }
+                        }
+                    },
+                    data:[
+                        {value:obj.totalCount,   name:'设备总数 \r\n'+obj.totalCount}
+                    ]
+                },
+                //内圈
+                {
+                    type:'pie',
+                    // 禁用饼状图悬浮动画效果
+                    animation: false,
+                    radius: ['35%', '82%'],
+                    //设置背景颜色
+                    color: ['#CAFF70','#9ACD32'],
+                    label : {
+                        //字体调整，b项目名，c值
+                        normal : {
+                            position: 'inner',
+                            formatter: '{b}\r\n{c}',
+                            textStyle : {
+                                fontWeight : 'bold',
+                                color:'#000000',
+                                fontSize : 16
+                            }
+                        }
+                    },
+                    data:[
+                        {value:obj.offDeviceCount, name:'离线设备'},
+                        {value:obj.offGatewayCount, name:'离线网关'}
+                    ]
+                },
+                //外圈
+                {
+                    type:'pie',
+                    // 第一个参数是内圆半径，第二个参数是外圆半径，相对饼图的宿主div大小
+                    radius: ['83%', '86%'],
+                    avoidLabelOverlap: false,
+                    // 禁用饼状图悬浮动画效果
+                    animation: false,
+                    //设置背景颜色
+                    color: ['#BDBDBD','#D9D9D9'],
+                    label : {
+                        //字体调整，b项目名，c值，换行
+                        normal : {
+                            formatter: '{b}\n{c}',
+                            textStyle : {
+                                fontWeight : 'bold',
+                                color:'#000000',
+                                fontSize : 16
+                            }
+                        }
+                    },
+                    data:[
+                         {value:obj.readFaileCount, name:'抄表失败'},
+                        {value:obj.noneDataCount, name:'24小时无数据'}
+                    ]
+                }
+            ]
 
         };
+        var myChart = echarts.init(document.getElementById('totalNumPie'));
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
+        //点击事件
         myChart.on('click', function (param){
             var name=param.name;
-            if(name=="总数"){
-                alert("总数")
-            }else if(name=="二十四小时无数据"){
-                alert("二十四小时")
+            if(name=='离线设备'){
+                window.open("http://47.93.21.73:18080/offlinetable.html");
+            }else if(name=='离线网关'){
+                window.open("http://47.93.21.73:18080/offlinetable.html");
+            }else if(name=="抄表失败"){
+                window.open("http://47.93.21.73:18080/readfailed.html");
+            }else if(name=="24小时无数据"){
+                var src="http://47.93.21.73/superset/explore/?form_data=%7B%22datasource%22%3A%221__table%22%2C%22viz_type%22%3A%22table%22%2C%22slice_id%22%3A28%2C%22granularity_sqla%22%3Anull%2C%22time_grain_sqla%22%3Anull%2C%22since%22%3A%227+days+ago%22%2C%22until%22%3A%22now%22%2C%22groupby%22%3A%5B%22project%22%5D%2C%22metrics%22%3A%5B%22count%22%5D%2C%22include_time%22%3Afalse%2C%22timeseries_limit_metric%22%3Anull%2C%22order_desc%22%3Atrue%2C%22all_columns%22%3A%5B%5D%2C%22order_by_cols%22%3A%5B%5D%2C%22table_timestamp_format%22%3A%22%25Y-%25m-%25d+%25H%3A%25M%3A%25S%22%2C%22row_limit%22%3A10000%2C%22page_length%22%3A0%2C%22include_search%22%3Afalse%2C%22table_filter%22%3Afalse%2C%22align_pn%22%3Afalse%2C%22color_pn%22%3Atrue%2C%22where%22%3A%22deviceId%3DgatewayId%22%2C%22having%22%3A%22%22%2C%22filters%22%3A%5B%7B%22col%22%3A%22deviceState%22%2C%22val%22%3A%220%22%2C%22op%22%3A%22%3D%3D%22%7D%5D%2C%22url_params%22%3A%7B%7D%2C%22pandas_aggfunc%22%3A%22sum%22%2C%22treemap_ratio%22%3A1.618033988749895%2C%22color_scheme%22%3A%22bnbColors%22%2C%22columns%22%3A%5B%5D%2C%22combine_metric%22%3Atrue%2C%22number_format%22%3A%22.4r%22%2C%22pivot_margins%22%3Atrue%7D&standalone=true&height=400"
+                window.open(src);
             }
         });
-        myChart.on('click',eConsole);
     });
-
 };
 
 
