@@ -29,4 +29,40 @@ public class VisualInterfaceController {
         return visualInterfaceService.getTotalNum();
     }
 
+    //获取离线设备个数group by project
+    @RequestMapping("/getOffDevCountByProject")
+    @ResponseBody
+    public String getOffDevCountByProject(){
+        return visualInterfaceService.getOffDevCountByProject();
+    }
+
+    //获取离线网关个数group by project
+    @RequestMapping("/getOffGtwCountByProject")
+    @ResponseBody
+    public String getOffGtwCountByProject(){
+        return visualInterfaceService.getOffGtwCountByProject();
+    }
+
+    //24小时无数据设备group by project
+    @RequestMapping("/getNodeDataByProject")
+    @ResponseBody
+    public String getNodeDataByProject(){
+        return visualInterfaceService.getNodeDataByProject();
+    }
+
+    //抄表失败group by project
+    @RequestMapping("/getReadFailedByProject")
+    @ResponseBody
+    public String getReadFailedByProject(){
+        return visualInterfaceService.getReadFailedByProject();
+    }
+
+    //设备总数group by project
+    @RequestMapping("/getTotalCountByProject")
+    @ResponseBody
+    public String getTotalCountByProject(){
+        return visualInterfaceService.getTotalCountByProject();
+    }
+
+
 }

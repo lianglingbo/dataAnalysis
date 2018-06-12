@@ -3,13 +3,26 @@
 <head>
 	<meta charset="UTF-8" name="viewport" content="width=device-width" />
 	<script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+	<link href="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.css"  rel="stylesheet"/>
+	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+
+	<script src="js/tableExport.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/extensions/export/bootstrap-table-export.min.js"></script>
+
 	<title>主页</title>
-	<script src="js/echarts.js"></script>
 </head>
 <body>
-
-	<div id="totalNumPie" style="width: 500px;height: 400px;float:left;"></div>
-
+	<div>
+		<div id="totalNumPie" style="width: 500px;height: 400px;float:left;"></div>
+		<div style="width: 200px;height: 400px;float:left;"><table id = "table" ></table></div>
+		<div style="width: 200px;height: 400px;float:left;"><table id = "table2" ></table></div>
+		<div style="width: 200px;height: 400px;float:left;"><table id = "table3" ></table></div>
+		<div style="width: 200px;height: 400px;float:left;"><table id = "table4" ></table></div>
+	</div>
+	<script src="js/echarts.js"></script>
 	<script src="js/home.js"></script>
 </body>
 </html>
