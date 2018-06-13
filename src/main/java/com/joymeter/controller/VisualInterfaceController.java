@@ -64,5 +64,7 @@ public class VisualInterfaceController {
         return visualInterfaceService.getTotalCountByProject();
     }
 
+    //24小时无数据设备列表详情
+
 
 }

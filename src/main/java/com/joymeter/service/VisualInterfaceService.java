@@ -1,6 +1,9 @@
 package com.joymeter.service;
 
 
+import java.util.HashMap;
+import java.util.List;
+
 public interface VisualInterfaceService {
 
     //获取设备总数，抄表失败个数，离线设备个数，离线网关个数，24小时无数据设备个数
@@ -15,6 +18,9 @@ public interface VisualInterfaceService {
     String getReadFailedByProject();
     //设备总数group by project
     String getTotalCountByProject();
+    //24小时无数据设备列表动态分组,动态聚合查询
+    List<HashMap<String, Object>> getNoneDataGroupList(String data);
+
 
 
 }

@@ -1,8 +1,11 @@
 package com.joymeter.mapper;
 
+import com.joymeter.entity.DeviceInfos;
 import com.joymeter.entity.ProjectCountBean;
 import com.joymeter.entity.TotalNumBean;
+import com.joymeter.provider.VisualInterfaceProvider;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,7 +27,7 @@ import java.util.List;
 public interface VisualInterfaceMapper {
 
      //获取设备总数，抄表失败个数，离线设备个数，离线网关个数，24小时无数据设备个数
-     @Select("  select  (select count(deviceId) from device_info) as totalCount,(select count(deviceId)  from device_info where deviceState = '0' and deviceId != gatewayId) as offDeviceCount,(select count(deviceId)  from device_info where deviceState = '0' and deviceId = gatewayId) as offGatewayCount,(select count(deviceId)  from device_info where readState = '1') as readFaileCount,(select count(deviceId)  from device_info where TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' and deviceId != gatewayId) as noneDataCount  from device_info limit 1 ")
+     @Select("SELECT  (select count(deviceId) from device_info) as totalCount,(select count(deviceId)  from device_info where deviceState = '0' and deviceId != gatewayId) as offDeviceCount,(select count(deviceId)  from device_info where deviceState = '0' and deviceId = gatewayId) as offGatewayCount,(select count(deviceId)  from device_info where readState = '1') as readFaileCount,(select count(deviceId)  from device_info where TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' and deviceId != gatewayId) as noneDataCount  from device_info limit 1 ")
      TotalNumBean getTotalNum();
 
      //获取离线设备个数group by project
@@ -36,7 +39,7 @@ public interface VisualInterfaceMapper {
      List<ProjectCountBean> getOffGtwCountByProject();
 
      //24小时无数据设备group by project
-     @Select("  SELECT a.* FROM  (SELECT IFNULL(project,'无数据设备总数') AS myProject,count(deviceId) AS myCount FROM device_info where TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' GROUP BY project  WITH ROLLUP ) AS a ORDER BY a.myCount DESC ")
+     @Select("  SELECT a.* FROM  (SELECT IFNULL(project,'无数据设备总数') AS myProject,count(deviceId) AS myCount FROM device_info where TIMESTAMPDIFF(HOUR,updateTime,now()) > '24'  and deviceId != gatewayId  GROUP BY project  WITH ROLLUP ) AS a ORDER BY a.myCount DESC ")
      List<ProjectCountBean> getNodeDataByProject();
 
      //抄表失败group by project
@@ -46,5 +49,9 @@ public interface VisualInterfaceMapper {
      //设备总数group by project
      @Select("  SELECT a.* FROM  (SELECT IFNULL(project,'总设备数') AS myProject,count(deviceId) AS myCount FROM device_info  GROUP BY project  WITH ROLLUP ) AS a ORDER BY a.myCount DESC ")
      List<ProjectCountBean> getTotalCountByProject();
+
+     //24小时无数据设备列表动态分组,动态聚合查询
+     @SelectProvider(type = VisualInterfaceProvider.class,method="getNoneDataGroupList")
+     List<DeviceInfos> getNoneDataGroupList(DeviceInfos deviceInfos);
 
 }

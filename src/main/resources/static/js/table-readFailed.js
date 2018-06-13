@@ -78,6 +78,8 @@ let initSelects = function (e) {
         });
         selects.eq(index).empty();
         selects.eq(index).append(html);
+        //获取url参数，选择项目
+        selectProject();
         //更新表格
         columns.push({field:fileds[index],title:titles[index]});
         columns.push({field:'failed',title:'抄表失败个数'});
@@ -117,6 +119,29 @@ let showDevices = function(){
     },function () {
 
     })
+};
+
+//全局变量使用一次,同一界面，再次触发方法无效
+var url = location.search; //获取url中"?"符后的字串
+//获取url中的参数，赋值给select下拉框
+var selectProject = function () {
+    //获取url的参数，自动选择项目
+    if (url != null && url != '' && url.indexOf("?") != -1) {
+        //中文解码，得到项目名
+        var getProject = decodeURI(url.substr(1));
+        //销毁url
+        url=null;
+        //获取下拉框元素
+        var selectElement = document.getElementById("input_project");
+        //遍历下拉框options，将项目选中
+        for(i=0;i<selectElement.length;i++){//给select赋值
+            if(getProject==selectElement.options[i].text){
+                selectElement.options[i].selected=true;
+                //触发onchange事件
+                $('#input_project').trigger('change');
+            }
+        }
+    }
 };
 
 let TableInit = function(){

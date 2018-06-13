@@ -135,7 +135,12 @@ var getReadFailedByProject = function () {
         $('#tableReadFailed').bootstrapTable({
             //加载数据
             columns: columns,
-            data:obj
+            data:obj,
+            //双击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onDblClickRow:function f(row) {
+                var project = row.myProject;
+                window.open("http://47.93.21.73:18080/readfailed.html?"+project);
+            }
         });
     });
 };
