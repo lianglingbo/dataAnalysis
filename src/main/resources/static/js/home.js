@@ -29,6 +29,7 @@ $(function () {
     getOffGtwCountByProject();
     getNodeDataByProject();
     getReadFailedByProject();
+    getTotalCountByProject();
 });
 
 
@@ -110,8 +111,6 @@ var getReadFailedByProject = function () {
     var data;
     $.axspost("/visual/getReadFailedByProject",data,function (d) {
         var obj = eval(d);
-        //重写分页详情方法
-
         var columns = [];
         columns.push({
             field: 'myProject',
@@ -123,18 +122,44 @@ var getReadFailedByProject = function () {
             title: "个数",
             align: 'center'
         });
-
         $('#tableReadFailed').bootstrapTable({
             //加载数据
             columns: columns,
             data:obj
         });
     });
-}
+};
+//设备总数group by project
+var getTotalCountByProject = function () {
+    var data;
+    $.axspost("/visual/getTotalCountByProject",data,function (d) {
+        var obj = eval(d);
+        var columns = [];
+        columns.push({
+            field: 'myProject',
+            title: "各项目设备分布",
+            align: 'center'
+        });
+        columns.push({
+            field: 'myCount',
+            title: "个数",
+            align: 'center'
+        });
+        $('#tableTotalCount').bootstrapTable({
+            //加载数据
+            columns: columns,
+            data:obj
+        });
+    });
+};
 
 
-//查询设备总数饼图，实现跳转功能
-var getTotalNumPie = function () {
+/**
+ * ===============================
+ * 查询设备总数饼图，实现跳转功能
+
+ */
+ var getTotalNumPie = function () {
     var data;
     $.axspost("/visual/getTotalNum",data,function(d){
         var obj = eval(d);
