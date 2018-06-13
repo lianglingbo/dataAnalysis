@@ -1,6 +1,5 @@
 $(function () {
-    var oTable = new TableInit();
-    oTable.Init();
+
     /**
      * ajax封装
      * url 发送请求的地址
@@ -32,121 +31,7 @@ $(function () {
     getReadFailedByProject();
 });
 
-//boostrap table
-var TableInit = function() {
-    var oTableInit = {};
-    oTableInit.Init = function() {
-        $('#table').bootstrapTable({
-            search: false,
-            // 搜索框
-            singleSelect: false,
-            // 单选checkbox
-            pagination: false,
-            //是否显示分页（*）
-            queryParams: oTableInit.queryParams,
-            //传递参数（*）
-            sidePagination: "client",
-            //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,
-            //初始化加载第一页，默认第一页
-            pageSize: 10,
-            //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],
-            //可供选择的每页的行数（*）
-            clickToSelect: true,
-            showColumns: false,
-            //是否显示刷新按钮
-            showExport: false,
-            //是否显示导出
-            exportDataType: "selected",
-            //basic', 'all', 'selected'.
 
-            columns: [],
-        });
-        $('#table2').bootstrapTable({
-            search: false,
-            // 搜索框
-            singleSelect: false,
-            // 单选checkbox
-            pagination: false,
-            //是否显示分页（*）
-            queryParams: oTableInit.queryParams,
-            //传递参数（*）
-            sidePagination: "client",
-            //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,
-            //初始化加载第一页，默认第一页
-            pageSize: 10,
-            //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],
-            //可供选择的每页的行数（*）
-            clickToSelect: true,
-            showColumns: false,
-            //是否显示刷新按钮
-            showExport: false,
-            //是否显示导出
-            exportDataType: "selected",
-            //basic', 'all', 'selected'.
-
-            columns: [],
-        });
-        $('#table3').bootstrapTable({
-            search: false,
-            // 搜索框
-            singleSelect: false,
-            // 单选checkbox
-            pagination: false,
-            //是否显示分页（*）
-            queryParams: oTableInit.queryParams,
-            //传递参数（*）
-            sidePagination: "client",
-            //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,
-            //初始化加载第一页，默认第一页
-            pageSize: 10,
-            //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],
-            //可供选择的每页的行数（*）
-            clickToSelect: true,
-            showColumns: false,
-            //是否显示刷新按钮
-            showExport: false,
-            //是否显示导出
-            exportDataType: "selected",
-            //basic', 'all', 'selected'.
-
-            columns: [],
-        });
-        $('#table4').bootstrapTable({
-            search: false,
-            // 搜索框
-            singleSelect: false,
-            // 单选checkbox
-            pagination: false,
-            //是否显示分页（*）
-            queryParams: oTableInit.queryParams,
-            //传递参数（*）
-            sidePagination: "client",
-            //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,
-            //初始化加载第一页，默认第一页
-            pageSize: 10,
-            //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],
-            //可供选择的每页的行数（*）
-            clickToSelect: true,
-            showColumns: false,
-            //是否显示刷新按钮
-            showExport: false,
-            //是否显示导出
-            exportDataType: "selected",
-            //basic', 'all', 'selected'.
-
-            columns: [],
-        });
-    };
-    return oTableInit;
-};
 
 //getOffDevCountByProject获取离线设备个数order by project
 var getOffDevCountByProject = function () {
@@ -156,7 +41,7 @@ var getOffDevCountByProject = function () {
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "项目",
+            title: "离线设备",
             align: 'center'
         });
         columns.push({
@@ -164,9 +49,10 @@ var getOffDevCountByProject = function () {
             title: "个数",
             align: 'center'
         });
-        $('#table').bootstrapTable("refreshOptions", {
+        $('#tableOffDevCount').bootstrapTable({
+            //加载数据
             columns: columns,
-            data: obj
+            data:obj
         });
     });
 };
@@ -179,7 +65,7 @@ var getOffGtwCountByProject = function () {
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "项目",
+            title: "离线网关",
             align: 'center'
         });
         columns.push({
@@ -187,9 +73,10 @@ var getOffGtwCountByProject = function () {
             title: "个数",
             align: 'center'
         });
-        $('#table2').bootstrapTable("refreshOptions", {
+        $('#tableOffGtwCount').bootstrapTable({
+            //加载数据
             columns: columns,
-            data: obj
+            data:obj
         });
     });
 };
@@ -202,7 +89,7 @@ var getNodeDataByProject = function () {
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "项目",
+            title: "一天内无数据",
             align: 'center'
         });
         columns.push({
@@ -210,9 +97,10 @@ var getNodeDataByProject = function () {
             title: "个数",
             align: 'center'
         });
-        $('#table3').bootstrapTable("refreshOptions", {
+        $('#tableNodeData').bootstrapTable({
+            //加载数据
             columns: columns,
-            data: obj
+            data:obj
         });
     });
 };
@@ -222,10 +110,12 @@ var getReadFailedByProject = function () {
     var data;
     $.axspost("/visual/getReadFailedByProject",data,function (d) {
         var obj = eval(d);
+        //重写分页详情方法
+
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "项目",
+            title: "抄表失败",
             align: 'center'
         });
         columns.push({
@@ -233,9 +123,11 @@ var getReadFailedByProject = function () {
             title: "个数",
             align: 'center'
         });
-        $('#table4').bootstrapTable("refreshOptions", {
+
+        $('#tableReadFailed').bootstrapTable({
+            //加载数据
             columns: columns,
-            data: obj
+            data:obj
         });
     });
 }

@@ -28,11 +28,11 @@ public interface VisualInterfaceMapper {
      TotalNumBean getTotalNum();
 
      //获取离线设备个数group by project
-     @Select("SELECT a.* FROM (SELECT IFNULL(project,'离线总数') AS myProject,count(deviceId) AS myCount FROM device_info WHERE deviceState = 0 and deviceId != gatewayId GROUP BY  project WITH ROLLUP) AS a ORDER BY a.myCount DESC ")
+     @Select("SELECT a.* FROM (SELECT IFNULL(project,'离线设备总数') AS myProject,count(deviceId) AS myCount FROM device_info WHERE deviceState = 0 and deviceId != gatewayId GROUP BY  project WITH ROLLUP) AS a ORDER BY a.myCount DESC ")
      List<ProjectCountBean> getOffDevCountByProject();
 
      //获取离线网关个数group by project
-     @Select("SELECT a.* FROM (SELECT IFNULL(project,'离线总数') AS myProject,count(deviceId) AS myCount FROM device_info WHERE deviceState = 0 and deviceId = gatewayId GROUP BY  project WITH ROLLUP) AS a ORDER BY a.myCount DESC ")
+     @Select("SELECT a.* FROM (SELECT IFNULL(project,'离线网关总数') AS myProject,count(deviceId) AS myCount FROM device_info WHERE deviceState = 0 and deviceId = gatewayId GROUP BY  project WITH ROLLUP) AS a ORDER BY a.myCount DESC ")
      List<ProjectCountBean> getOffGtwCountByProject();
 
      //24小时无数据设备group by project
