@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -52,6 +53,6 @@ public interface VisualInterfaceMapper {
 
      //24小时无数据设备列表动态分组,动态聚合查询
      @SelectProvider(type = VisualInterfaceProvider.class,method="getNoneDataGroupList")
-     List<DeviceInfos> getNoneDataGroupList(DeviceInfos deviceInfos);
+     List<HashMap<String, Object>> getNoneDataGroupList(DeviceInfos deviceInfos);
 
 }

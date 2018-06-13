@@ -138,8 +138,7 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
         try {
             DeviceInfos deviceInfos = JSONObject.parseObject(data,DeviceInfos.class);
 
-            visualInterfaceMapper.getNoneDataGroupList(deviceInfos);
-            return null;
+           return  visualInterfaceMapper.getNoneDataGroupList(deviceInfos);
         } catch (Exception e) {
             //日志
         }

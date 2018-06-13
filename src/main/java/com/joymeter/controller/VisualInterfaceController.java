@@ -5,7 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @ClassName VisualInterfaceController
@@ -64,7 +68,13 @@ public class VisualInterfaceController {
         return visualInterfaceService.getTotalCountByProject();
     }
 
-    //24小时无数据设备列表详情
+    //24小时无数据设备列表分组详情
+    @RequestMapping("/getNoneDataGroupList")
+    @ResponseBody
+    public List<HashMap<String, Object>> getNoneDataGroupList(@RequestParam("data")String data){
+        System.out.println(data.toString());
+        return visualInterfaceService.getNoneDataGroupList(data);
+    }
 
 
 }

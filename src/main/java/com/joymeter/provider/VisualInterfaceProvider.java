@@ -36,7 +36,9 @@ public class VisualInterfaceProvider {
 		} else {
 			column = "project";
 		}
-		return sql.append(column).append(sqlb.append(" Group By " + column + " order by noneDataCount desc ")).toString();
+		String sqltemp = sql.append(column).append(sqlb.append(" Group By " + column + " order by noneDataCount desc ")).toString();
+		System.out.println(sqltemp);
+		return sqltemp;
 	}
 
 
