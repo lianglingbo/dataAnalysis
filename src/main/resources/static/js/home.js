@@ -1,7 +1,7 @@
 
 //全局变量地址
-//var url = "http://47.93.21.73:18080";
-var url = "http://127.0.0.1:18080";
+var url = "http://47.93.21.73:18080";
+//var url = "http://127.0.0.1:18080";
 
 $(function () {
 
@@ -44,26 +44,43 @@ var getOffDevCountByProject = function () {
     var data;
     $.axspost("/visual/getOffDevCountByProject",data,function (d) {
         var obj = eval(d);
+        //解析设备总数和各项目设备数
+        var totalCount = obj[0].myCount;
+        //截取剩下的数据
+        obj = obj.slice(1);
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "离线设备",
-            align: 'center'
+            title: "离线设备总数",
+            align: 'center',
+           // cellStyle:{css:{"color":"blue",'text-decoration': 'underline'}}
         });
         columns.push({
             field: 'myCount',
-            title: "个数",
+            title: totalCount,
             align: 'center'
         });
         $('#tableOffDevCount').bootstrapTable({
             //加载数据
             columns: columns,
             data:obj,
-            //双击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
-            onDblClickRow:function f(row) {
+            //单击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onClickRow:function f(row) {
                 var project = row.myProject;
                 window.open(url+"/offlinetable.html?"+project);
+            },
+            //自定义字体颜色，或者背景颜色
+            rowStyle: function (row, index) {
+                var style = {};
+                style={
+                    css:{
+                        'color':'blue',
+                        //'text-decoration': 'underline'
+                    }
+                };
+                return style;
             }
+
         });
     });
 };
@@ -73,25 +90,41 @@ var getOffGtwCountByProject = function () {
     var data;
     $.axspost("/visual/getOffGtwCountByProject",data,function (d) {
         var obj = eval(d);
+        //解析设备总数和各项目设备数
+        var totalCount = obj[0].myCount;
+        //截取剩下的数据
+        obj = obj.slice(1);
+
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "离线网关",
+            title: "离线网关总数",
             align: 'center'
         });
         columns.push({
             field: 'myCount',
-            title: "个数",
+            title: totalCount,
             align: 'center'
         });
         $('#tableOffGtwCount').bootstrapTable({
             //加载数据
             columns: columns,
             data:obj,
-            //双击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
-            onDblClickRow:function f(row) {
+            //单击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onClickRow:function f(row) {
                 var project = row.myProject;
                 window.open(url+"/offlinetable.html?"+project);
+            },
+            //自定义字体颜色，或者背景颜色
+            rowStyle: function (row, index) {
+                var style = {};
+                style={
+                    css:{
+                        'color':'blue',
+                        //'text-decoration': 'underline'
+                    }
+                };
+                return style;
             }
         });
     });
@@ -102,26 +135,41 @@ var getNodeDataByProject = function () {
     var data;
     $.axspost("/visual/getNodeDataByProject",data,function (d) {
         var obj = eval(d);
+        //解析设备总数和各项目设备数
+        var totalCount = obj[0].myCount;
+        //截取剩下的数据
+        obj = obj.slice(1);
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "一天内无数据",
+            title: "一天内无数据总数",
             align: 'center'
         });
         columns.push({
             field: 'myCount',
-            title: "个数",
+            title: totalCount,
             align: 'center'
         });
         $('#tableNodeData').bootstrapTable({
             //加载数据
             columns: columns,
             data:obj,
-            //双击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
-            onDblClickRow:function f(row) {
+            //单击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onClickRow:function f(row) {
                 var project = row.myProject;
                 window.open(url+"/nonedata.html?"+project);
 
+            },
+            //自定义字体颜色，或者背景颜色
+            rowStyle: function (row, index) {
+                var style = {};
+                style={
+                    css:{
+                        'color':'blue',
+                        //'text-decoration': 'underline'
+                    }
+                };
+                return style;
             }
         });
     });
@@ -132,25 +180,40 @@ var getReadFailedByProject = function () {
     var data;
     $.axspost("/visual/getReadFailedByProject",data,function (d) {
         var obj = eval(d);
+        //解析设备总数和各项目设备数
+        var totalCount = obj[0].myCount;
+        //截取剩下的数据
+        obj = obj.slice(1);
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "抄表失败",
+            title: "抄表失败总数",
             align: 'center'
         });
         columns.push({
             field: 'myCount',
-            title: "个数",
+            title: totalCount,
             align: 'center'
         });
         $('#tableReadFailed').bootstrapTable({
             //加载数据
             columns: columns,
             data:obj,
-            //双击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
-            onDblClickRow:function f(row) {
+            //单击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onClickRow:function f(row) {
                 var project = row.myProject;
                 window.open(url+"/readfailed.html?"+project);
+            },
+            //自定义字体颜色，或者背景颜色
+            rowStyle: function (row, index) {
+                var style = {};
+                style={
+                    css:{
+                        'color':'blue',
+                        //'text-decoration': 'underline'
+                    }
+                };
+                return style;
             }
         });
     });
@@ -160,21 +223,36 @@ var getTotalCountByProject = function () {
     var data;
     $.axspost("/visual/getTotalCountByProject",data,function (d) {
         var obj = eval(d);
+        //解析设备总数和各项目设备数
+        var totalCount = obj[0].myCount;
+        //截取剩下的数据
+        obj = obj.slice(1);
         var columns = [];
         columns.push({
             field: 'myProject',
-            title: "各项目设备分布",
+            title: "设备总数",
             align: 'center'
         });
         columns.push({
             field: 'myCount',
-            title: "个数",
+            title: totalCount,
             align: 'center'
         });
         $('#tableTotalCount').bootstrapTable({
             //加载数据
             columns: columns,
-            data:obj
+            data:obj,
+            //自定义字体颜色，或者背景颜色
+            rowStyle: function (row, index) {
+                var style = {};
+                style={
+                    css:{
+                        'color':'blue',
+                       // 'text-decoration': 'underline'
+                    }
+                };
+                return style;
+            }
         });
     });
 };
@@ -224,7 +302,7 @@ var getTotalCountByProject = function () {
                     type:'pie',
                     // 禁用饼状图悬浮动画效果
                     animation: false,
-                    radius: ['35%', '82%'],
+                    radius: ['35%', '75%'],
                     //设置背景颜色
                     color: ['#CAFF70','#9ACD32'],
                     label : {
@@ -248,12 +326,12 @@ var getTotalCountByProject = function () {
                 {
                     type:'pie',
                     // 第一个参数是内圆半径，第二个参数是外圆半径，相对饼图的宿主div大小
-                    radius: ['83%', '86%'],
+                    radius: ['75%', '77%'],
                     avoidLabelOverlap: false,
                     // 禁用饼状图悬浮动画效果
                     animation: false,
                     //设置背景颜色
-                    color: ['#BDBDBD','#D9D9D9'],
+                    color: ['#BDBDBD','#EEEE00'],
                     label : {
                         //字体调整，b项目名，c值，换行
                         normal : {
@@ -267,7 +345,7 @@ var getTotalCountByProject = function () {
                     },
                     data:[
                          {value:obj.readFaileCount, name:'抄表失败'},
-                        {value:obj.noneDataCount, name:'24小时无数据'}
+                        {value:obj.noneDataCount, name:'无新数据'}
                     ]
                 }
             ]
