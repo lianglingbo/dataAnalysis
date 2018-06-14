@@ -20,6 +20,8 @@ public interface VisualInterfaceService {
     String getTotalCountByProject();
     //24小时无数据设备列表动态分组,动态聚合查询
     List<HashMap<String, Object>> getNoneDataGroupList(String data);
+    //24小时无数据查询设备列表详情，按地区信息查询
+    List<HashMap<String, Object>> getNoneDataByParams(String data);
 
 
 

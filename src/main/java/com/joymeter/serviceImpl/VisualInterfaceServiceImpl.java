@@ -2,7 +2,6 @@ package com.joymeter.serviceImpl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.joymeter.entity.DeviceInfos;
-import com.joymeter.entity.DeviceInfos;
 import com.joymeter.entity.ProjectCountBean;
 import com.joymeter.entity.TotalNumBean;
 import com.joymeter.mapper.VisualInterfaceMapper;
@@ -10,8 +9,6 @@ import com.joymeter.service.VisualInterfaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -142,6 +139,26 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
         } catch (Exception e) {
             //日志
         }
+        return null;
+    }
+
+    /**
+     * 24小时无数据查询设备列表详情，按地区信息查询
+     * @param data
+     * @return
+     */
+    @Override
+    public List<HashMap<String, Object>> getNoneDataByParams(String data) {
+        if (StringUtils.isEmpty(data))return null;
+        //打印日志
+        try {
+            DeviceInfos deviceInfos = JSONObject.parseObject(data,DeviceInfos.class);
+            System.out.println(deviceInfos.toString());
+            return  visualInterfaceMapper.getNoneDataByParams(deviceInfos);
+        } catch (Exception e) {
+            //日志
+        }
+
         return null;
     }
 }

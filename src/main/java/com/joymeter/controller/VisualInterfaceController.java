@@ -72,8 +72,14 @@ public class VisualInterfaceController {
     @RequestMapping("/getNoneDataGroupList")
     @ResponseBody
     public List<HashMap<String, Object>> getNoneDataGroupList(@RequestParam("data")String data){
-        System.out.println(data.toString());
         return visualInterfaceService.getNoneDataGroupList(data);
+    }
+
+    //24小时无数据查询设备列表详情，按地区信息查询
+    @RequestMapping("/getNoneDataByParams")
+    @ResponseBody
+    public List<HashMap<String, Object>> getNoneDataByParams(@RequestParam("data")String data){
+        return visualInterfaceService.getNoneDataByParams(data);
     }
 
 

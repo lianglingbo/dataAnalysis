@@ -55,4 +55,8 @@ public interface VisualInterfaceMapper {
      @SelectProvider(type = VisualInterfaceProvider.class,method="getNoneDataGroupList")
      List<HashMap<String, Object>> getNoneDataGroupList(DeviceInfos deviceInfos);
 
+     //24小时无数据查询设备列表详情，按地区信息查询
+     @SelectProvider(type = VisualInterfaceProvider.class,method="getNoneDataByParams")
+     List<HashMap<String, Object>> getNoneDataByParams(DeviceInfos deviceInfos);
+
 }
