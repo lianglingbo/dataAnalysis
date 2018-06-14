@@ -161,4 +161,21 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
 
         return null;
     }
+
+    /**
+     * 设备列表详情页面，传入不同参数，展示不同列表（离线，抄表失败，一天无数据）
+     * @param data
+     * @return
+     */
+    @Override
+    public List<HashMap<String, Object>> getDeviceInfosByArgs(String data) {
+        if (StringUtils.isEmpty(data))return null;
+        //打印日志
+        try {
+            return  visualInterfaceMapper.getDeviceInfosByArgs(data);
+        } catch (Exception e) {
+            //日志
+        }
+        return null;
+    }
 }

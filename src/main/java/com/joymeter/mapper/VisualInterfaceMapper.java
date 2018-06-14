@@ -59,4 +59,8 @@ public interface VisualInterfaceMapper {
      @SelectProvider(type = VisualInterfaceProvider.class,method="getNoneDataByParams")
      List<HashMap<String, Object>> getNoneDataByParams(DeviceInfos deviceInfos);
 
+     //设备列表详情页面，传入不同参数，展示不同列表（离线，抄表失败，一天无数据）
+     @SelectProvider(type = VisualInterfaceProvider.class,method="getDeviceInfosByArgs")
+     List<HashMap<String, Object>> getDeviceInfosByArgs(String  args);
+
 }

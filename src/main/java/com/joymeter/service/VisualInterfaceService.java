@@ -22,7 +22,8 @@ public interface VisualInterfaceService {
     List<HashMap<String, Object>> getNoneDataGroupList(String data);
     //24小时无数据查询设备列表详情，按地区信息查询
     List<HashMap<String, Object>> getNoneDataByParams(String data);
-
+    //设备列表详情页面，传入不同参数，展示不同列表（离线，抄表失败，一天无数据）
+    List<HashMap<String, Object>> getDeviceInfosByArgs(String  args);
 
 
 }

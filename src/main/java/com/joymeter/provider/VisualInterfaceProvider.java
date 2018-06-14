@@ -76,4 +76,28 @@ public class VisualInterfaceProvider {
 		System.out.println(sqltemp);
 		return sqltemp;
 	}
+
+	/**
+	 * 设备列表详情页面，传入不同参数，展示不同列表（离线，抄表失败，一天无数据）
+	 * @param args
+	 * @return
+	 */
+	public String getDeviceInfosByArgs(String args){
+		StringBuffer sql = new StringBuffer();
+		StringBuffer sqlArgs = new StringBuffer();
+		sql.append("SELECT project, province, city, district, community,address,DATE_FORMAT(updateTime,'%Y-%m-%d %T')  AS lastUpdate,TIMESTAMPDIFF(HOUR,updateTime,now()) AS diffTime,deviceId,gatewayId,deviceState,readState, readFaile FROM device_info  where  1=1 ");
+		if("offlineDevice".equals(args)){
+			//查询离线设备列表
+			sqlArgs.append("and deviceState = 0 ");
+		}else if("readFailedDevice".equals(args)){
+			//查询抄表失败列表
+			sqlArgs.append("and readState = 1 ");
+		}else if("noneDataDevice".equals(args)){
+			//查询一天无数据列表
+			sqlArgs.append(" and TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' ");
+		}
+		sqlArgs.append("order by project ");
+		String sqltemp = sql.append(sqlArgs).toString();
+		return sqltemp;
+	}
 }

@@ -298,7 +298,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public List<HashMap<String, Object>> getOffline(String data) {
 		if (StringUtils.isEmpty(data))return null;
-		logger.log(Level.INFO,data);
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
@@ -391,7 +390,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}
 		}
 		String QUERY_HIST_DATA = "{\"query\":\"select deviceId ,serverId ,event ,eventinfo ,data,( __time + INTERVAL '8' HOUR) as utf8time   from dataInfo   "+sql.toString()+"  order by __time desc limit 500 \"}";
-		System.out.println(QUERY_HIST_DATA);
 
 		try {
 			String result = HttpClient.sendPost(queryUrl, QUERY_HIST_DATA);
@@ -420,7 +418,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 		String endTime =time+"T16";
 
         String QUERY_WATER_DATA ="{\"query\":\"select deviceId ,max(currentdata) as maxUse   from  watermeter where  __time >='"+startTime+"' and __time <='"+ endTime +"' and  currentdata > 0  group by deviceId order by max(currentdata) desc limit 500 \"}";
-		System.out.println(QUERY_WATER_DATA);
         try {
             String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
             //将json转为对象，遍历每个对象，再增加设备得项目信息
@@ -492,7 +489,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 			String result = HttpClient.sendPost(queryUrl, QUERY_WATER_DATA);
 			return  result;
 		} catch (Exception e) {
-			System.out.println(QUERY_WATER_DATA+e);
 			logger.log(Level.SEVERE, QUERY_WATER_DATA, e);
 			return null;
 		}
@@ -507,8 +503,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public List<HashMap<String, Object>> getDeviceByParams(String data) {
 		if (StringUtils.isEmpty(data))return null;
-
-		logger.log(Level.INFO,data);
 		try {
 			JSONObject jsonObject = JSONObject.parseObject(data);
 			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);

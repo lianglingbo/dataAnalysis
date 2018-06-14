@@ -28,6 +28,7 @@ $(function () {
         });
     };
     initSelects();
+    showDevicesList();
 });
 
 let initSelects = function (e) {
@@ -70,7 +71,7 @@ let initSelects = function (e) {
     $.axspost("/monitor/getOffline",data,function (d) {
         let jsonData = eval(d);
         let sort = [];
-        let columns = [{checkbox:true}];
+        let columns = [];
         for (let x in jsonData){
             sort.push(jsonData[x].project||jsonData[x].province||jsonData[x].city||jsonData[x].district||jsonData[x].community);
         }
@@ -103,7 +104,7 @@ let showDevices = function(){
     data.data = JSON.stringify(params);
     $.axspost("/monitor/getDeviceByParams",data,function (d) {
         let jsonData = eval(d);
-        let columns = [{checkbox:true}];
+        let columns = [];
 
         columns.push({field:'deviceId',title:"设备编号",align: 'center'});
         columns.push({field:'gatewayId',title:'网关编号',align: 'center'});
@@ -143,6 +144,45 @@ var selectProject = function () {
         }
     }
 };
+//展示列表详情
+let showDevicesList = function(){
+    var data = {};
+    var args = 'offlineDevice';
+    data.data=args;
+    $.axspost("/visual/getDeviceInfosByArgs",data,function (d) {
+        let obj = eval(d);
+        let columns = [];
+        columns.push({field:'project',title:"项目",align: 'center'});
+        columns.push({field:'province',title:"省",align: 'center'});
+        columns.push({field:'city',title:"市",align: 'center'});
+        columns.push({field:'district',title:"区",align: 'center'});
+        columns.push({field:'community',title:"小区",align: 'center'});
+        columns.push({field:'address',title:"地址",align: 'center'});
+        columns.push({field:'lastUpdate',title:'最后更新时间',align: 'center'});
+        columns.push({field:'diffTime',title:'时差(h)',align: 'center'});
+        columns.push({field:'deviceId',title:"设备编号",align: 'center'});
+        columns.push({field:'gatewayId',title:'网关编号',align: 'center'});
+        columns.push({field:'address',title:"地址",align: 'center'});
+        columns.push({field:'deviceState',title:'设备状态',align: 'center',formatter: 'deviceStatusFormatter'});
+        columns.push({field:'readState',title:'抄表状态',align: 'center',formatter: 'readStatusFormatter'});
+        columns.push({field:'readFaile',title:'抄表失败次数',align: 'center'});
+        $('#table_list').bootstrapTable({
+            search:true,                        //搜索框
+            pagination: true,                   //是否显示分页（*）
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            clickToSelect:true,
+            exportDataType: "selected",              //basic', 'all', 'selected'.
+            data:obj,
+            columns:columns
+        });
+
+    },function () {
+    })
+};
+
 let TableInit = function(){
     let oTableInit = {};
     oTableInit.Init = function(){
@@ -154,8 +194,6 @@ let TableInit = function(){
             pageSize: 10,                       //每页的记录行数（*）
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             clickToSelect:true,
-            showColumns: true,                  //是否显示刷新按钮
-            showExport: true,                     //是否显示导出
             exportDataType: "selected",              //basic', 'all', 'selected'.
             rowStyle: function (row, index) {
                 //这里有5个取值代表5中颜色['active', 'success', 'info', 'warning', 'danger'];

@@ -82,5 +82,11 @@ public class VisualInterfaceController {
         return visualInterfaceService.getNoneDataByParams(data);
     }
 
+    //设备列表详情页面，传入不同参数，展示不同列表（离线，抄表失败，一天无数据）
+    @RequestMapping("/getDeviceInfosByArgs")
+    @ResponseBody
+    public List<HashMap<String, Object>> getDeviceInfosByArgs(@RequestParam("data")String data){
+        return visualInterfaceService.getDeviceInfosByArgs(data);
+    }
 
 }
