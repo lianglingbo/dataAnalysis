@@ -83,6 +83,8 @@ let initSelects = function (e) {
         selects.eq(index).append(html);
         //获取url参数，选择项目
         selectProject();
+        //展示设备详情，并将下拉框所选的项目传给后台做筛选条件
+        showDevicesList($("#input_project option:selected").text());//拿到选中项的文本
         //更新表格
         columns.push({field:fileds[index],title:titles[index]});
         columns.push({field:'noneDataCount',title:'设备数量'});
@@ -144,9 +146,12 @@ var selectProject = function () {
 };
 
 //展示列表详情
-let showDevicesList = function(){
+let showDevicesList = function(projectTemp){
     var data = {};
     var args = 'noneDataDevice';
+    if(projectTemp!=null && projectTemp.length!=0 && projectTemp!=''){
+        args = args + ','+ projectTemp;
+    }
     data.data=args;
     $.axspost("/visual/getDeviceInfosByArgs",data,function (d) {
         let obj = eval(d);
@@ -165,17 +170,7 @@ let showDevicesList = function(){
         columns.push({field:'deviceState',title:'设备状态',align: 'center',formatter: 'deviceStatusFormatter'});
         columns.push({field:'readState',title:'抄表状态',align: 'center',formatter: 'readStatusFormatter'});
         columns.push({field:'readFaile',title:'抄表失败次数',align: 'center'});
-        $('#table_list').bootstrapTable({
-            search:true,                        //搜索框
-            pagination: true,                   //是否显示分页（*）
-            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
-            pageNumber: 1,                       //初始化加载第一页，默认第一页
-            pageSize: 10,                       //每页的记录行数（*）
-            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
-            clickToSelect:true,
-            data:obj,
-            columns:columns
-        });
+        $('#table_list').bootstrapTable("refreshOptions",{columns:columns,data:obj});
 
     },function () {
     })
@@ -207,6 +202,17 @@ let TableInit = function(){
                 return { classes: strclass }
             },
             columns:[],
+        });
+        $('#table_list').bootstrapTable({
+            search:true,                        //搜索框
+            pagination: true,                   //是否显示分页（*）
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            clickToSelect:true,
+            exportDataType: "selected",              //basic', 'all', 'selected'.
+            columns:[]
         });
     };
     return oTableInit;

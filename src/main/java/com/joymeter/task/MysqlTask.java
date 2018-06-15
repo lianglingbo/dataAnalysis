@@ -82,9 +82,8 @@ public class MysqlTask {
                 //转json
                 String postData = JSON.toJSONString(usage);
                 //遍历，发送给druid
-               // String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
-                System.out.println(postData.toString());
-                //logger.log(Level.SEVERE,"夜间同步数据："+postData+"返回结果"+s);
+                String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
+                logger.log(Level.SEVERE,"夜间同步数据："+postData+"返回结果"+s);
             }
         }catch (Exception e){
             logger.log(Level.SEVERE, "夜间同步数据异常", e);

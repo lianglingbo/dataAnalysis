@@ -22,6 +22,7 @@ public class SynchStateController {
     @RequestMapping("/queryDruidFromMysql")
     @ResponseBody
     public String  queryDruidFromMysql( ) {
+
         return synchStateService.queryDruidFromMysql();
     }
 

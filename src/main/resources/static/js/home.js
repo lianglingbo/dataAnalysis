@@ -53,7 +53,7 @@ var getOffDevCountByProject = function () {
             field: 'myProject',
             title: "离线设备总数",
             align: 'center',
-           // cellStyle:{css:{"color":"blue",'text-decoration': 'underline'}}
+            //cellStyle:{css:{ 'cursor':'pointer '}}
         });
         columns.push({
             field: 'myCount',
@@ -76,6 +76,7 @@ var getOffDevCountByProject = function () {
                     css:{
                         'color':'blue',
                         //'text-decoration': 'underline'
+                        'cursor':'pointer'
                     }
                 };
                 return style;
@@ -122,6 +123,7 @@ var getOffGtwCountByProject = function () {
                     css:{
                         'color':'blue',
                         //'text-decoration': 'underline'
+                        'cursor':'pointer'
                     }
                 };
                 return style;
@@ -167,6 +169,7 @@ var getNodeDataByProject = function () {
                     css:{
                         'color':'blue',
                         //'text-decoration': 'underline'
+                        'cursor':'pointer'
                     }
                 };
                 return style;
@@ -211,6 +214,7 @@ var getReadFailedByProject = function () {
                     css:{
                         'color':'blue',
                         //'text-decoration': 'underline'
+                        'cursor':'pointer'
                     }
                 };
                 return style;
@@ -249,6 +253,7 @@ var getTotalCountByProject = function () {
                     css:{
                         'color':'blue',
                        // 'text-decoration': 'underline'
+                        'cursor':'pointer'
                     }
                 };
                 return style;

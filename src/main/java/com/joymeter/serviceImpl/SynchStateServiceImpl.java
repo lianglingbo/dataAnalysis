@@ -63,7 +63,7 @@ public class SynchStateServiceImpl implements SynchStateService {
      * @return
      */
     @Override
-    public String queryDruidFromMysql( ) {
+        public String queryDruidFromMysql( ) {
         StringBuffer resultBuffer = new StringBuffer("");
         //每次查询只更新50条记录
         int count = 0;

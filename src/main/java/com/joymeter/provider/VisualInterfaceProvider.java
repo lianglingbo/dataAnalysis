@@ -95,8 +95,12 @@ public class VisualInterfaceProvider {
 		}else if("noneDataDevice".equals(args)){
 			//查询一天无数据列表
 			sqlArgs.append(" and TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' ");
+		}else if(args.indexOf(",") > 0){
+			//解析带project参数
+			String projectTemp = args.substring(args.indexOf(",") + 1);
+			sqlArgs.append("and project = "+ "'"+projectTemp+"'");
 		}
-		sqlArgs.append("order by project ");
+		sqlArgs.append("   order by project ");
 		String sqltemp = sql.append(sqlArgs).toString();
 		return sqltemp;
 	}
