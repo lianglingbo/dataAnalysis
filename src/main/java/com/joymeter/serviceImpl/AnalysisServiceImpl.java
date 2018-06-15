@@ -36,6 +36,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static final Logger registerLogger = Logger.getLogger("register");
 	private static final Logger updateDeviceLogger = Logger.getLogger("updateDevice");
 	private static final Logger addDataLogger = Logger.getLogger("addData");
+	private static final Logger usageHourLog = Logger.getLogger("usageHourLog");
+
 	private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
 
 
@@ -265,6 +267,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 								}
 								//插入mysql
 								deviceInfoMapper.insertIntoUsageHour(usageHour);
+								usageHourLog.log(Level.INFO,usageHour.toString());
 							}
 						}
 					}catch (Exception e){
