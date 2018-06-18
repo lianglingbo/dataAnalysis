@@ -38,6 +38,7 @@ public class VisualInterfaceProvider {
 			column = "project";
 		}
 		String sqltemp = sql.append(column).append(sqlb.append(" Group By " + column + " order by noneDataCount desc ")).toString();
+		System.out.println("下拉框查询"+sqltemp);
 		return sqltemp;
 	}
 
@@ -73,7 +74,7 @@ public class VisualInterfaceProvider {
 			column = "project";
 		}
 		String sqltemp = sql.append(column).append(sqlb.append( " order by project desc ")).toString();
-		System.out.println(sqltemp);
+		System.out.println("下拉框设备列表"+sqltemp);
 		return sqltemp;
 	}
 
@@ -85,6 +86,12 @@ public class VisualInterfaceProvider {
 	public String getDeviceInfosByArgs(String args){
 		StringBuffer sql = new StringBuffer();
 		StringBuffer sqlArgs = new StringBuffer();
+		//解析参数，是否带项目信息查询格式：条件+项目； noneDataDevice,钱江
+		String projectTemp = null;
+		if(args.indexOf(",") > 0){
+			projectTemp = args.substring(args.indexOf(",") + 1);
+			args = args.substring(0,args.indexOf(","));
+		}
 		sql.append("SELECT project, province, city, district, community,address,DATE_FORMAT(updateTime,'%Y-%m-%d %T')  AS lastUpdate,TIMESTAMPDIFF(HOUR,updateTime,now()) AS diffTime,deviceId,gatewayId,deviceState,readState, readFaile FROM device_info  where  1=1 ");
 		if("offlineDevice".equals(args)){
 			//查询离线设备列表
@@ -94,14 +101,15 @@ public class VisualInterfaceProvider {
 			sqlArgs.append("and readState = 1 ");
 		}else if("noneDataDevice".equals(args)){
 			//查询一天无数据列表
-			sqlArgs.append(" and TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' ");
-		}else if(args.indexOf(",") > 0){
+			sqlArgs.append(" and deviceId != gatewayId and TIMESTAMPDIFF(HOUR,updateTime,now()) > '24' ");
+		}
+		if(projectTemp!=null){
 			//解析带project参数
-			String projectTemp = args.substring(args.indexOf(",") + 1);
 			sqlArgs.append("and project = "+ "'"+projectTemp+"'");
 		}
 		sqlArgs.append("   order by project ");
 		String sqltemp = sql.append(sqlArgs).toString();
+		System.out.println("详情页面："+sqltemp);
 		return sqltemp;
 	}
 }

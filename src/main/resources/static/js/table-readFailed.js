@@ -27,7 +27,7 @@ $(function () {
     };
 
     initSelects();
-    showDevicesList();
+    //showDevicesList();
 });
 
 let initSelects = function (e) {
