@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import com.alibaba.fastjson.JSONArray;
 import com.joymeter.entity.UsageHour;
 import com.joymeter.entity.WaterMeterUse;
+import com.joymeter.service.RedisService;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
 import com.joymeter.util.TimeTools;
@@ -29,6 +30,8 @@ import com.joymeter.service.AnalysisService;
 public class AnalysisServiceImpl implements AnalysisService {
 	@Autowired
 	private DeviceInfoMapper deviceInfoMapper;
+	@Autowired
+	private RedisService redisService;
 
 	private static String queryUrl = PropertiesUtils.getProperty("queryUrl", "");
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
@@ -72,6 +75,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 					|| StringUtils.isEmpty(event) || datetime <= 0)
 				return;
 			addDataLogger.log(Level.INFO,dataStr);
+			//发送至缓存
+			redisService.sendToCJoy(deviceId,dataStr);
 			//如果event 不为 data ，则将其data值存入eventinfo中
 			if(!"data".equals(event)){
 				jsonData.put("eventinfo",totaldata);

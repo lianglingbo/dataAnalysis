@@ -1,5 +1,6 @@
 package com.joymeter.controller;
 
+import com.joymeter.util.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +17,9 @@ import com.joymeter.service.AnalysisService;
 public class RedisController {
 	@Autowired
 	private AnalysisService analysisService;
-	
+	@Autowired
+	private RedisUtils redisUtils;
+
 	@RequestMapping("/addData")
     public void addData(@RequestParam("data") String data) {
 		analysisService.addData(data);
@@ -36,4 +39,6 @@ public class RedisController {
 	public void updateSIM(@RequestBody DeviceInfo deviceInfo) {
 		analysisService.updateSim(deviceInfo);
 	}
+
+
 }
