@@ -44,8 +44,7 @@ spring:
   #redis配置，往cjoy系统发送实时数据
   redis:
     database: 0
-    #host: 47.93.21.73
-    host: 127.0.0.1
+    host: 47.93.21.73
     password: 123456
     port: 6379
     pool:
