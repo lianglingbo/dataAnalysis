@@ -585,6 +585,20 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 	}
 
+	//更新设备信息
+	@Override
+	public void updateDeviceInfo(DeviceInfo deviceInfo) {
+		if("".equals(deviceInfo) || StringUtils.isEmpty(deviceInfo)){
+			return;
+		}
+		try {
+			logger.log(Level.SEVERE, "更新设备："+ deviceInfo);
+			deviceInfoMapper.updateDeviceInfo(deviceInfo);
+		} catch (Exception e) {
+
+		}
+	}
+
 
 	/**
 	 * 更新SIM卡的流量

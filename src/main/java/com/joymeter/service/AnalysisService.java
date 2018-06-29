@@ -12,6 +12,8 @@ public interface AnalysisService {
 	void register(DeviceInfo deviceInfo);
 	//删除
 	void deleteDeviceInfoById(String deviceId);
+	//更新设备信息接口
+	void updateDeviceInfo(DeviceInfo deviceInfo);
 
 	void updateSim(DeviceInfo deviceInfo);
 	
