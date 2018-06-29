@@ -368,7 +368,7 @@ var getTotalCountByProject = function () {
                 window.open(url+"/offlinetable.html");
             }else if(name=="抄表失败"){
                 window.open(url+"/readfailed.html");
-            }else if(name=="24小时无数据"){
+            }else if(name=="无新数据"){
                 window.open(url+"/readfailed.html");
             }
         });
