@@ -12,9 +12,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeviceInfoMapper {
+	//查询全部设备
 	@Select("SELECT * FROM device_info")
     List<DeviceInfo> getAll();
 	
+	//查询特定设备SQL
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
     List<HashMap<String, Object>> getByParams(DeviceInfo deviceInfo);
 
@@ -22,11 +24,11 @@ public interface DeviceInfoMapper {
     @SelectProvider(type = DeviceInfoProvider.class,method="selectUsageWithProjectByParams")
     List<HashMap<String, Object>> getUsageWithProjectByParams(DeviceInfo deviceInfo);
 
-
-
+    //统计数量SQL
     @SelectProvider(type = DeviceInfoProvider.class,method="selectcount")
 	int getCount(DeviceInfo deviceInfo);
 	
+    //查询离线设备聚合SQL
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectoffline")
     List<HashMap<String, Object>> getofflineGroup(DeviceInfo deviceInfo);
 
@@ -38,12 +40,15 @@ public interface DeviceInfoMapper {
     @SelectProvider(type = DeviceInfoProvider.class,method="selectUsageStatusFailed")
     List<HashMap<String, Object>> selectUsageStatusFailed(DeviceInfo deviceInfo);
 
+    //根据Id查询设备
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(String deviceId);
     
+    //插入新的设备数据
     @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address})")
     void insert(DeviceInfo deviceInfo);
     
+    //更新设备信息SQL
     @UpdateProvider(type = DeviceInfoProvider.class,method="updateDeviceInfo")
     void updateDeviceInfo(DeviceInfo deviceInfo);
 

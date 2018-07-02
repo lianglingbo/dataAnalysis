@@ -1,7 +1,5 @@
 package com.joymeter.service;
 
-import com.joymeter.entity.DeviceInfo;
-
 public interface SynchStateService {
 
     //遍历方法mysql，查询druid

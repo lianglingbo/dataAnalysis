@@ -14,11 +14,11 @@ public interface AnalysisService {
 	void deleteDeviceInfoById(String deviceId);
 	//更新设备信息接口
 	void updateDeviceInfo(DeviceInfo deviceInfo);
-
+	//更新Sim信息接口
 	void updateSim(DeviceInfo deviceInfo);
-	
+	//获取离线设备接口
 	List<HashMap<String, Object>> getOffline(String data);
-	
+	//根据条件获取特定设备接口
 	List<HashMap<String, Object>> getDeviceByParams(String data);
 
 	//获取可疑用水的用水和项目信息

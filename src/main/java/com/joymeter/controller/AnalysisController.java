@@ -25,43 +25,48 @@ public class AnalysisController {
 		return "offlinetable";
 	}
 
+	//接收设备事件数据
 	@RequestMapping("/event")
 	@ResponseBody
     public void event(@RequestBody String data) {
 		analysisService.addData(data);
     }
 	
+	//注册设备信息
 	@RequestMapping("/register")
 	@ResponseBody
     public void register(@RequestBody DeviceInfo deviceInfo) {
 		analysisService.register(deviceInfo);
     }
 
-
+	//根据Id删除设备信息
 	@RequestMapping("/deleteDeviceInfoById")
 	@ResponseBody
 	public void deleteDeviceInfoById(@RequestBody DeviceInfo deviceInfo) {
 		analysisService.deleteDeviceInfoById(deviceInfo.getDeviceId());
 	}
 
+	//更新设备信息
 	@RequestMapping("/updateDeviceInfo")
 	@ResponseBody
 	public void updateDeviceInfo(@RequestBody DeviceInfo deviceInfo) {
 		analysisService.updateDeviceInfo(deviceInfo);
 	}
 
-
+	//更新Sim卡信息
 	@RequestMapping("/updateSim")
 	@ResponseBody
 	public void updateSIM(@RequestBody DeviceInfo deviceInfo) {
 		analysisService.updateSim(deviceInfo);
 	}
 	
+	//查询离线的设备
 	@RequestMapping("/getOffline")
 	@ResponseBody
 	public List<HashMap<String, Object>> getOffline(@RequestParam("data")String data){
 		return analysisService.getOffline(data);
 	}
+	
 	//查询抄表失败的设备
 	@RequestMapping("/getReadFailed")
 	@ResponseBody
@@ -83,6 +88,7 @@ public class AnalysisController {
 		return analysisService.getUsageWithProjectByParams(data);
 	}
 
+	//查询特定设备
 	@RequestMapping("/getDeviceByParams")
 	@ResponseBody
 	public List<HashMap<String, Object>> getDeviceByParams(@RequestParam("data")String data){
