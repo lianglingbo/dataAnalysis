@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 
 import com.joymeter.cache.DataCache;
 import com.joymeter.util.HttpClient;
+import com.joymeter.util.KafkaProducer;
 import com.joymeter.util.PropertiesUtils;
+import com.joymeter.util.SpringBean;
 
 /**
  *
@@ -20,6 +22,7 @@ public class Scheduler {
     private static Scheduler scheduler = null;
 	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
 
+	private KafkaProducer kafkaProducer = SpringBean.getBean(KafkaProducer.class);
     /**
      * 单例模式
      *
@@ -63,7 +66,8 @@ public class Scheduler {
             if (value == null || value.isEmpty()) {
                 continue;
             }
-			HttpClient.sendPost(druidUrl, value); // 向Druid发送数据
+            kafkaProducer.sendMessage("dataInfo", value);
+			//HttpClient.sendPost(druidUrl, value); // 向Druid发送数据
         }
     }
 }

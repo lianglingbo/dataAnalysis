@@ -7,14 +7,16 @@ server:
 #配置多环境,修改active属性即可
 spring:
   profiles:
-    active: product
+    active: PC
 ---
 spring:
   profiles: PC
   datasource:
-    url: jdbc:mysql://192.168.31.26:3306/deviceData?useSSL=false
+    url: jdbc:mysql://192.168.31.168:3306/deviceData?useSSL=false
     username: root
     password: Joymeter@123
+  kafka:
+    bootstrap-servers: 192.168.31.168:9092
 ---
 spring:
   profiles: product

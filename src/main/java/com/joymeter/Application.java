@@ -4,18 +4,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.joymeter.task.Scheduler;
+import com.joymeter.util.KafkaProducer;
+import com.joymeter.util.SpringBean;
 import com.joymeter.util.ThreadsExecutor;
 
 @SpringBootApplication
 @EnableScheduling
 @MapperScan("com.joymeter.mapper")
 public class Application {
-
+	
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
         try {
@@ -26,5 +30,10 @@ public class Application {
 		} catch (Exception e) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, e);
 		}
+    }
+    
+    @Bean
+    public SpringBean getSpringContext() {
+    	return new SpringBean();
     }
 }
