@@ -20,9 +20,13 @@ import com.joymeter.util.SpringBean;
  */
 public class Scheduler {
     private static Scheduler scheduler = null;
-	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
+	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", ""); 
 
+	/**
+	 * 通过辅助类获取bean
+	 */
 	private KafkaProducer kafkaProducer = SpringBean.getBean(KafkaProducer.class);
+	
     /**
      * 单例模式
      *

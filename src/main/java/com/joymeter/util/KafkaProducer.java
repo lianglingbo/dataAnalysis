@@ -26,7 +26,7 @@ public class KafkaProducer {
 	 * @param msg
 	 */
 	public void sendMessage(String topic, String msg) {
-		ListenableFuture future = kafkaTemplate.send(topic,msg);
+		ListenableFuture<?> future = kafkaTemplate.send(topic,msg);
 		future.addCallback(o -> logger.log(Level.INFO,"主题 "+topic+" 消息发送成功：" + msg),
 				throwable -> logger.log(Level.SEVERE,"主题 "+topic+" 消息发送失败：" + msg));
 	}
