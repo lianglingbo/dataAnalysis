@@ -112,7 +112,7 @@ public class SynchStateServiceImpl implements SynchStateService {
                          continue;
                     }
                 } catch (ParseException e) {
-                    logger.log(Level.INFO,e+"解析时间异常");
+                    logger.log(Level.SEVERE,e+"解析时间异常");
                  }
              //进行状态的判断，对druid结果进行分析，然后更新mysql
              if("data".equals(event)){
@@ -191,7 +191,7 @@ public class SynchStateServiceImpl implements SynchStateService {
              }
          }
         }catch (Exception e){
-            logger.log(Level.INFO,e+"同步方法异常");
+            logger.log(Level.SEVERE,e+"同步方法异常");
             return "同步方法异常"+e;
         }
         return resultBuffer.toString();
