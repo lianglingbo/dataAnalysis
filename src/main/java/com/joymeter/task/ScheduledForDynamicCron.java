@@ -56,7 +56,7 @@ public class ScheduledForDynamicCron {
 				String sendJson = "{\"type\":\"" + type + "\",\"data\":\"" + data + "\",\"datetime\":\""
 						+ System.currentTimeMillis() + "\"}";
 				HttpClient.sendPost(postEnUrl, sendJson );
-				logger.log(Level.SEVERE, sendJson, "执行定时任务");
+				logger.log(Level.INFO, sendJson, "执行定时任务");
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, null, e);
 			}
@@ -76,7 +76,7 @@ public class ScheduledForDynamicCron {
 					+ totalNum + "\",\"datetime\":\"" + System.currentTimeMillis() + "\"}";
 			// 设备类型暂时传空
 			HttpClient.sendPost(postOfUrl, sendJson );
-			logger.log(Level.SEVERE, sendJson, "执行定时任务");
+			logger.log(Level.INFO, sendJson, "执行定时任务");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
