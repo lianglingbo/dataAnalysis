@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @ClassName VisualInterfaceServiceImpl
@@ -23,6 +24,8 @@ import java.util.List;
  **/
 @Service
 public class VisualInterfaceServiceImpl implements VisualInterfaceService {
+
+    private static final Logger logger = Logger.getLogger(VisualInterfaceServiceImpl.class.getName());
 
     @Autowired
     private VisualInterfaceMapper visualInterfaceMapper;
@@ -54,7 +57,7 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             String result = JSONObject.toJSONString(offCount);
             return result;
         }catch (Exception e){
-
+        	logger.severe(e.toString());
         }
         return null;
     }
@@ -71,7 +74,7 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             String result = JSONObject.toJSONString(gtwCount);
             return result;
          }catch (Exception e){
-
+         	logger.severe(e.toString());
         }
         return null;
     }
@@ -85,7 +88,7 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             String result = JSONObject.toJSONString(nodeData);
             return result;
         }catch (Exception e){
-
+        	logger.severe(e.toString());
         }
         return null;
     }
@@ -102,7 +105,7 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             String result = JSONObject.toJSONString(readFailed);
             return result;
         }catch (Exception e){
-
+        	logger.severe(e.toString());
         }
         return null;
     }
@@ -119,7 +122,7 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             String result = JSONObject.toJSONString(totalCount);
             return result;
         }catch (Exception e){
-
+        	logger.severe(e.toString());
         }
         return null;
     }
@@ -132,12 +135,15 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
     public List<HashMap<String, Object>> getNoneDataGroupList(String data) {
         if (StringUtils.isEmpty(data))return null;
         //打印日志
+
         try {
             DeviceInfos deviceInfos = JSONObject.parseObject(data,DeviceInfos.class);
+        	logger.info(deviceInfos.toString());
 
            return  visualInterfaceMapper.getNoneDataGroupList(deviceInfos);
         } catch (Exception e) {
             //日志
+        	logger.severe(e.toString());
         }
         return null;
     }
@@ -153,10 +159,12 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
         //打印日志
         try {
             DeviceInfos deviceInfos = JSONObject.parseObject(data,DeviceInfos.class);
-            System.out.println(deviceInfos.toString());
+        	logger.info(deviceInfos.toString());
+
             return  visualInterfaceMapper.getNoneDataByParams(deviceInfos);
         } catch (Exception e) {
             //日志
+        	logger.severe(e.toString());
         }
 
         return null;
@@ -171,10 +179,13 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
     public List<HashMap<String, Object>> getDeviceInfosByArgs(String data) {
         if (StringUtils.isEmpty(data))return null;
         //打印日志
+    	logger.info(data);
+
         try {
             return  visualInterfaceMapper.getDeviceInfosByArgs(data);
         } catch (Exception e) {
             //日志
+        	logger.severe(e.toString());
         }
         return null;
     }
