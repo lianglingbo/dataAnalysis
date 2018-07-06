@@ -5,6 +5,7 @@
  */
 package com.joymeter.task;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,11 +67,11 @@ public class Scheduler {
      */
     public void start() {
         while (true) {
-            final String value = DataCache.poll();
-            if (value == null || value.isEmpty()) {
+            final Map<String, String> datamap = DataCache.poll();
+            if (datamap == null || datamap.isEmpty()) {
                 continue;
             }
-            kafkaProducer.sendMessage("dataInfo", value); //使用kafka生产者向durid发送数据
+            kafkaProducer.sendMessage(datamap.get("topic"), datamap.get("value")); //使用kafka生产者向durid发送数据
 			//HttpClient.sendPost(druidUrl, value); // 向Druid发送数据
         }
     }

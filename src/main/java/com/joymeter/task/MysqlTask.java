@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.joymeter.entity.UsageHour;
 import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.util.HttpClient;
+import com.joymeter.util.KafkaProducer;
 import com.joymeter.util.PropertiesUtils;
+import com.joymeter.util.SpringBean;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -26,11 +29,13 @@ import java.util.logging.Logger;
  **/
 @Service
 public class MysqlTask {
-    @Autowired
-    DeviceInfoMapper deviceInfoMapper;
+
     private static final Logger logger = Logger.getLogger(ScheduledForDynamicCron.class.getName());
     private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
+	private KafkaProducer kafkaProducer = SpringBean.getBean(KafkaProducer.class);
 
+    @Autowired
+    private DeviceInfoMapper deviceInfoMapper;
 
     // 定时任务每天22點40執行一次，清空usageHour表
     @Scheduled(cron = "0 40 22 * * ?")
@@ -82,6 +87,7 @@ public class MysqlTask {
                 //转json
                 String postData = JSON.toJSONString(usage);
                 //遍历，发送给druid
+                kafkaProducer.sendMessage("usage", postData);
                 String s = HttpClient.sendPost(postUsageUrl, postData);// 向Druid发送数据
                 logger.log(Level.INFO,"夜间同步数据："+postData+"返回结果"+s);
             }

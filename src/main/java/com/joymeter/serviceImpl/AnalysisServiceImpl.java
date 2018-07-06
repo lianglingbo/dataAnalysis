@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +42,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
 
 
+	private Map<String, String> datamap = new HashMap<>();
 
 
 	/**
@@ -288,7 +290,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
 		//发送数据到druid中
-		DataCache.add(dataStr);
+		datamap.put("topic", "dataInfo");
+		datamap.put("value", dataStr);
+		DataCache.add(datamap);
 	}
 
 

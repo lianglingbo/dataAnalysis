@@ -1,5 +1,6 @@
 package com.joymeter.cache;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,14 +12,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class DataCache {
 	
-	private static final Queue<String> EVENT_DATA = new ConcurrentLinkedQueue<>();
+	private static final Queue<Map<String, String>> EVENT_DATA = new ConcurrentLinkedQueue<>();
 	
 	/**
 	 * 添加到Cache
 	 * 
 	 * @param value
 	 */
-	public static void add(String value) {
+	public static void add(Map<String,String> value) {
 		EVENT_DATA.add(value);
 	}
 	
@@ -27,7 +28,7 @@ public class DataCache {
 	 * 
 	 * @return
 	 */
-	public static String poll() {
+	public static Map<String, String> poll() {
 		if(EVENT_DATA.isEmpty()) {
 			return null;
 		}

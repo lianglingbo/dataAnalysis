@@ -3,7 +3,10 @@ package com.joymeter.task;
 import com.joymeter.entity.DeviceInfo;
 import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.util.HttpClient;
+import com.joymeter.util.KafkaProducer;
 import com.joymeter.util.PropertiesUtils;
+import com.joymeter.util.SpringBean;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,8 +21,9 @@ import java.util.logging.Logger;
 @Service
 public class ScheduledForDynamicCron {
 	@Autowired
-	DeviceInfoMapper deviceInfoMapper;
+	private DeviceInfoMapper deviceInfoMapper;
 
+	private KafkaProducer kafkaProducer = SpringBean.getBean(KafkaProducer.class);
 	private static final Logger logger = Logger.getLogger(ScheduledForDynamicCron.class.getName());
 	private static final String queryUrl = PropertiesUtils.getProperty("queryUrl", "");
 	private static final String postEnUrl = PropertiesUtils.getProperty("postEnUrl", "");
@@ -75,7 +79,8 @@ public class ScheduledForDynamicCron {
 			String sendJson ="{\"type\":\"" + ' ' + "\",\"offNum\":\"" + offNum + "\",\"totalNum\":\""
 					+ totalNum + "\",\"datetime\":\"" + System.currentTimeMillis() + "\"}";
 			// 设备类型暂时传空
-			HttpClient.sendPost(postOfUrl, sendJson );
+			//HttpClient.sendPost(postOfUrl, sendJson );
+			kafkaProducer.sendMessage("offline", sendJson);
 			logger.log(Level.INFO, sendJson, "执行定时任务");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
