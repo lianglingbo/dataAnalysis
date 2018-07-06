@@ -37,7 +37,7 @@ public class KafkaProducer {
 				throwable -> {
 					logger.log(Level.SEVERE,"主题 "+topic+" 消息发送失败：" + msg);
 					datamap.put("topic", topic);
-					datamap.put("value", msg);
+					datamap.put("msg", msg);
 					DataCache.add(datamap);   //存入缓存，等待再次发送
 				});
 	}

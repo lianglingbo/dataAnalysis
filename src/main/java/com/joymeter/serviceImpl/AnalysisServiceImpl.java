@@ -42,7 +42,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
 
 
-	private Map<String, String> datamap = new HashMap<>();
+	private Map<String, String> datamap = new HashMap<>(); //数据缓存topic-msg
 
 
 	/**
@@ -289,9 +289,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 		} catch (Exception e) {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
-		//发送数据到druid中
+		//存入数据缓存中
 		datamap.put("topic", "dataInfo");
-		datamap.put("value", dataStr);
+		datamap.put("msg", dataStr);
 		DataCache.add(datamap);
 	}
 
