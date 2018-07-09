@@ -47,9 +47,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	/**
 	 * 1.保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
-	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
-	 * 2.数据源新增字段，eventinfo，记录event事件的data值（为字符串类型的时候，不能存入druid，druid中设置data属性为double类型）
-	 *   数据源新增时，判断事件，如果event 不为 data ，则将其data值存入eventinfo中
+	 * "type":"1","event":"data","data":"","msg":"","datetime":"1513576307290"}
+	 * 2.数据源新增字段，msg，记录对event事件的描述
 	 * 3.新增方法setusageHour() ,mysql新增表：usage_hour；统计每日凌晨0到6点，每个小时的用水量；
 	 * 	 每天凌晨，每个整点写入一次数据，最后生成完整信息；mysql中只存当天数据，每天统计结束后，将信息放入druid中；
 	 * 	 防止最后有空数据：每次收到数据后，把后面几个小时内容都填充；如果上一小时数据为空，填充所有
@@ -68,17 +67,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 			String deviceType = jsonData.getString("type");
 			String event = jsonData.getString("event");
 			String totaldata = jsonData.getString("data");
+			String msg = jsonData.getString("msg");
 			long datetime = Long.valueOf(jsonData.getString("datetime"));
 
 			if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType)
-					|| StringUtils.isEmpty(event) || datetime <= 0)
+					|| StringUtils.isEmpty(event) || StringUtils.isEmpty(msg) || datetime <= 0)
 				return;
 			addDataLogger.log(Level.INFO,dataStr);
-			//如果event 不为 data ，则将其data值存入eventinfo中
-			if(!"data".equals(event)){
-				jsonData.put("eventinfo",totaldata);
-				dataStr = jsonData.toJSONString();
-			}
 			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
 			deviceInfo.setDeviceId(deviceId);
@@ -294,7 +289,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 		datamap.put("msg", dataStr);
 		DataCache.add(datamap);
 	}
-
 
 
 	/**
