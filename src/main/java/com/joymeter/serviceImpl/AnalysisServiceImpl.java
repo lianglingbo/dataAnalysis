@@ -42,9 +42,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
 
 
-	private Map<String, String> datamap = new HashMap<>(); //数据缓存topic-msg
-
-
 	/**
 	 * 1.保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","msg":"","datetime":"1513576307290"}
@@ -285,8 +282,9 @@ public class AnalysisServiceImpl implements AnalysisService {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
 		//存入数据缓存中
+		Map<String, String> datamap = new HashMap<>(); //数据缓存topic-msg
 		datamap.put("topic", "dataInfo");
-		datamap.put("msg", dataStr);
+		datamap.put("value", dataStr);
 		DataCache.add(datamap);
 	}
 

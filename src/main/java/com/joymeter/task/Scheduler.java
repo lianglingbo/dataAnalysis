@@ -71,7 +71,7 @@ public class Scheduler {
             if (datamap == null || datamap.isEmpty()) {
                 continue;
             }
-            kafkaProducer.sendMessage(datamap.get("topic"), datamap.get("msg")); //使用kafka生产者向durid发送数据
+            kafkaProducer.sendMessage(datamap.get("topic"), datamap.get("value")); //使用kafka生产者向durid发送数据
 			//HttpClient.sendPost(druidUrl, value); // 向Druid发送数据
         }
     }

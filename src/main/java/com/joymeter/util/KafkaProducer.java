@@ -23,8 +23,6 @@ public class KafkaProducer {
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
-	
-	private Map<String, String> datamap = new HashMap<>();
 
 	/**
 	 * 发送消息
@@ -36,8 +34,9 @@ public class KafkaProducer {
 		future.addCallback(o -> logger.log(Level.INFO,"主题 "+topic+" 消息发送成功：" + msg),
 				throwable -> {
 					logger.log(Level.SEVERE,"主题 "+topic+" 消息发送失败：" + msg);
+					Map<String, String> datamap = new HashMap<>();
 					datamap.put("topic", topic);
-					datamap.put("msg", msg);
+					datamap.put("value", msg);
 					DataCache.add(datamap);   //存入缓存，等待再次发送
 				});
 	}
