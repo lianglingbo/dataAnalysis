@@ -64,24 +64,22 @@ public class AnalysisServiceImpl implements AnalysisService {
 		if (StringUtils.isEmpty(dataStr))return;
 		try {
 			JSONObject jsonData = JSONObject.parseObject(dataStr);
+			//获得的json数据格式增加了msg信息，将msg存入druid时，对应的字段为eventInfo
+			if(dataStr.contains("msg")){
+				dataStr = dataStr.replace("msg","eventinfo");
+			}
 			String serverId = jsonData.getString("serverId");
 			String deviceId = jsonData.getString("deviceId");
 			String deviceType = jsonData.getString("type");
 			String event = jsonData.getString("event");
 			String totaldata = jsonData.getString("data");
 			long datetime = Long.valueOf(jsonData.getString("datetime"));
-
 			if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType)
 					|| StringUtils.isEmpty(event) || datetime <= 0)
 				return;
 			addDataLogger.log(Level.INFO,dataStr);
 			//发送至缓存
 			redisService.sendToCJoy(deviceId,dataStr);
-			//如果event 不为 data ，则将其data值存入eventinfo中
-			if(!"data".equals(event)){
-				jsonData.put("eventinfo",totaldata);
-				dataStr = jsonData.toJSONString();
-			}
 			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
 			deviceInfo.setDeviceId(deviceId);
@@ -294,6 +292,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 		//发送数据到druid中
 		DataCache.add(dataStr);
+
 	}
 
 
