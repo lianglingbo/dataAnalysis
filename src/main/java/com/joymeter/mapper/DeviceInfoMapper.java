@@ -43,7 +43,11 @@ public interface DeviceInfoMapper {
     //根据Id查询设备
     @Select("SELECT * FROM device_info WHERE deviceId = #{deviceId}")
     DeviceInfo getOne(String deviceId);
-    
+
+    //查询24小时无数据的设备
+    @Select(" select * from device_info where   TIMESTAMPDIFF(HOUR,updateTime,now()) > '24'  and deviceId != gatewayId and project in(select project from project_info ) ")
+    List<DeviceInfo> getNoneDataAday();
+
     //插入新的设备数据
     @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address})")
     void insert(DeviceInfo deviceInfo);

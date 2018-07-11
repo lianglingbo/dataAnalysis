@@ -36,4 +36,14 @@ public class SynchStateController {
           synchStateService.SynchUsageToDruid();
     }
 
+
+    /**
+     * 同步各个项目的设备是否删除状态到本地mysql，方法写在定时任务内
+     */
+    @RequestMapping("/synchEachProjectDevice")
+    @ResponseBody
+    public void  SynchEachProjectDevice( ) {
+        synchStateService.SynchEachProjectDevice();
+    }
+
 }

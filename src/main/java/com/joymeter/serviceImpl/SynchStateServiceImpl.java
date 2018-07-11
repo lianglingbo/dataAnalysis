@@ -204,4 +204,12 @@ public class SynchStateServiceImpl implements SynchStateService {
     public void SynchUsageToDruid() {
         mysqlTask.fromUsageHourToDruid();
     }
+
+    /**
+     * 同步各个项目的设备是否删除状态到本地mysql，方法写在定时任务内
+     */
+    @Override
+    public void SynchEachProjectDevice() {
+        mysqlTask.syncDeletedDeviceFromAPI();
+    }
 }

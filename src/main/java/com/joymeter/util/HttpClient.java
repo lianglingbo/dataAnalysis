@@ -46,20 +46,20 @@ public class HttpClient {
         //设置请求响应配置
         httpGet.setConfig(requestConfig);
         try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            logger.log(Level.INFO, "当前请求的地址为：" + httpGet.getURI());
+            //logger.log(Level.INFO, "当前请求的地址为：" + httpGet.getURI());
             //如果返回值为200，则请求成功，可以通过TestNG做判断 HttpStatus.SC_OK
             int status = response.getStatusLine().getStatusCode();
-            logger.log(Level.INFO, "当前请求URL状态：" + status);
+            //logger.log(Level.INFO, "当前请求URL状态：" + status);
             //获取Http Headers信息
             Header[] headers = response.getAllHeaders();
             int headerLength = headers.length;
             for (int i = 0; i < headerLength; i++) {
-                logger.log(Level.INFO, "Header内容为：" + headers[i]);
+                //logger.log(Level.INFO, "Header内容为：" + headers[i]);
             }
             //获取到请求的内容
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, "UTF-8");
-            logger.log(Level.INFO, "获取请求响应的内容为：" + result);
+            //logger.log(Level.INFO, "获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
             logger.log(Level.SEVERE, e.getMessage());
         } finally {
