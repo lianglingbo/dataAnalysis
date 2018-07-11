@@ -25,7 +25,7 @@ spring:
     host: 127.0.0.1
     password: 123456
     port: 6379
-    timeout: 5ms
+    timeout: 1000ms
 ---
 spring:
   profiles: product
@@ -42,4 +42,4 @@ spring:
     host: 39.106.25.214
     password: 123456
     port: 6379
-    timeout: 5ms
+    timeout: 1000ms
