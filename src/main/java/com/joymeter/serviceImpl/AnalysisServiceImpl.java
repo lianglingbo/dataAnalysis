@@ -70,6 +70,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType)
 					|| StringUtils.isEmpty(event) || StringUtils.isEmpty(msg) || datetime <= 0)
 				return;
+			dataStr = dataStr.replace("msg", "eventinfo");
 			addDataLogger.log(Level.INFO,dataStr);
 			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
