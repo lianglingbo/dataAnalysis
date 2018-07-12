@@ -110,7 +110,7 @@ public class MysqlTask {
     public  boolean isDelete(String deviceId){
         String access_token = RSACoder.getSafeAccessToken();
         String meterNo = deviceId  ;
-        String api = "/joy/findUserByMeterNo.do?access_token="+access_token+"&meterNo="+meterNo;
+        String api = "/findUserByMeterNo.do?access_token="+access_token+"&meterNo="+meterNo;
          try{
             //查询此设备的项目url
             DeviceInfo deviceInfo = deviceInfoMapper.getOne(meterNo);
