@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProjectInfoMapper {
 
-    //根据Id查询设备
+    //根据项目查询对应url
     @Select("SELECT url FROM project_info WHERE project = #{project}")
     String getUrl(String project);
 

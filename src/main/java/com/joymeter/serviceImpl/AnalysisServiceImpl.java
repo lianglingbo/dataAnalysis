@@ -114,18 +114,18 @@ public class AnalysisServiceImpl implements AnalysisService {
 								if(currenHour >=23 ){
 									//0点插入，值到zero,one，two，three，four，five，six；
 									usageHour.setZero(totaldata);
-								}else if(currenHour >=0 && currenHour <1){
-									//1点，插入之前，先判断0点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
+								}else if(currenHour >=0 && currenHour <6){
+									//0点后，插入之前，先判断前一整点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
 									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
 									if(StringUtils.isEmpty(selectResult)){
 										//上一次結果爲空，初始化
-										usageHour.setZero(totaldata);
+										usageHour.setUsageByHour(currenHour,totaldata);
 									}else{
 										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getZero();
+										String lastusage = selectResult.getUsageByHour(currenHour);
 										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
 											//初始化所有數據
-											usageHour.setZero(totaldata);
+											usageHour.setUsageByHour(currenHour,totaldata);
 										}else {
 											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
 											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
@@ -137,134 +137,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 												usageHour.setStatus("0");
 											}
 											//后续时间点数据的初始化
-											usageHour.setOne(totaldata);
-										}
-									}
-								}else if(currenHour >=1 && currenHour <2){
-									//2点，插入之前，先判断0点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
-									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-									if(StringUtils.isEmpty(selectResult)){
-										//結果爲空
-										usageHour.setZero(totaldata);
-									}else{
-										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getOne();
-										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-											//初始化所有數據
-											usageHour.setZero(totaldata);
-										}else {
-											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-											if(comp == 1){
-												//更新状态为1：异常
-												usageHour.setStatus("1");
-											}else {
-												//更新状态为0：正常
-												usageHour.setStatus("0");
-											}
-											//后续时间点数据的初始化
-											usageHour.setTwo(totaldata);
-										}
-									}
-								}else if(currenHour >=2 && currenHour <3){
-									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-									if(StringUtils.isEmpty(selectResult)){
-										//結果爲空
-										usageHour.setZero(totaldata);
-									}else{
-										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getTwo();
-										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-											//初始化所有數據
-											usageHour.setZero(totaldata);
-										}else {
-											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-											if(comp == 1){
-												//更新状态为1：异常
-												usageHour.setStatus("1");
-											}else {
-												//更新状态为0：正常
-												usageHour.setStatus("0");
-											}
-											//后续时间点数据的初始化
-											usageHour.setThree(totaldata);
-										}
-									}
-								}else if(currenHour >=3 && currenHour <4){
-									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-									if(StringUtils.isEmpty(selectResult)){
-										//結果爲空
-										usageHour.setZero(totaldata);
-									}else{
-										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getThree();
-										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-											//初始化所有數據
-											usageHour.setZero(totaldata);
-										}else {
-											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-											if(comp == 1){
-												//更新状态为1：异常
-												usageHour.setStatus("1");
-											}else {
-												//更新状态为0：正常
-												usageHour.setStatus("0");
-											}
-											//后续时间点数据的初始化;
-											usageHour.setFour(totaldata);
-										}
-									}
-
-								}else if(currenHour >=4 && currenHour <5){
-									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-									if(StringUtils.isEmpty(selectResult)){
-										//結果爲空
-										usageHour.setZero(totaldata);
-									}else{
-										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getFour();
-										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-											//初始化所有數據
-											usageHour.setZero(totaldata);
-										}else {
-											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-											if(comp == 1){
-												//更新状态为1：异常
-												usageHour.setStatus("1");
-											}else {
-												//更新状态为0：正常
-												usageHour.setStatus("0");
-											}
-											//后续时间点数据的初始化
-											usageHour.setFive(totaldata);
-										}
-									}
-								}else if(currenHour >=5 && currenHour <6){
-									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-									if(StringUtils.isEmpty(selectResult)){
-										//結果爲空
-										usageHour.setZero(totaldata);
-									}else{
-										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getFive();
-										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-											//初始化所有數據
-											usageHour.setZero(totaldata);
-										}else {
-											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-											if(comp == 1){
-												//更新状态为1：异常
-												usageHour.setStatus("1");
-											}else {
-												//更新状态为0：正常
-												usageHour.setStatus("0");
-											}
-											//后续时间点数据的初始化
-											usageHour.setSix(totaldata);
+											usageHour.setUsageByHour(currenHour+1,totaldata);
 										}
 									}
 								}
@@ -292,9 +165,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		}
 		//发送数据到druid中
 		DataCache.add(dataStr);
-
 	}
-
 
 
 	/**
