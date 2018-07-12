@@ -237,7 +237,7 @@ public class DeviceInfoProvider {
 	}
 
 	/**
-	 * 态生成查询抄表失败聚合SQL
+	 * 动态生成查询抄表失败聚合SQL
 	 * readState = 1 为失败
 	 * @param deviceInfo
 	 * @return

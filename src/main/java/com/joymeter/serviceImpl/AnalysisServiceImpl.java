@@ -83,82 +83,91 @@ public class AnalysisServiceImpl implements AnalysisService {
 			//更新抄表状态、设备状态、阀门状态
 			DeviceInfo deviceInfo = new DeviceInfo();
 			deviceInfo.setDeviceId(deviceId);
-			if("offline".equals(event)) {
+			switch (event) {
+			case "offline":  //设备离线
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-			}else if ("online".equals(event)||"data".equals(event)||"keepalive".equals(event)||"push".equals(event)) {
-				//能收到上面四种事件，说明设备在线
-				deviceInfo.setDeviceState("1");
-				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				if ("data".equals(event)) {
-					//能收到读表data数据，说明读表成功
-					deviceInfo.setReadState("0");
-					deviceInfoMapper.updateDeviceInfo(deviceInfo);
-					//开始判断凌晨用水情况
-					try{
-						//获取date时间
-						SimpleDateFormat sdfh=new SimpleDateFormat("HH");
-						int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
-						//每天清空mysql;重要！！寫在定時任務中
-						//【3】凌晨0点到6点：整点统计用水量
-						if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
-							//判断类型为水表的数据
-							if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
-								//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
-								UsageHour usageHour = new UsageHour();
-								usageHour.setDeviceId(deviceId);
-								//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
-								String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
-								usageHour.setDeviceTime(Timestamp.valueOf(deviceTime));
-
-								if(currenHour >=23 ){
-									//0点插入，值到zero,one，two，three，four，five，six；
-									usageHour.setZero(totaldata);
-								}else if(currenHour >=0 && currenHour <6){
-									//0点后，插入之前，先判断前一整点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
-									UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-									if(StringUtils.isEmpty(selectResult)){
-										//上一次結果爲空，初始化
-										usageHour.setUsageByHour(currenHour,totaldata);
-									}else{
-										//結果不爲空，判斷上一小時是否有數據
-										String lastusage = selectResult.getUsageByHour(currenHour);
-										if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-											//初始化所有數據
-											usageHour.setUsageByHour(currenHour,totaldata);
-										}else {
-											//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-											int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-											if(comp == 1){
-												//更新状态为1：异常
-												usageHour.setStatus("1");
-											}else {
-												//更新状态为0：正常
-												usageHour.setStatus("0");
-											}
-											//后续时间点数据的初始化
-											usageHour.setUsageByHour(currenHour+1,totaldata);
-										}
-									}
-								}
-								//插入mysql
-								deviceInfoMapper.insertIntoUsageHour(usageHour);
-								usageHourLog.log(Level.INFO,usageHour.toString());
-							}
-						}
-					}catch (Exception e){
-						addDataLogger.log(Level.INFO,e+"凌晨用水统计方法异常"+dataStr);
-					}
-				}
-			}else if ("close".equals(event)) {
+				break; 
+			case "close":    //阀门关闭
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-			}else if("open".equals(event)){
+				break;
+			case "open":     //阀门打开
 				deviceInfo.setValveState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-			} else if ("data_failed".equals(event)) {
+				break;
+			case "data_failed":  //读表失败
 				deviceInfo.setReadState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				break;
+			case "data":       //读表成功
+				deviceInfo.setDeviceState("1");
+				//能收到读表data数据，说明读表成功
+				deviceInfo.setReadState("0");
+				//开始判断凌晨用水情况
+				try{
+					//获取date时间
+					SimpleDateFormat sdfh=new SimpleDateFormat("HH");
+					int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
+					//每天清空mysql;重要！！寫在定時任務中
+					//【3】凌晨0点到6点：整点统计用水量
+					if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
+						//判断类型为水表的数据
+						if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
+							//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
+							UsageHour usageHour = new UsageHour();
+							usageHour.setDeviceId(deviceId);
+							//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
+							String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
+							usageHour.setDeviceTime(Timestamp.valueOf(deviceTime));
+
+							if(currenHour >=23 ){
+								//0点插入，值到zero,one，two，three，four，five，six；
+								usageHour.setZero(totaldata);
+							}else if(currenHour >=0 && currenHour <6){
+								//0点后，插入之前，先判断前一整点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
+								UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+								if(StringUtils.isEmpty(selectResult)){
+									//上一次結果爲空，初始化
+									usageHour.setUsageByHour(currenHour,totaldata);
+								}else{
+									//結果不爲空，判斷上一小時是否有數據
+									String lastusage = selectResult.getUsageByHour(currenHour);
+									if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+										//初始化所有數據
+										usageHour.setUsageByHour(currenHour,totaldata);
+									}else {
+										//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+										int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+										if(comp == 1){
+											//更新状态为1：异常
+											usageHour.setStatus("1");
+										}else {
+											//更新状态为0：正常
+											usageHour.setStatus("0");
+										}
+										//后续时间点数据的初始化
+										usageHour.setUsageByHour(currenHour+1,totaldata);
+									}
+								}
+							}
+							//插入mysql
+							deviceInfoMapper.insertIntoUsageHour(usageHour);
+							usageHourLog.log(Level.INFO,usageHour.toString());
+						}
+					}
+				}catch (Exception e){
+					addDataLogger.log(Level.INFO,e+"凌晨用水统计方法异常"+dataStr);
+				}
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				break;
+			case "online":   //设备上线
+			case "keepalive": 
+			case "push":    
+				//收到以上四种事件，说明设备在线
+				deviceInfo.setDeviceState("1");
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				break;
 			}
 		} catch (Exception e) {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
