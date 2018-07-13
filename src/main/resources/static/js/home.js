@@ -282,7 +282,8 @@ var getTotalCountByProject = function () {
         columns.push({
             field: 'myProject',
             title: "设备总数",
-            align: 'center'
+            align: 'center',
+            formatter: 'outlinkFormatter'
         });
         columns.push({
             field: 'myCount',
@@ -327,6 +328,10 @@ var getTotalCountByProject = function () {
     });
 };
 
+
+function outlinkFormatter(value) { //标识外部链接
+    return value+'<i class="glyphicon glyphicon-new-window"></i>';
+};
 
 /**
  * ===============================
