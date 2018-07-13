@@ -63,4 +63,7 @@ public interface VisualInterfaceMapper {
      @SelectProvider(type = VisualInterfaceProvider.class,method="getDeviceInfosByArgs")
      List<HashMap<String, Object>> getDeviceInfosByArgs(String  data);
 
+     //通过项目名称获取项目首页地址
+     @Select(" select homeurl from project_info where project = #{project}")
+     String getURLByProject(String project);
 }

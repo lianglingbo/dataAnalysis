@@ -178,4 +178,21 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
         }
         return null;
     }
+
+    /**
+     * 通过项目名称获取项目首页地址
+     * @param project
+     * @return
+     */
+    @Override
+    public String getURLByProject(String project) {
+        if (StringUtils.isEmpty(project))return null;
+        //打印日志
+        try {
+            return  visualInterfaceMapper.getURLByProject(project);
+        } catch (Exception e) {
+            //日志
+        }
+        return null;
+    }
 }

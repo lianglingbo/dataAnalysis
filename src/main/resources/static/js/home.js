@@ -178,6 +178,53 @@ var getNodeDataByProject = function () {
     });
 };
 
+
+//24小时无数据设备group by project
+var getNodeDataByProject = function () {
+    var data;
+    $.axspost("/visual/getNodeDataByProject",data,function (d) {
+        var obj = eval(d);
+        //解析设备总数和各项目设备数
+        var totalCount = obj[0].myCount;
+        //截取剩下的数据
+        obj = obj.slice(1);
+        var columns = [];
+        columns.push({
+            field: 'myProject',
+            title: "一天内无数据总数",
+            align: 'center'
+        });
+        columns.push({
+            field: 'myCount',
+            title: totalCount,
+            align: 'center'
+        });
+        $('#tableNodeData').bootstrapTable({
+            //加载数据
+            columns: columns,
+            data:obj,
+            //单击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onClickRow:function f(row) {
+                var project = row.myProject;
+                window.open(url+"/nonedata.html?"+project);
+
+            },
+            //自定义字体颜色，或者背景颜色
+            rowStyle: function (row, index) {
+                var style = {};
+                style={
+                    css:{
+                        'color':'blue',
+                        //'text-decoration': 'underline'
+                        'cursor':'pointer'
+                    }
+                };
+                return style;
+            }
+        });
+    });
+};
+
 //抄表失败group by project
 var getReadFailedByProject = function () {
     var data;
@@ -246,6 +293,24 @@ var getTotalCountByProject = function () {
             //加载数据
             columns: columns,
             data:obj,
+            //单击事件,跳转到详情页面:row = {myCount: "4", myProject: "王店"}带参数调用页面
+            onClickRow:function f(row) {
+                var project = {"project":row.myProject};
+                //使用同步ajax加载
+                $.ajax({
+                    type: "post",
+                    url:  "/visual/getURLByProject",
+                    cache:false,
+                    async:false,
+                    data: project,
+                    dataType: "text",
+                    success: function(homeurl){
+                        if(!(homeurl == null || homeurl.length<1)) window.open(homeurl);
+                    }
+                });
+
+
+            },
             //自定义字体颜色，或者背景颜色
             rowStyle: function (row, index) {
                 var style = {};

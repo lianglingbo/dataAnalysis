@@ -25,5 +25,6 @@ public interface VisualInterfaceService {
     //设备列表详情页面，传入不同参数，展示不同列表（离线，抄表失败，一天无数据）
     List<HashMap<String, Object>> getDeviceInfosByArgs(String  args);
 
-
+    //通过项目名称获取项目首页地址
+    String getURLByProject(String project);
 }

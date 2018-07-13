@@ -89,4 +89,11 @@ public class VisualInterfaceController {
         return visualInterfaceService.getDeviceInfosByArgs(data);
     }
 
+    //通过项目名称获取项目首页地址
+    @RequestMapping("/getURLByProject")
+    @ResponseBody
+    public String getURLByProject(@RequestParam("project")String project){
+        return visualInterfaceService.getURLByProject(project);
+    }
+
 }
