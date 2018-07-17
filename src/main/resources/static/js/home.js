@@ -330,7 +330,7 @@ var getTotalCountByProject = function () {
 
 
 function outlinkFormatter(value) { //标识外部链接
-    return value+'<i class="glyphicon glyphicon-new-window"></i>';
+    return value+' <i class="glyphicon glyphicon-new-window"></i>';
 };
 
 /**
