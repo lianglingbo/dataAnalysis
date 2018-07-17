@@ -1,6 +1,7 @@
 package com.joymeter.util;
 
-import com.joymeter.entity.Msg;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 返回信息工具类
@@ -13,21 +14,21 @@ public class ResultUtil {
      * @param object
      * @return
      */
-    public static Msg success(Object object){
-        Msg msg=new Msg();
-        msg.setCode(200);
-        msg.setMsg("请求成功");
-        msg.setData(object);
+    public static Map<String, Object> success(Object object){
+        Map<String, Object> msg=new HashMap<String, Object>();
+        msg.put("code",200);
+        msg.put("msg","请求成功");
+        msg.put("data",object);
         return msg;
     }
-    public static Msg success(){
+    public static Map<String, Object>  success(){
         return success(null);
     }
  
-    public static Msg error(Integer code,String resultmsg){
-        Msg msg=new Msg();
-        msg.setCode(code);
-        msg.setMsg(resultmsg);
+    public static Map<String, Object>  error(Integer code,String resultmsg){
+    	Map<String, Object> msg=new HashMap<String, Object>();
+        msg.put("code",code);
+        msg.put("msg",resultmsg);
         return msg;
     }
 }

@@ -2,15 +2,15 @@ package com.joymeter.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.joymeter.entity.DeviceInfo;
-import com.joymeter.entity.Msg;
 
 public interface AnalysisService {
 	void addData(String data);
 
 	//注册，添加
-	Msg register(DeviceInfo deviceInfo);
+	Map<String, Object> register(DeviceInfo deviceInfo);
 	//删除
 	void deleteDeviceInfoById(String deviceId);
 	//更新设备信息接口

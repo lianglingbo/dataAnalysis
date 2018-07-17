@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +25,6 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.joymeter.cache.DataCache;
 import com.joymeter.entity.DeviceInfo;
-import com.joymeter.entity.Msg;
 import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.service.AnalysisService;
 
@@ -433,7 +433,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param
 	 */
 	@Override
-	public Msg register(DeviceInfo deviceInfo) {
+	public Map<String, Object> register(DeviceInfo deviceInfo) {
 		registerLogger.log(Level.INFO, deviceInfo.toString());
 		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
