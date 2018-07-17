@@ -15,6 +15,7 @@ import com.joymeter.entity.WaterMeterUse;
 import com.joymeter.service.RedisService;
 import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
+import com.joymeter.util.ResultUtil;
 import com.joymeter.util.TimeTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.joymeter.cache.DataCache;
 import com.joymeter.entity.DeviceInfo;
+import com.joymeter.entity.Msg;
 import com.joymeter.mapper.DeviceInfoMapper;
 import com.joymeter.service.AnalysisService;
 
@@ -431,7 +433,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param
 	 */
 	@Override
-	public String register(DeviceInfo deviceInfo) {
+	public Msg register(DeviceInfo deviceInfo) {
 		registerLogger.log(Level.INFO, deviceInfo.toString());
 		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
@@ -439,7 +441,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress())
 				|| StringUtils.isEmpty(deviceInfo.getValveId())|| StringUtils.isEmpty(deviceInfo.getCategory())
 				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol()))
-			return "Unexpected params";
+			return ResultUtil.error(406, "Unexpected param");
 
 		try {
 			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
@@ -450,7 +452,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		} catch (Exception e) {
 			registerLogger.log(Level.SEVERE, deviceInfo.toString(), e);
 		}
-		return "OK";
+		return ResultUtil.success();
 	}
 
 	//删除设备

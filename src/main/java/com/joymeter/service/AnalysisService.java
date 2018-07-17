@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.joymeter.entity.DeviceInfo;
+import com.joymeter.entity.Msg;
 
 public interface AnalysisService {
 	void addData(String data);
 
 	//注册，添加
-	String register(DeviceInfo deviceInfo);
+	Msg register(DeviceInfo deviceInfo);
 	//删除
 	void deleteDeviceInfoById(String deviceId);
 	//更新设备信息接口
