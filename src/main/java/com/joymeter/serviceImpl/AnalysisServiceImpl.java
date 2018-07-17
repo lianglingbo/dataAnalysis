@@ -431,13 +431,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param
 	 */
 	@Override
-	public void register(DeviceInfo deviceInfo) {
+	public String register(DeviceInfo deviceInfo) {
 		registerLogger.log(Level.INFO, deviceInfo.toString());
 		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
-				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress()))
-			return;
+				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress())
+				|| StringUtils.isEmpty(deviceInfo.getValveId())|| StringUtils.isEmpty(deviceInfo.getCategory())
+				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol()))
+			return "Unexpected params";
 
 		try {
 			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
@@ -448,6 +450,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		} catch (Exception e) {
 			registerLogger.log(Level.SEVERE, deviceInfo.toString(), e);
 		}
+		return "OK";
 	}
 
 	//删除设备

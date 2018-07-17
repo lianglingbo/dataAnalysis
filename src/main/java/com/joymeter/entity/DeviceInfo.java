@@ -8,6 +8,10 @@ public class DeviceInfo {
 	private String deviceId;
 	private String simId;
 	private String gatewayId;
+	private String valveId;
+	private String category;
+	private String deviceProtocol;
+	private String valveProtocol;
 	private String project;
 	private String province;
 	private String city;
@@ -20,8 +24,6 @@ public class DeviceInfo {
 	private String simState;
 	private String dataUsed;
 	private Timestamp updateTime;
-
-
 
 	public Timestamp getUpdateTime() {
 		return updateTime;
@@ -51,6 +53,10 @@ public class DeviceInfo {
 		this.deviceState = jsonObject.getString("deviceState");
 		this.simState = jsonObject.getString("simState");
 		this.dataUsed = jsonObject.getString("dataUsed");
+		this.category = jsonObject.getString("category");
+		this.valveId = jsonObject.getString("valveId");
+		this.valveProtocol = jsonObject.getString("valveProtocol");
+		this.deviceProtocol = jsonObject.getString("deviceProtocol");
 	}
 
 	public String getDeviceId() {
@@ -163,6 +169,38 @@ public class DeviceInfo {
 
 	public void setCommunity(String community) {
 		this.community = community;
+	}
+	
+	public String getValveId() {
+		return valveId;
+	}
+
+	public void setValveId(String valveId) {
+		this.valveId = valveId;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public String getDeviceProtocol() {
+		return deviceProtocol;
+	}
+
+	public void setDeviceProtocol(String deviceProtocol) {
+		this.deviceProtocol = deviceProtocol;
+	}
+
+	public String getValveProtocol() {
+		return valveProtocol;
+	}
+
+	public void setValveProtocol(String valveProtocol) {
+		this.valveProtocol = valveProtocol;
 	}
 
 	@Override

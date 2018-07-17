@@ -46,20 +46,20 @@ public class HttpClient {
         //设置请求响应配置
         httpGet.setConfig(requestConfig);
         try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            //logger.log(Level.INFO, "当前请求的地址为：" + httpGet.getURI());
+            logger.log(Level.INFO, "当前请求的地址为：" + httpGet.getURI());
             //如果返回值为200，则请求成功，可以通过TestNG做判断 HttpStatus.SC_OK
             int status = response.getStatusLine().getStatusCode();
-            //logger.log(Level.INFO, "当前请求URL状态：" + status);
+            logger.log(Level.INFO, "当前请求URL状态：" + status);
             //获取Http Headers信息
             Header[] headers = response.getAllHeaders();
             int headerLength = headers.length;
             for (int i = 0; i < headerLength; i++) {
-                //logger.log(Level.INFO, "Header内容为：" + headers[i]);
+                logger.log(Level.INFO, "Header内容为：" + headers[i]);
             }
             //获取到请求的内容
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, "UTF-8");
-            //logger.log(Level.INFO, "获取请求响应的内容为：" + result);
+            logger.log(Level.INFO, "获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
             logger.log(Level.SEVERE, e.getMessage());
         } finally {
@@ -91,14 +91,14 @@ public class HttpClient {
             response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, "UTF-8");
-            logger.log(Level.INFO, "获取请求响应的内容为：" + result);
+            logger.info("获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.severe(e.getMessage());
         } finally {
             try {
                 if (response != null) response.close();
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage());
+                logger.severe(e.getMessage());
             }
             httpPost.releaseConnection();
             //httpClient.close();
@@ -117,8 +117,8 @@ public class HttpClient {
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(jsonParams)) return "";
         String result = "";
         HttpPost httpPost = new HttpPost(url);
-        //logger.log(Level.INFO, "当前请求的地址为: " + httpPost.getURI());
-        //logger.log(Level.INFO, "当前请求的参数为: " + jsonParams);
+        logger.log(Level.INFO, "当前请求的地址为: " + httpPost.getURI());
+        logger.log(Level.INFO, "当前请求的参数为: " + jsonParams);
         httpPost.setConfig(requestConfig);
         httpPost.setHeader("Content-Type", "application/json");
         CloseableHttpResponse response = null;
@@ -127,9 +127,9 @@ public class HttpClient {
             response = httpClient.execute(httpPost);
             HttpEntity httpEntity = response.getEntity();
             result = EntityUtils.toString(httpEntity, "UTF-8");
-            //logger.log(Level.INFO, "获取请求响应的内容为：" + result);
+            logger.log(Level.INFO, "获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
-            logger.log(Level.SEVERE, e.getMessage()+"请求内容为："+jsonParams+"请求结果为:"+response);
+            logger.log(Level.SEVERE, e.getMessage());
         } finally {
             try {
                 if (response != null) response.close();

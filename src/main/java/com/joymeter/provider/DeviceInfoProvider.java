@@ -60,6 +60,18 @@ public class DeviceInfoProvider {
 						SET("readFaile = readFaile+1");
 					}
 				}
+				if (!StringUtils.isEmpty(deviceInfo.getCategory())) {
+					SET("category=#{category}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getValveId())) {
+					SET("valveId=#{valveId}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getValveProtocol())) {
+					SET("valveProtocol=#{valveProtocol}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceProtocol())) {
+					SET("deviceProtocol=#{deviceProtocol}");
+				}
 				if (!StringUtils.isEmpty(deviceInfo.getSimId())) {
 					SET("simId=#{simId}");
 				}
