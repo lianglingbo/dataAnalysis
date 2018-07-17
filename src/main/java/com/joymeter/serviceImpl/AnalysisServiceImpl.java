@@ -440,7 +440,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
 				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress())
 				|| StringUtils.isEmpty(deviceInfo.getValveId())|| StringUtils.isEmpty(deviceInfo.getCategory())
-				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol()))
+				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol())
+				|| StringUtils.isEmpty(deviceInfo.getGatewayUrl()))
 			return ResultUtil.error(406, "Unexpected param");
 
 		try {

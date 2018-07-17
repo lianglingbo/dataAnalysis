@@ -49,7 +49,7 @@ public interface DeviceInfoMapper {
     List<DeviceInfo> getNoneDataAday();
 
     //插入新的设备数据
-    @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address,category,valveId,valveProtocol,deviceProtocol) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address},#{category},#{valveId},#{valveProtocol},#{deviceProtocol})")
+    @Insert("INSERT INTO device_info(deviceId,simId,gatewayId,project,province,city,district,community,address,category,valveId,valveProtocol,deviceProtocol,gatewayUrl) VALUES(#{deviceId},#{simId},#{gatewayId},#{project},#{province},#{city},#{district},#{community},#{address},#{category},#{valveId},#{valveProtocol},#{deviceProtocol},#{gatewayUrl})")
     void insert(DeviceInfo deviceInfo);
     
     //更新设备信息SQL

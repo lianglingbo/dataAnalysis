@@ -8,6 +8,7 @@ public class DeviceInfo {
 	private String deviceId;
 	private String simId;
 	private String gatewayId;
+	private String gatewayUrl;
 	private String valveId;
 	private String category;
 	private String deviceProtocol;
@@ -201,6 +202,15 @@ public class DeviceInfo {
 
 	public void setValveProtocol(String valveProtocol) {
 		this.valveProtocol = valveProtocol;
+	}
+	
+
+	public String getGatewayUrl() {
+		return gatewayUrl;
+	}
+
+	public void setGatewayUrl(String gatewayUrl) {
+		this.gatewayUrl = gatewayUrl;
 	}
 
 	@Override

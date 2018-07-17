@@ -72,6 +72,9 @@ public class DeviceInfoProvider {
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceProtocol())) {
 					SET("deviceProtocol=#{deviceProtocol}");
 				}
+				if (!StringUtils.isEmpty(deviceInfo.getDeviceProtocol())) {
+					SET("gatewayUrl=#{gatewayUrl}");
+				}
 				if (!StringUtils.isEmpty(deviceInfo.getSimId())) {
 					SET("simId=#{simId}");
 				}

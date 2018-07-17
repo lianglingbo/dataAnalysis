@@ -80,8 +80,8 @@ public class HttpClient {
         if (StringUtils.isEmpty(url) || params == null || params.isEmpty()) return "";
         String result = "";
         HttpPost httpPost = new HttpPost(url);
-        logger.log(Level.INFO, "当前请求的地址为: " + httpPost.getURI());
-        logger.log(Level.INFO, "当前请求的参数为: " + params);
+        //logger.log(Level.INFO, "当前请求的地址为: " + httpPost.getURI());
+        //logger.log(Level.INFO, "当前请求的参数为: " + params);
         httpPost.setConfig(requestConfig);
         List<NameValuePair> list = new ArrayList<>();
         params.entrySet().forEach(e -> list.add(new BasicNameValuePair(e.getKey(), e.getValue())));
@@ -91,7 +91,7 @@ public class HttpClient {
             response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity, "UTF-8");
-            logger.info("获取请求响应的内容为：" + result);
+            //logger.info("获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
             logger.severe(e.getMessage());
         } finally {
@@ -117,8 +117,8 @@ public class HttpClient {
         if (StringUtils.isEmpty(url) || StringUtils.isEmpty(jsonParams)) return "";
         String result = "";
         HttpPost httpPost = new HttpPost(url);
-        logger.log(Level.INFO, "当前请求的地址为: " + httpPost.getURI());
-        logger.log(Level.INFO, "当前请求的参数为: " + jsonParams);
+        //logger.log(Level.INFO, "当前请求的地址为: " + httpPost.getURI());
+        //logger.log(Level.INFO, "当前请求的参数为: " + jsonParams);
         httpPost.setConfig(requestConfig);
         httpPost.setHeader("Content-Type", "application/json");
         CloseableHttpResponse response = null;
@@ -127,7 +127,7 @@ public class HttpClient {
             response = httpClient.execute(httpPost);
             HttpEntity httpEntity = response.getEntity();
             result = EntityUtils.toString(httpEntity, "UTF-8");
-            logger.log(Level.INFO, "获取请求响应的内容为：" + result);
+            //logger.log(Level.INFO, "获取请求响应的内容为：" + result);
         } catch (IOException | ParseException e) {
             logger.log(Level.SEVERE, e.getMessage());
         } finally {
