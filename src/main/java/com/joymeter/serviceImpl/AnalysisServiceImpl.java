@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alibaba.fastjson.JSONArray;
+import com.joymeter.entity.MessFromGatewayBean;
 import com.joymeter.entity.UsageHour;
 import com.joymeter.entity.WaterMeterUse;
 import com.joymeter.service.RedisService;
@@ -50,7 +51,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	/**
 	 * 1.保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
-	 * "type":"1","event":"data","data":"","datetime":"1513576307290"}
+	 * "type":"1","event":"data","data":"","datetime":"1513576307290","msg":"msg"}
 	 * 2.数据源新增字段，eventinfo，记录event事件的data值（为字符串类型的时候，不能存入druid，druid中设置data属性为double类型）
 	 *   数据源新增时，判断事件，如果event 不为 data ，则将其data值存入eventinfo中
 	 * 3.新增方法setusageHour() ,mysql新增表：usage_hour；统计每日凌晨0到6点，每个小时的用水量；
@@ -65,31 +66,48 @@ public class AnalysisServiceImpl implements AnalysisService {
 	public void addData(String dataStr) {
 		if (StringUtils.isEmpty(dataStr))return;
 		try {
-			JSONObject jsonData = JSONObject.parseObject(dataStr);
-			//获得的json数据格式增加了msg信息，将msg存入druid时，对应的字段为eventInfo
-			if(dataStr.contains("msg")){
-				dataStr = dataStr.replace("msg","eventinfo");
+ 			JSONObject jsonData = JSONObject.parseObject(dataStr);
+			MessFromGatewayBean messFromGatewayBean= new MessFromGatewayBean(jsonData);
+			//内容非空校验
+			if(messageIsEmpty(messFromGatewayBean)) return;
+			try{
+				//发送至缓存
+				redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),dataStr);
+			}catch (Exception e) {
+				updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 			}
-			String serverId = jsonData.getString("serverId");
-			String deviceId = jsonData.getString("deviceId");
-			String deviceType = jsonData.getString("type");
-			String event = jsonData.getString("event");
-			String totaldata = jsonData.getString("data");
-			long datetime = Long.valueOf(jsonData.getString("datetime"));
-			if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType)
-					|| StringUtils.isEmpty(event) || datetime <= 0)
-				return;
-			addDataLogger.log(Level.INFO,dataStr);
-			//发送至缓存
-			redisService.sendToCJoy(deviceId,dataStr);
-			//更新抄表状态、设备状态、阀门状态
-			DeviceInfo deviceInfo = new DeviceInfo();
-			deviceInfo.setDeviceId(deviceId);
-			switch (event) {
+			//过滤事件，发送至mysql
+			enventFilter(messFromGatewayBean);
+		} catch (Exception e) {
+			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
+		}
+		//发送数据到druid中
+		//获得的json数据格式增加了msg信息，将msg存入druid时，对应的字段为eventInfo
+		if(dataStr.contains("msg")){
+			dataStr = dataStr.replace("msg","eventinfo");
+		}
+		DataCache.add(dataStr);
+		addDataLogger.log(Level.INFO, dataStr);
+
+	}
+
+
+	/**
+	 * 分析设备的状态，更新抄表状态、设备状态、阀门状态发送至mysql的deviceInfo表中
+	 * @param messFromGatewayBean
+	 */
+	public  void enventFilter(MessFromGatewayBean messFromGatewayBean){
+		String event = messFromGatewayBean.getEvent();
+		String deviceId = messFromGatewayBean.getDeviceId();
+
+		//更新抄表状态、设备状态、阀门状态
+		DeviceInfo deviceInfo = new DeviceInfo();
+		deviceInfo.setDeviceId(deviceId);
+		switch (event) {
 			case "offline":  //设备离线
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				break; 
+				break;
 			case "close":    //阀门关闭
 				deviceInfo.setValveState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
@@ -106,79 +124,108 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setDeviceState("1");
 				//能收到读表data数据，说明读表成功
 				deviceInfo.setReadState("0");
-				//开始判断凌晨用水情况
-				try{
-					//获取date时间
-					SimpleDateFormat sdfh=new SimpleDateFormat("HH");
-					int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
-					//每天清空mysql;重要！！寫在定時任務中
-					//【3】凌晨0点到6点：整点统计用水量
-					if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
-						//判断类型为水表的数据
-						if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
-							//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
-							UsageHour usageHour = new UsageHour();
-							usageHour.setDeviceId(deviceId);
-							//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
-							String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
-							usageHour.setDeviceTime(Timestamp.valueOf(deviceTime));
-
-							if(currenHour >=23 ){
-								//0点插入，值到zero,one，two，three，four，five，six；
-								usageHour.setZero(totaldata);
-							}else if(currenHour >=0 && currenHour <6){
-								//0点后，插入之前，先判断前一整点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
-								UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
-								if(StringUtils.isEmpty(selectResult)){
-									//上一次結果爲空，初始化
-									usageHour.setUsageByHour(currenHour,totaldata);
-								}else{
-									//結果不爲空，判斷上一小時是否有數據
-									String lastusage = selectResult.getUsageByHour(currenHour);
-									if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
-										//初始化所有數據
-										usageHour.setUsageByHour(currenHour,totaldata);
-									}else {
-										//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
-										int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
-										if(comp == 1){
-											//更新状态为1：异常
-											usageHour.setStatus("1");
-										}else {
-											//更新状态为0：正常
-											usageHour.setStatus("0");
-										}
-										//后续时间点数据的初始化
-										usageHour.setUsageByHour(currenHour+1,totaldata);
-									}
-								}
-							}
-							//插入mysql
-							deviceInfoMapper.insertIntoUsageHour(usageHour);
-							usageHourLog.log(Level.INFO,usageHour.toString());
-						}
-					}
-				}catch (Exception e){
-					addDataLogger.log(Level.INFO,e+"凌晨用水统计方法异常"+dataStr);
-				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				break;
+				try{
+					sendToUsage(messFromGatewayBean);
+				}catch (Exception e){
+
+				}
+ 				break;
 			case "online":   //设备上线
-			case "keepalive": 
-			case "push":    
+			case "keepalive":
+			case "push":
 				//收到以上四种事件，说明设备在线
 				deviceInfo.setDeviceState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
-			}
-		} catch (Exception e) {
-			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
-		//发送数据到druid中
-		DataCache.add(dataStr);
+
 	}
 
+	/**
+	 * 分析凌晨设备用水量，发送至mysql的usage表中
+	 * @param messFromGatewayBean
+	 */
+	public  void sendToUsage(MessFromGatewayBean messFromGatewayBean){
 
+		//开始判断凌晨用水情况
+		try{
+			//获取date时间
+			String time = messFromGatewayBean.getDatetime();
+			long datetime = Long.valueOf(time);
+			SimpleDateFormat sdfh=new SimpleDateFormat("HH");
+			int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
+			//每天清空mysql;重要！！寫在定時任務中
+			//【3】凌晨0点到6点：整点统计用水量
+			if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
+				String deviceId = messFromGatewayBean.getDeviceId();
+				String deviceType = messFromGatewayBean.getType();
+				String totaldata = messFromGatewayBean.getData();
+				//判断类型为水表的数据
+				if("3200".equals(deviceType) || "3201".equals(deviceType) || "32".equals(deviceType)){
+					//每个整点都进行数据统计，如果mysql中有记录则更新，无记录则插入，手动更新时间
+					UsageHour usageHour = new UsageHour();
+					usageHour.setDeviceId(deviceId);
+					//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
+					String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
+					usageHour.setDeviceTime(Timestamp.valueOf(deviceTime));
+
+					if(currenHour >=23 ){
+						//0点插入，值到zero,one，two，three，four，five，six；
+						usageHour.setZero(totaldata);
+					}else if(currenHour >=0 && currenHour <6){
+						//0点后，插入之前，先判断前一整点的值是否为空；如果为空，初始化所有时间点数据，如果不为空初始化后续时间点数据；
+						UsageHour selectResult  = deviceInfoMapper.getOneUsageHour(deviceId);
+						if(StringUtils.isEmpty(selectResult)){
+							//上一次結果爲空，初始化
+							usageHour.setUsageByHour(currenHour,totaldata);
+						}else{
+							//結果不爲空，判斷上一小時是否有數據
+							String lastusage = selectResult.getUsageByHour(currenHour);
+							if(StringUtils.isEmpty(lastusage) || "".equals(lastusage) || lastusage.length() == 0){
+								//初始化所有數據
+								usageHour.setUsageByHour(currenHour,totaldata);
+							}else {
+								//上一次数据和此次对比，结果返回1，表示上次数据大于这次数据，不合理，判断为异常
+								int comp = new BigDecimal(lastusage).compareTo(new BigDecimal(totaldata));
+								if(comp == 1){
+									//更新状态为1：异常
+									usageHour.setStatus("1");
+								}else {
+									//更新状态为0：正常
+									usageHour.setStatus("0");
+								}
+								//后续时间点数据的初始化
+								usageHour.setUsageByHour(currenHour+1,totaldata);
+							}
+						}
+					}
+					//插入mysql
+					deviceInfoMapper.insertIntoUsageHour(usageHour);
+					usageHourLog.log(Level.INFO,usageHour.toString());
+				}
+			}
+		}catch (Exception e){
+			addDataLogger.log(Level.INFO,e+"凌晨用水统计方法异常"+messFromGatewayBean.toString());
+		}
+
+	}
+
+	public boolean messageIsEmpty(MessFromGatewayBean messFromGatewayBean){
+		String deviceId = messFromGatewayBean.getDeviceId();
+		String serverId = messFromGatewayBean.getServerId();
+		String deviceType = messFromGatewayBean.getType();
+		String event = messFromGatewayBean.getEvent();
+		String time = messFromGatewayBean.getDatetime();
+		long datetime = Long.valueOf(time);
+
+
+		if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType) || StringUtils.isEmpty(event) || datetime <= 0){
+			return true;
+		}else {
+			return false;
+		}
+	}
 	/**
 	 * 根据参数获取离线设备
 	 * 
