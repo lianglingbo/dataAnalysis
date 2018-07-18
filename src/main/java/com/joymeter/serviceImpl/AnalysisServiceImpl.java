@@ -2,8 +2,6 @@ package com.joymeter.serviceImpl;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +17,7 @@ import com.joymeter.util.HttpClient;
 import com.joymeter.util.PropertiesUtils;
 import com.joymeter.util.ResultUtil;
 import com.joymeter.util.TimeTools;
+import com.joymeter.util.common.EmptyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -64,7 +63,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 */
 	@Override
 	public void addData(String dataStr) {
-		if (StringUtils.isEmpty(dataStr))return;
+
+		if (EmptyUtils.isEmpty(dataStr))return;
 		try {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
 			MessFromGatewayBean messFromGatewayBean= new MessFromGatewayBean(jsonData);
@@ -78,16 +78,17 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}
 			//过滤事件，发送至mysql
 			enventFilter(messFromGatewayBean);
+			//发送数据到druid中
+			//获得的json数据格式增加了msg信息，将msg存入druid时，对应的字段为eventInfo
+			if(dataStr.contains("msg")){
+				dataStr = dataStr.replace("msg","eventinfo");
+			}
+			DataCache.add(dataStr);
+			addDataLogger.log(Level.INFO, dataStr);
 		} catch (Exception e) {
 			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 		}
-		//发送数据到druid中
-		//获得的json数据格式增加了msg信息，将msg存入druid时，对应的字段为eventInfo
-		if(dataStr.contains("msg")){
-			dataStr = dataStr.replace("msg","eventinfo");
-		}
-		DataCache.add(dataStr);
-		addDataLogger.log(Level.INFO, dataStr);
+
 
 	}
 
@@ -152,9 +153,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		try{
 			//获取date时间
 			String time = messFromGatewayBean.getDatetime();
-			long datetime = Long.valueOf(time);
-			SimpleDateFormat sdfh=new SimpleDateFormat("HH");
-			int currenHour =  Integer.valueOf(sdfh.format(new Date(datetime)));
+			int currenHour = TimeTools.timestampToHour(Long.valueOf(time));
 			//每天清空mysql;重要！！寫在定時任務中
 			//【3】凌晨0点到6点：整点统计用水量
 			if((currenHour >=23 )|| (currenHour >= 0 && currenHour < 6)){
@@ -167,9 +166,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 					UsageHour usageHour = new UsageHour();
 					usageHour.setDeviceId(deviceId);
 					//手动更新时间（防止出现数据无修改情况下，mysql不自动更新时间）;存入时间改为设备自带的时间；
-					String deviceTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(datetime);//将时间格式转换成符合Timestamp要求的格式.
+					String deviceTime = TimeTools.timestampToDate(Long.valueOf(time));
 					usageHour.setDeviceTime(Timestamp.valueOf(deviceTime));
-
 					if(currenHour >=23 ){
 						//0点插入，值到zero,one，two，three，four，five，six；
 						usageHour.setZero(totaldata);

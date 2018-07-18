@@ -1,5 +1,6 @@
 package com.joymeter.util;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -70,5 +71,24 @@ public class TimeTools {
 
         String dayAfter=new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
         return dayAfter;
+    }
+
+
+    /**
+     * 时间戳( 转 小时
+     *
+     * @param dateTime
+     * @return
+     */
+    public static int timestampToHour(long dateTime){
+        SimpleDateFormat hourFormat=new SimpleDateFormat("HH");
+        int hour =  Integer.valueOf(hourFormat.format(new Date(dateTime)));
+        return hour;
+    }
+
+    public static String timestampToDate(long dataTime){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        String format = dateFormat.format(dataTime);
+        return format;
     }
 }
