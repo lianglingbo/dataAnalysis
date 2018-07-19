@@ -458,43 +458,43 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @return
 	 */
 	public boolean needUpdate(DeviceInfo localDevice,DeviceInfo newDevice){
-		if(!localDevice.getDeviceId().equals(newDevice.getDeviceId())){
+		if(!newDevice.getDeviceId().equals(localDevice.getDeviceId())){
 			return true;
 		}
-		if(!localDevice.getGatewayId().equals(newDevice.getGatewayId())){
+		if(!newDevice.getGatewayId().equals(localDevice.getGatewayId())){
 			return true;
 		}
-		if(!localDevice.getProject().equals(newDevice.getProject())){
+		if(!newDevice.getProject().equals(localDevice.getProject())){
 			return true;
 		}
-		if(!localDevice.getProvince().equals(newDevice.getProvince())){
+		if(!newDevice.getProvince().equals(localDevice.getProvince())){
 			return true;
 		}
-		if(!localDevice.getCity().equals(newDevice.getCity())){
+		if(!newDevice.getCity().equals(localDevice.getCity())){
 			return true;
 		}
-		if(!localDevice.getDistrict().equals(newDevice.getDistrict())){
+		if(!newDevice.getDistrict().equals(localDevice.getDistrict())){
 			return true;
 		}
-		if(!localDevice.getCommunity().equals(newDevice.getCommunity())){
+		if(!newDevice.getCommunity().equals(localDevice.getCommunity())){
 			return true;
 		}
-		if(!localDevice.getAddress().equals(newDevice.getAddress())){
+		if(!newDevice.getAddress().equals(localDevice.getAddress())){
 			return true;
 		}
-		if(!localDevice.getValveId().equals(newDevice.getValveId())){
+		if(!newDevice.getValveId().equals(localDevice.getValveId())){
 			return true;
 		}
-		if(!localDevice.getCategory().equals(newDevice.getCategory())){
+		if(!newDevice.getCategory().equals(localDevice.getCategory())){
 			return true;
 		}
-		if(!localDevice.getValveProtocol().equals(newDevice.getValveProtocol())){
+		if(!newDevice.getValveProtocol().equals(localDevice.getValveProtocol())){
 			return true;
 		}
-		if(!localDevice.getDeviceProtocol().equals(newDevice.getDeviceProtocol())){
+		if(!newDevice.getDeviceProtocol().equals(localDevice.getDeviceProtocol())){
 			return true;
 		}
-		if(!localDevice.getGatewayUrl().equals(newDevice.getGatewayUrl())){
+		if(!newDevice.getGatewayUrl().equals(localDevice.getGatewayUrl())){
 			return true;
 		}
 		return false;
