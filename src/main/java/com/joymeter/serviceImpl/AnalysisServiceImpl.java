@@ -451,15 +451,65 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 
 
+	 /**
+	 * 判断对象内容是否相等，不相等返回true，需要更新
+	 * @param localDevice
+	 * @param newDevice
+	 * @return
+	 */
+	public boolean needUpdate(DeviceInfo localDevice,DeviceInfo newDevice){
+		if(!localDevice.getDeviceId().equals(newDevice.getDeviceId())){
+			return true;
+		}
+		if(!localDevice.getGatewayId().equals(newDevice.getGatewayId())){
+			return true;
+		}
+		if(!localDevice.getProject().equals(newDevice.getProject())){
+			return true;
+		}
+		if(!localDevice.getProvince().equals(newDevice.getProvince())){
+			return true;
+		}
+		if(!localDevice.getCity().equals(newDevice.getCity())){
+			return true;
+		}
+		if(!localDevice.getDistrict().equals(newDevice.getDistrict())){
+			return true;
+		}
+		if(!localDevice.getCommunity().equals(newDevice.getCommunity())){
+			return true;
+		}
+		if(!localDevice.getAddress().equals(newDevice.getAddress())){
+			return true;
+		}
+		if(!localDevice.getValveId().equals(newDevice.getValveId())){
+			return true;
+		}
+		if(!localDevice.getCategory().equals(newDevice.getCategory())){
+			return true;
+		}
+		if(!localDevice.getValveProtocol().equals(newDevice.getValveProtocol())){
+			return true;
+		}
+		if(!localDevice.getDeviceProtocol().equals(newDevice.getDeviceProtocol())){
+			return true;
+		}
+		if(!localDevice.getGatewayUrl().equals(newDevice.getGatewayUrl())){
+			return true;
+		}
+		return false;
+
+	}
+
 	/**
 	 * 注册设备相关信息
+	 * 增加更新逻辑判断
 	 *
 	 * @param
 	 */
 	@Override
 	public Map<String, Object> register(DeviceInfo deviceInfo) {
-		registerLogger.log(Level.INFO, deviceInfo.toString());
-		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
+		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId())
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
 				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress())
@@ -469,10 +519,16 @@ public class AnalysisServiceImpl implements AnalysisService {
 			return ResultUtil.error(406, "Unexpected param");
 
 		try {
-			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
+			DeviceInfo localDevice = deviceInfoMapper.getOne(deviceInfo.getDeviceId());
+			if (localDevice == null) {
+				//注册设备
 				deviceInfoMapper.insert(deviceInfo);
 			}else {
-				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				//更新设备逻辑：当内容发生变更时，才去update
+				if(needUpdate(localDevice,deviceInfo)){
+					deviceInfoMapper.updateDeviceInfo(deviceInfo);
+					registerLogger.log(Level.SEVERE, deviceInfo.toString());
+				}
 			}
 		} catch (Exception e) {
 			registerLogger.log(Level.SEVERE, deviceInfo.toString(), e);
