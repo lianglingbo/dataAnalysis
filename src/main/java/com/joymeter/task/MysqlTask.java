@@ -101,7 +101,8 @@ public class MysqlTask {
 
     /**
      * 从各项目获取设备状态（是否已经删除）
-     * findConcentratorById.do
+     * findConcentratorById.do ，获取网关状态
+     * 设备id = 网关id 判断为网关
      * 1.通过deviceid查deviceinfo表
      * 2.得到project查projectinfo表
      * 3.得到对应项目的url
@@ -116,9 +117,14 @@ public class MysqlTask {
             //查询此设备的项目url
             DeviceInfo deviceInfo = deviceInfoMapper.getOne(meterNo);
             if(deviceInfo==null) return false;
-            String url = projectInfoMapper.getUrl(deviceInfo.getProject());
+             String url = projectInfoMapper.getUrl(deviceInfo.getProject());
             if(url==null || url.length()<4) return false;
-            url=url+api;
+             String gatewayId = deviceInfo.getGatewayId();
+             if(meterNo.equals(gatewayId)){
+                 //判断为网关
+                 api = "/findConcentratorById.do?access_token="+access_token+"&meterNo="+meterNo;
+             }
+             url=url+api;
             String result = HttpClient.sendGet(url);
             //如果项目接口异常，查询可能404
              if(StringUtils.isEmpty(result) || result.contains("Error")){

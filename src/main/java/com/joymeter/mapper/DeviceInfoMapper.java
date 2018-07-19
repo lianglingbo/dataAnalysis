@@ -43,7 +43,7 @@ public interface DeviceInfoMapper {
     DeviceInfo getOne(String deviceId);
 
     //查询24小时无数据的设备
-    @Select(" select * from device_info where   TIMESTAMPDIFF(HOUR,updateTime,now()) > '24'  and deviceId != gatewayId and project in(select project from project_info ) ")
+    @Select(" select * from device_info where   TIMESTAMPDIFF(HOUR,updateTime,now()) > '24'  and  project in(select project from project_info ) ")
     List<DeviceInfo> getNoneDataAday();
 
     //插入新的设备数据
