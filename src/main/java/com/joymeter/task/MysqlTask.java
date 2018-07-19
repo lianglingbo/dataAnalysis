@@ -101,6 +101,7 @@ public class MysqlTask {
 
     /**
      * 从各项目获取设备状态（是否已经删除）
+     * findConcentratorById.do
      * 1.通过deviceid查deviceinfo表
      * 2.得到project查projectinfo表
      * 3.得到对应项目的url

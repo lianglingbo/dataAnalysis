@@ -23,9 +23,11 @@ public class DeviceInfoProvider {
 		String nowTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);//将时间格式转换成符合Timestamp要求的格式.
 		Timestamp updatetime =Timestamp.valueOf(nowTime);//把时间转换
 		deviceInfo.setUpdateTime(updatetime);
-
-		String sql = new SQL() {
+		//是否更新时间
+ 		String sql = new SQL() {
 			{
+				boolean updateFlag = false;
+
 				UPDATE("device_info");
 				if (!StringUtils.isEmpty(deviceInfo.getGatewayId())) {
 					SET("gatewayId = #{gatewayId}");
@@ -50,15 +52,21 @@ public class DeviceInfoProvider {
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceState())) {
 					SET("deviceState = #{deviceState}");
-				}
+					//设备状态为离线不更新时间，在线状态才更新
+					if("1".equals(deviceInfo.getDeviceState())){
+						updateFlag = true;
+					}
+ 				}
 				if (!StringUtils.isEmpty(deviceInfo.getValveState())) {
 					SET("valveState = #{valveState}");
+					updateFlag = true;
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getReadState())) {
 					SET("readState = #{readState}");
 					if (deviceInfo.getReadState() == "1") {
 						SET("readFaile = readFaile+1");
 					}
+					updateFlag = true;
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getCategory())) {
 					SET("category=#{category}");
@@ -80,22 +88,24 @@ public class DeviceInfoProvider {
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getSimState())) {
 					SET("simState=#{simState}");
+					updateFlag = true;
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDataUsed())) {
 					SET("dataUsed=#{dataUsed}");
+					updateFlag = true;
 				}
 				if (!StringUtils.isEmpty(deviceInfo.getDeviceId())) {
-					//如果更新事件是offline，也就是deviceState=0，则不修改updatetime；反之修改
-					if("0".equals(deviceInfo.getDeviceState())){
-						WHERE("deviceId = #{deviceId}");
-					}else {
+					//更新策略调整，当设备的状态变化才更新时间
+					if(updateFlag){
 						SET("updateTime=#{updateTime}");
 						WHERE("deviceId = #{deviceId}");
+					}else {
+ 						WHERE("deviceId = #{deviceId}");
 					}
-
 				}
 			}
 		}.toString();
+		System.out.println(sql);
 		return sql ;
 	}
 	/**
