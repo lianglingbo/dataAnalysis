@@ -27,4 +27,11 @@ public interface VisualInterfaceService {
 
     //通过项目名称获取项目首页地址
     String getURLByProject(String project);
+
+    //获取可疑用水的用水和项目信息
+    List<HashMap<String, Object>> getUsageWithProjectByParams(String data);
+
+    //getAllUsageInfos查询可疑用水的详细信息展示所有
+    List<HashMap<String, Object>> getAllUsageInfos();
+
 }

@@ -22,9 +22,6 @@ public interface AnalysisService {
 	//根据条件获取特定设备接口
 	List<HashMap<String, Object>> getDeviceByParams(String data);
 
-	//获取可疑用水的用水和项目信息
-	List<HashMap<String, Object>> getUsageWithProjectByParams(String data);
-
 	//查询抄表失败聚合SQL
 	List<HashMap<String, Object>> getReadFailed(String data);
 

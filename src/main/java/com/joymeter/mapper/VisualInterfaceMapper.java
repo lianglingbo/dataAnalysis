@@ -1,8 +1,10 @@
 package com.joymeter.mapper;
 
+import com.joymeter.entity.DeviceInfo;
 import com.joymeter.entity.DeviceInfos;
 import com.joymeter.entity.ProjectCountBean;
 import com.joymeter.entity.TotalNumBean;
+import com.joymeter.provider.DeviceInfoProvider;
 import com.joymeter.provider.VisualInterfaceProvider;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -66,4 +68,12 @@ public interface VisualInterfaceMapper {
      //通过项目名称获取项目首页地址
      @Select(" select homeurl from project_info where project = #{project}")
      String getURLByProject(String project);
+
+     //查询可疑用水详情列表
+     @SelectProvider(type = VisualInterfaceProvider.class,method="getUsageWithProjectByParams")
+     List<HashMap<String, Object>> getUsageWithProjectByParams(DeviceInfo deviceInfo);
+     //查询可疑用水详情列表所有信息
+
+     @SelectProvider(type = VisualInterfaceProvider.class,method="getAllUsageInfos")
+     List<HashMap<String,Object>> getAllUsageInfos();
 }

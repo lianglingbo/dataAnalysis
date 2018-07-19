@@ -20,9 +20,7 @@ public interface DeviceInfoMapper {
 	@SelectProvider(type = DeviceInfoProvider.class,method="selectByParams")
     List<HashMap<String, Object>> getByParams(DeviceInfo deviceInfo);
 
-	//查询可疑用水详情列表
-    @SelectProvider(type = DeviceInfoProvider.class,method="selectUsageWithProjectByParams")
-    List<HashMap<String, Object>> getUsageWithProjectByParams(DeviceInfo deviceInfo);
+
 
     //统计数量SQL
     @SelectProvider(type = DeviceInfoProvider.class,method="selectcount")

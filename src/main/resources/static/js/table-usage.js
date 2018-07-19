@@ -27,10 +27,13 @@ $(function () {
     };
 
     initSelects();
+    showDevicesList();
 });
 
 //存储设备列表的全局变量
 var deviceData;
+//首页所有数据
+var deviceDataAll;
 
 let initSelects = function (e) {
     let selects = $("select"),
@@ -101,7 +104,7 @@ let showDevices = function(){
             params[fileds[idx]] = selects.eq(idx).find("option:selected").text();
     });
     data.data = JSON.stringify(params);
-    $.axspost("/monitor/getUsageWithProjectByParams",data,function (d) {
+    $.axspost("/visual/getUsageWithProjectByParams",data,function (d) {
         let jsonData = eval(d);
         let columns = [{checkbox:true}];
         columns.push({field:'project',title:"项目",align: 'center',valign : 'middle'});
@@ -115,6 +118,28 @@ let showDevices = function(){
         $('#table').bootstrapTable("refreshOptions",{columns:columns,data:jsonData});
         //将数据给全局变量,其他页面，把deviceData制空
         deviceData=jsonData;
+        //调用模拟点击事件
+        clickAllButton();
+    },function () {
+    })
+};
+
+//展示列表详情
+let showDevicesList = function(){
+    $.axspost("/visual/getAllUsageInfos","",function (d) {
+        let obj = eval(d);
+        let columns = [];
+        columns.push({field:'project',title:"项目",align: 'center',valign : 'middle'});
+        columns.push({field:'province',title:"省",align: 'center',valign : 'middle'});
+        columns.push({field:'city',title:"市",align: 'center',valign : 'middle'});
+        columns.push({field:'district',title:"区",align: 'center',valign : 'middle'});
+        columns.push({field:'community',title:"小区",align: 'center',valign : 'middle'});
+        columns.push({field:'address',title:"地址",align: 'center',valign : 'middle'});
+        columns.push({field:'deviceId',title:"设备编号",align: 'center',valign : 'middle'});
+        columns.push({field:'usagepic',title:'凌晨1-6点用量图', width:550  ,height:70,events:getLineChartEvents,align: 'center',formatter:AddPicFunction,valign : 'middle'});
+        $('#table_list').bootstrapTable("refreshOptions",{columns:columns,data:obj});
+        //将数据给全局变量all,其他页面，把deviceData制空
+        deviceDataAll=obj;
         //调用模拟点击事件
         clickAllButton();
     },function () {
@@ -168,6 +193,17 @@ let TableInit = function(){
             },
             columns:[],
         });
+        $('#table_list').bootstrapTable({
+            search:true,                        //搜索框
+            pagination: true,                   //是否显示分页（*）
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            clickToSelect:true,
+            exportDataType: "selected",              //basic', 'all', 'selected'.
+            columns:[]
+        });
     };
     return oTableInit;
 };
@@ -185,7 +221,18 @@ let  clickAllButton = function () {
             $(divid).click();
         });
     }
+    if(deviceDataAll!=null){
+        //获取id，循环遍历
+        $.each(deviceDataAll,function (index,obj) {
+            var deviceId = obj.deviceId;
+            var divid = "#"+deviceId;
+            //模拟触发div的点击事件，触发events的绘图方法
+            $(divid).click();
+        });
+    }
 };
+
+
 
 
 //表格中增加折线图容器

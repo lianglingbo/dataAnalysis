@@ -96,4 +96,19 @@ public class VisualInterfaceController {
         return visualInterfaceService.getURLByProject(project);
     }
 
+    //查询可疑用水的详细信息
+    @RequestMapping("/getUsageWithProjectByParams")
+    @ResponseBody
+    public List<HashMap<String, Object>> getUsageWithProjectByParams(@RequestParam("data")String data){
+        return visualInterfaceService.getUsageWithProjectByParams(data);
+    }
+
+    //getAllUsageInfos查询可疑用水的详细信息展示所有
+    @RequestMapping("/getAllUsageInfos")
+    @ResponseBody
+    public List<HashMap<String, Object>> getAllUsageInfos(){
+        System.out.println(visualInterfaceService.getAllUsageInfos().toString());
+         return visualInterfaceService.getAllUsageInfos();
+    }
+
 }

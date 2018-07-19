@@ -450,27 +450,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 
-	/**
-	 * 获取可疑用水的用水和项目信息
-	 * @param data
-	 * @return
-	 */
-	@Override
-	public List<HashMap<String, Object>> getUsageWithProjectByParams(String data) {
-		if (StringUtils.isEmpty(data))return null;
-
-		logger.log(Level.INFO,data);
-		try {
-			JSONObject jsonObject = JSONObject.parseObject(data);
-			DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
-
-			return deviceInfoMapper.getUsageWithProjectByParams(deviceInfo);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, data, e);
-			return null;
-		}
-	}
-
 
 	/**
 	 * 注册设备相关信息

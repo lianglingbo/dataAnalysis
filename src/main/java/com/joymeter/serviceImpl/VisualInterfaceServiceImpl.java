@@ -1,6 +1,7 @@
 package com.joymeter.serviceImpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.joymeter.entity.DeviceInfo;
 import com.joymeter.entity.DeviceInfos;
 import com.joymeter.entity.ProjectCountBean;
 import com.joymeter.entity.TotalNumBean;
@@ -12,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @ClassName VisualInterfaceServiceImpl
@@ -194,5 +196,37 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             //日志
         }
         return null;
+    }
+
+
+    /**
+     * 获取可疑用水的用水和项目信息
+     * @param data
+     * @return
+     */
+    @Override
+    public List<HashMap<String, Object>> getUsageWithProjectByParams(String data) {
+        if (StringUtils.isEmpty(data))return null;
+
+
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(data);
+            DeviceInfo deviceInfo = new DeviceInfo(jsonObject);
+
+            return visualInterfaceMapper.getUsageWithProjectByParams(deviceInfo);
+        } catch (Exception e) {
+
+            return null;
+        }
+    }
+
+    //getAllUsageInfos查询可疑用水的详细信息展示所有
+    @Override
+    public List<HashMap<String, Object>> getAllUsageInfos( ) {
+        try {
+            return visualInterfaceMapper.getAllUsageInfos();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -81,12 +81,6 @@ public class AnalysisController {
 		return analysisService.getUsageStatusFailed(data);
 	}
 
-	//查询可疑用水的详细信息
-	@RequestMapping("/getUsageWithProjectByParams")
-	@ResponseBody
-	public List<HashMap<String, Object>> getUsageWithProjectByParams(@RequestParam("data")String data){
-		return analysisService.getUsageWithProjectByParams(data);
-	}
 
 	//查询特定设备
 	@RequestMapping("/getDeviceByParams")

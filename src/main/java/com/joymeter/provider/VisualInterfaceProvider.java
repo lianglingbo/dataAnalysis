@@ -1,5 +1,6 @@
 package com.joymeter.provider;
 
+import com.joymeter.entity.DeviceInfo;
 import com.joymeter.entity.DeviceInfos;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
@@ -112,4 +113,71 @@ public class VisualInterfaceProvider {
 		System.out.println("详情页面："+sqltemp);
 		return sqltemp;
 	}
+
+
+	/**
+	 * 动态生成可疑用水列表查询
+	 *
+	 * @param deviceInfo
+	 * @return
+	 */
+	public String getUsageWithProjectByParams(DeviceInfo deviceInfo) {
+		return new SQL() {
+			{
+				SELECT("t2.project,t2.province,t2.city,t2.district,t2.community,t2.address,t1.deviceId,ROUND((t1.one - t1.zero ),3) as ones,ROUND((t1.two - t1.one ),3) as twos,ROUND((t1.three - t1.two ),3) as threes,ROUND((t1.four - t1.three ),3) as fours,ROUND((t1.five - t1.four ),3) as fives,ROUND((t1.six - t1.five ),3) as sixs   ");
+				FROM("usage_hour t1,device_info t2");
+				WHERE("t1.deviceId = t2.deviceId ");
+				//可疑标识
+				WHERE("t1.one > t1.zero");
+				WHERE("t1.two > t1.one");
+				WHERE("t1.three > t1.two");
+				WHERE("t1.four > t1.three");
+				WHERE("t1.five > t1.four");
+				WHERE("t1.six > t1.five");
+				if (!StringUtils.isEmpty(deviceInfo.getProject())) {
+					WHERE("t2.project = #{project}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getProvince())) {
+					WHERE("t2.province = #{province}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCity())) {
+					WHERE("t2.city = #{city}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getDistrict())) {
+					WHERE("t2.district = #{district}");
+				}
+				if (!StringUtils.isEmpty(deviceInfo.getCommunity())) {
+					WHERE("t2.community = #{community}");
+				}
+
+			}
+		}.toString();
+	}
+
+	/**
+	 * 可疑用水列表所有信息
+	 *
+	 * @param deviceInfo
+	 * @return
+	 */
+	public String getAllUsageInfos( ) {
+		return new SQL() {
+			{
+				SELECT("t2.project,t2.province,t2.city,t2.district,t2.community,t2.address,t1.deviceId,ROUND((t1.one - t1.zero ),3) as ones,ROUND((t1.two - t1.one ),3) as twos,ROUND((t1.three - t1.two ),3) as threes,ROUND((t1.four - t1.three ),3) as fours,ROUND((t1.five - t1.four ),3) as fives,ROUND((t1.six - t1.five ),3) as sixs   ");
+				FROM("usage_hour t1,device_info t2");
+				WHERE("t1.deviceId = t2.deviceId ");
+				//可疑标识
+				WHERE("t1.one > t1.zero");
+				WHERE("t1.two > t1.one");
+				WHERE("t1.three > t1.two");
+				WHERE("t1.four > t1.three");
+				WHERE("t1.five > t1.four");
+				WHERE("t1.six > t1.five");
+
+
+			}
+		}.toString();
+	}
+
+
 }
