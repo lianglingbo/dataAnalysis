@@ -43,11 +43,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static final Logger addDataLogger = Logger.getLogger("addData");
 	private static final Logger usageHourLog = Logger.getLogger("usageHourLog");
 
-	private static String postUsageUrl = PropertiesUtils.getProperty("postUsageUrl", "");
-
-
-
-
 	/**
 	 * 1.保存数据到Druid, 数据结构: {"serverId":"001","deviceId":"12345678",
 	 * "type":"1","event":"data","data":"","datetime":"1513576307290","msg":"msg"}
