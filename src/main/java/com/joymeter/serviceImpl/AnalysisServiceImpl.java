@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alibaba.fastjson.JSONArray;
-import com.joymeter.entity.MessFromGatewayBean;
+import com.joymeter.entity.MsgFromGatewayBean;
 import com.joymeter.entity.UsageHour;
 import com.joymeter.entity.WaterMeterUse;
 import com.joymeter.service.RedisService;
@@ -63,7 +63,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 		try {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
-			MessFromGatewayBean messFromGatewayBean= new MessFromGatewayBean(jsonData);
+			MsgFromGatewayBean messFromGatewayBean= new MsgFromGatewayBean(jsonData);
 			//内容非空校验
 			if(messFromGatewayBean.isEmpty())  return ResultUtil.error(406, "Unexpected param");
 			try{
@@ -94,7 +94,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * 分析设备的状态，更新抄表状态、设备状态、阀门状态发送至mysql的deviceInfo表中
 	 * @param messFromGatewayBean
 	 */
-	public  void eventFilter(MessFromGatewayBean messFromGatewayBean){
+	public  void eventFilter(MsgFromGatewayBean messFromGatewayBean){
 		String event = messFromGatewayBean.getEvent();
 		String deviceId = messFromGatewayBean.getDeviceId();
 
@@ -144,7 +144,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * 分析凌晨设备用水量，发送至mysql的usage表中
 	 * @param messFromGatewayBean
 	 */
-	public  void sendToUsage(MessFromGatewayBean messFromGatewayBean){
+	public  void sendToUsage(MsgFromGatewayBean messFromGatewayBean){
 
 		//开始判断凌晨用水情况
 		try{
@@ -432,7 +432,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	}
 
-
 	/**
 	 * 注册设备相关信息
 	 * 增加更新逻辑判断
@@ -457,7 +456,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfoMapper.insert(deviceInfo);
 			}else {
 				//更新设备逻辑：当内容发生变更时，才去update
-				if(deviceInfo.isEqual(localDevice)){
+				if(!deviceInfo.equals(localDevice)){
 					deviceInfoMapper.updateDeviceInfo(deviceInfo);
 					registerLogger.log(Level.SEVERE, deviceInfo.toString());
 				}

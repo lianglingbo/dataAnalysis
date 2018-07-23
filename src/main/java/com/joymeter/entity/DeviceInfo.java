@@ -214,53 +214,60 @@ public class DeviceInfo {
 	}
 	
 	/**
-	 * 判断对象内容是否相等，不相等返回true，需要更新
-	 * @param localDevice
-	 * @param newDevice
+	 * 判断对象内容是否相等，不相等返回false，需要更新
+	 * @param obj
 	 * @return
 	 */
-	public boolean isEqual(DeviceInfo localDevice){
-		if(!deviceId.equals(localDevice.getDeviceId())){
+	@Override
+	public boolean equals(Object obj) {
+		if(this==obj) {
 			return true;
 		}
-		if(!gatewayId.equals(localDevice.getGatewayId())){
-			return true;
-		}
-		if(!project.equals(localDevice.getProject())){
-			return true;
-		}
-		if(!province.equals(localDevice.getProvince())){
-			return true;
-		}
-		if(!city.equals(localDevice.getCity())){
-			return true;
-		}
-		if(!district.equals(localDevice.getDistrict())){
-			return true;
-		}
-		if(!community.equals(localDevice.getCommunity())){
-			return true;
-		}
-		if(!address.equals(localDevice.getAddress())){
-			return true;
-		}
-		if(!valveId.equals(localDevice.getValveId())){
-			return true;
-		}
-		if(!category.equals(localDevice.getCategory())){
-			return true;
-		}
-		if(!valveProtocol.equals(localDevice.getValveProtocol())){
-			return true;
-		}
-		if(!deviceProtocol.equals(localDevice.getDeviceProtocol())){
-			return true;
-		}
-		if(!gatewayUrl.equals(localDevice.getGatewayUrl())){
+		
+		if(obj instanceof DeviceInfo) {
+			DeviceInfo localDevice = (DeviceInfo)obj;
+			if(!deviceId.equals(localDevice.getDeviceId())){
+				return false;
+			}
+			if(!gatewayId.equals(localDevice.getGatewayId())){
+				return false;
+			}
+			if(!project.equals(localDevice.getProject())){
+				return false;
+			}
+			if(!province.equals(localDevice.getProvince())){
+				return false;
+			}
+			if(!city.equals(localDevice.getCity())){
+				return false;
+			}
+			if(!district.equals(localDevice.getDistrict())){
+				return false;
+			}
+			if(!community.equals(localDevice.getCommunity())){
+				return false;
+			}
+			if(!address.equals(localDevice.getAddress())){
+				return false;
+			}
+			if(!valveId.equals(localDevice.getValveId())){
+				return false;
+			}
+			if(!category.equals(localDevice.getCategory())){
+				return false;
+			}
+			if(!valveProtocol.equals(localDevice.getValveProtocol())){
+				return false;
+			}
+			if(!deviceProtocol.equals(localDevice.getDeviceProtocol())){
+				return false;
+			}
+			if(!gatewayUrl.equals(localDevice.getGatewayUrl())){
+				return false;
+			}
 			return true;
 		}
 		return false;
-
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
  * @Date 2018/7/18 11:14
  * @Version 1.0
  **/
-public class MessFromGatewayBean {
+public class MsgFromGatewayBean {
     private String serverId;
     private String deviceId;
     private String type;
@@ -23,7 +23,7 @@ public class MessFromGatewayBean {
 
 
 
-    public MessFromGatewayBean(JSONObject jsonObject) {
+    public MsgFromGatewayBean(JSONObject jsonObject) {
         super();
         this.serverId = jsonObject.getString("serverId");
         this.deviceId = jsonObject.getString("deviceId");
