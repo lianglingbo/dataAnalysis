@@ -212,6 +212,56 @@ public class DeviceInfo {
 	public void setGatewayUrl(String gatewayUrl) {
 		this.gatewayUrl = gatewayUrl;
 	}
+	
+	/**
+	 * 判断对象内容是否相等，不相等返回true，需要更新
+	 * @param localDevice
+	 * @param newDevice
+	 * @return
+	 */
+	public boolean isEqual(DeviceInfo localDevice){
+		if(!deviceId.equals(localDevice.getDeviceId())){
+			return true;
+		}
+		if(!gatewayId.equals(localDevice.getGatewayId())){
+			return true;
+		}
+		if(!project.equals(localDevice.getProject())){
+			return true;
+		}
+		if(!province.equals(localDevice.getProvince())){
+			return true;
+		}
+		if(!city.equals(localDevice.getCity())){
+			return true;
+		}
+		if(!district.equals(localDevice.getDistrict())){
+			return true;
+		}
+		if(!community.equals(localDevice.getCommunity())){
+			return true;
+		}
+		if(!address.equals(localDevice.getAddress())){
+			return true;
+		}
+		if(!valveId.equals(localDevice.getValveId())){
+			return true;
+		}
+		if(!category.equals(localDevice.getCategory())){
+			return true;
+		}
+		if(!valveProtocol.equals(localDevice.getValveProtocol())){
+			return true;
+		}
+		if(!deviceProtocol.equals(localDevice.getDeviceProtocol())){
+			return true;
+		}
+		if(!gatewayUrl.equals(localDevice.getGatewayUrl())){
+			return true;
+		}
+		return false;
+
+	}
 
 	@Override
 	public String toString() {

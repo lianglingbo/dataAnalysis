@@ -433,57 +433,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 	}
 
 
-
-	 /**
-	 * 判断对象内容是否相等，不相等返回true，需要更新
-	 * @param localDevice
-	 * @param newDevice
-	 * @return
-	 */
-	public boolean needUpdate(DeviceInfo localDevice,DeviceInfo newDevice){
-		if(!newDevice.getDeviceId().equals(localDevice.getDeviceId())){
-			return true;
-		}
-		if(!newDevice.getGatewayId().equals(localDevice.getGatewayId())){
-			return true;
-		}
-		if(!newDevice.getProject().equals(localDevice.getProject())){
-			return true;
-		}
-		if(!newDevice.getProvince().equals(localDevice.getProvince())){
-			return true;
-		}
-		if(!newDevice.getCity().equals(localDevice.getCity())){
-			return true;
-		}
-		if(!newDevice.getDistrict().equals(localDevice.getDistrict())){
-			return true;
-		}
-		if(!newDevice.getCommunity().equals(localDevice.getCommunity())){
-			return true;
-		}
-		if(!newDevice.getAddress().equals(localDevice.getAddress())){
-			return true;
-		}
-		if(!newDevice.getValveId().equals(localDevice.getValveId())){
-			return true;
-		}
-		if(!newDevice.getCategory().equals(localDevice.getCategory())){
-			return true;
-		}
-		if(!newDevice.getValveProtocol().equals(localDevice.getValveProtocol())){
-			return true;
-		}
-		if(!newDevice.getDeviceProtocol().equals(localDevice.getDeviceProtocol())){
-			return true;
-		}
-		if(!newDevice.getGatewayUrl().equals(localDevice.getGatewayUrl())){
-			return true;
-		}
-		return false;
-
-	}
-
 	/**
 	 * 注册设备相关信息
 	 * 增加更新逻辑判断
@@ -508,7 +457,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfoMapper.insert(deviceInfo);
 			}else {
 				//更新设备逻辑：当内容发生变更时，才去update
-				if(needUpdate(localDevice,deviceInfo)){
+				if(deviceInfo.isEqual(localDevice)){
 					deviceInfoMapper.updateDeviceInfo(deviceInfo);
 					registerLogger.log(Level.SEVERE, deviceInfo.toString());
 				}
