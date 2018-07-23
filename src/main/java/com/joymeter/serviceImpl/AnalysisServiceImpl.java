@@ -65,7 +65,7 @@ public class AnalysisServiceImpl implements AnalysisService {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
 			MessFromGatewayBean messFromGatewayBean= new MessFromGatewayBean(jsonData);
 			//内容非空校验
-			if(messageIsEmpty(messFromGatewayBean))  return ResultUtil.error(406, "Unexpected param");
+			if(messFromGatewayBean.isEmpty())  return ResultUtil.error(406, "Unexpected param");
 			try{
 				//发送至缓存
 				redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),dataStr);
@@ -206,21 +206,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	}
 
-	public boolean messageIsEmpty(MessFromGatewayBean messFromGatewayBean){
-		String deviceId = messFromGatewayBean.getDeviceId();
-		String serverId = messFromGatewayBean.getServerId();
-		String deviceType = messFromGatewayBean.getType();
-		String event = messFromGatewayBean.getEvent();
-		String time = messFromGatewayBean.getDatetime();
-		long datetime = Long.valueOf(time);
-
-
-		if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(deviceType) || StringUtils.isEmpty(event) || datetime <= 0){
-			return true;
-		}else {
-			return false;
-		}
-	}
+	
 	/**
 	 * 根据参数获取离线设备
 	 * 

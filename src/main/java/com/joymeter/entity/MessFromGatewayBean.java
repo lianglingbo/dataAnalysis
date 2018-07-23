@@ -1,5 +1,7 @@
 package com.joymeter.entity;
 
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -88,6 +90,19 @@ public class MessFromGatewayBean {
     public void setDatetime(String datetime) {
         this.datetime = datetime;
     }
+    
+    /**
+     * 判空
+     * @return
+     */
+    public boolean isEmpty(){
+
+		if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(type) || StringUtils.isEmpty(event) || StringUtils.isEmpty(datetime)?true:Long.valueOf(datetime) <= 0){
+			return true;
+		}else {
+			return false;
+		}
+	}
 
     @Override
     public String toString() {
