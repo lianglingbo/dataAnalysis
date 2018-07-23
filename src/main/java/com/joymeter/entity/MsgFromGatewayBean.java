@@ -22,7 +22,10 @@ public class MsgFromGatewayBean {
     private String data;
 
 
-
+    /**
+     * 根据jsonObject初始化实例
+     * @param jsonObject
+     */
     public MsgFromGatewayBean(JSONObject jsonObject) {
         super();
         this.serverId = jsonObject.getString("serverId");
@@ -97,7 +100,8 @@ public class MsgFromGatewayBean {
      */
     public boolean isEmpty(){
 
-		if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(type) || StringUtils.isEmpty(event) || StringUtils.isEmpty(datetime)?true:Long.valueOf(datetime) <= 0){
+		if (StringUtils.isEmpty(serverId) || StringUtils.isEmpty(deviceId) || StringUtils.isEmpty(type) || StringUtils.isEmpty(event) 
+				|| StringUtils.isEmpty(datetime)?true:Long.valueOf(datetime) <= 0){
 			return true;
 		}else {
 			return false;
