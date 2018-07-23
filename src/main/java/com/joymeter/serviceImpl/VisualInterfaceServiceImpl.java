@@ -1,19 +1,19 @@
 package com.joymeter.serviceImpl;
 
+
 import com.alibaba.fastjson.JSONObject;
-import com.joymeter.entity.DeviceInfo;
-import com.joymeter.entity.DeviceInfos;
-import com.joymeter.entity.ProjectCountBean;
-import com.joymeter.entity.TotalNumBean;
+import com.joymeter.entity.*;
 import com.joymeter.mapper.VisualInterfaceMapper;
 import com.joymeter.service.VisualInterfaceService;
+import com.joymeter.util.common.EmptyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * @ClassName VisualInterfaceServiceImpl
@@ -229,4 +229,57 @@ public class VisualInterfaceServiceImpl implements VisualInterfaceService {
             return null;
         }
     }
+
+    //获取省级，市级，区级设备分布通用方法
+    public List<HashMap<String, Object>> getDist(String level){
+        try {
+            List<HashMap<String, Object>> list = visualInterfaceMapper.getDevDistribution(level);
+            Iterator<HashMap<String, Object>> it = list.iterator();
+            while (it.hasNext()){
+                HashMap<String, Object> next = it.next();
+                Object name = next.get("name");
+                RegionBean region = visualInterfaceMapper.getRegion(name.toString());
+                if(EmptyUtils.isEmpty(region)){
+                    it.remove();
+                }else{
+                    next.put("adcode",region.getAdcode());
+                    next.put("padcode",region.getPadcode());
+
+                }
+
+            }
+            return  list;
+        } catch (Exception e) {
+
+            return null;
+        }
+
+    }
+
+    //设备分布
+    @Override
+    public List<HashMap<String, Object>> getDevDistribution() {
+         List<HashMap<String, Object>> city = getDist("city");
+         System.out.println("city********"+city);
+        ArrayList<HashMap<String, Object>> hashMapArrayList = new ArrayList<>();
+        for (HashMap<String, Object> map:city) {
+            Object padcode = map.get("padcode");
+            HashMap<String, Object> hashMap = new HashMap<>();
+            //查询上级信息
+            RegionBean regionbean = visualInterfaceMapper.getRegionByadcode(padcode.toString());
+            if(EmptyUtils.isEmpty(regionbean)) break;
+            hashMap.put("adcode",padcode);
+            hashMap.put("padcode",regionbean.getPadcode());
+            hashMap.put("name",regionbean.getName());
+
+            hashMap.put("value",map.get("value"));
+            hashMapArrayList.add(hashMap);
+        }
+        city.addAll(hashMapArrayList);
+         return city;
+
+    }
+
+    
+
 }

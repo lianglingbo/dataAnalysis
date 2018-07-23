@@ -1,11 +1,10 @@
 package com.joymeter.mapper;
 
-import com.joymeter.entity.DeviceInfo;
-import com.joymeter.entity.DeviceInfos;
-import com.joymeter.entity.ProjectCountBean;
-import com.joymeter.entity.TotalNumBean;
+import com.joymeter.entity.*;
 import com.joymeter.provider.DeviceInfoProvider;
 import com.joymeter.provider.VisualInterfaceProvider;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
@@ -76,4 +75,16 @@ public interface VisualInterfaceMapper {
 
      @SelectProvider(type = VisualInterfaceProvider.class,method="getAllUsageInfos")
      List<HashMap<String,Object>> getAllUsageInfos();
+
+     //设备分布数量
+     @SelectProvider(type = VisualInterfaceProvider.class,method="getDevDistribution")
+    List<HashMap<String,Object>> getDevDistribution(String level);
+
+     //查询本级和上级地区码
+     @Select(" select * from region_info where name = #{name}")
+     RegionBean getRegion(String name);
+
+     //查询本级和上级地区码
+     @Select(" select * from region_info where adcode = #{adcode}")
+     RegionBean getRegionByadcode(String adcode);
 }

@@ -34,4 +34,5 @@ public interface VisualInterfaceService {
     //getAllUsageInfos查询可疑用水的详细信息展示所有
     List<HashMap<String, Object>> getAllUsageInfos();
 
+    List<HashMap<String,Object>> getDevDistribution();
 }

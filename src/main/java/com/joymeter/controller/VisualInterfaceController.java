@@ -107,8 +107,14 @@ public class VisualInterfaceController {
     @RequestMapping("/getAllUsageInfos")
     @ResponseBody
     public List<HashMap<String, Object>> getAllUsageInfos(){
-        System.out.println(visualInterfaceService.getAllUsageInfos().toString());
          return visualInterfaceService.getAllUsageInfos();
     }
 
+    //各省市设备数量分布
+    @RequestMapping("/getDevDistribution")
+    @ResponseBody
+    public List<HashMap<String, Object>> getDevDistribution(){
+
+        return visualInterfaceService.getDevDistribution();
+    }
 }

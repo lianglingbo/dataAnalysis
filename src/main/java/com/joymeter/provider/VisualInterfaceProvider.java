@@ -157,7 +157,7 @@ public class VisualInterfaceProvider {
 	/**
 	 * 可疑用水列表所有信息
 	 *
-	 * @param deviceInfo
+	 * @param
 	 * @return
 	 */
 	public String getAllUsageInfos( ) {
@@ -178,6 +178,14 @@ public class VisualInterfaceProvider {
 			}
 		}.toString();
 	}
+
+
+
+	public String getDevDistribution(String level){
+		String sql = " select "+level+" as name , count(*) as value  from device_info GROUP BY " +level ;
+		return sql;
+	}
+
 
 
 }
