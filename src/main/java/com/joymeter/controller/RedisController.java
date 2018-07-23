@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.joymeter.entity.DeviceInfo;
 import com.joymeter.service.AnalysisService;
 
+import java.util.Map;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("redis/joy")
@@ -21,18 +23,18 @@ public class RedisController {
 	private RedisUtils redisUtils;
 
 	@RequestMapping("/addData")
-    public void addData(@RequestParam("data") String data) {
-		analysisService.addData(data);
+    public Map<String, Object> addData(@RequestParam("data") String data) {
+		return analysisService.addData(data);
     }
 	
 	@RequestMapping("/event")
-    public void event(@RequestBody String data) {
-		analysisService.addData(data);
+    public Map<String, Object> event(@RequestBody String data) {
+		return analysisService.addData(data);
     }
 	
 	@RequestMapping("/register")
-    public void register(@RequestBody DeviceInfo deviceInfo) {
-		analysisService.register(deviceInfo);
+    public Map<String, Object> register(@RequestBody DeviceInfo deviceInfo) {
+		return analysisService.register(deviceInfo);
     }
 	
 	@RequestMapping("/updateSim")

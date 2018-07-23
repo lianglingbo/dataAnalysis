@@ -57,14 +57,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param dataStr
 	 */
 	@Override
-	public void addData(String dataStr) {
+	public  Map<String, Object>  addData(String dataStr) {
 
-		if (EmptyUtils.isEmpty(dataStr))return;
+		if (EmptyUtils.isEmpty(dataStr))  return ResultUtil.error(406, "Unexpected param");
+
 		try {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
 			MessFromGatewayBean messFromGatewayBean= new MessFromGatewayBean(jsonData);
 			//内容非空校验
-			if(messageIsEmpty(messFromGatewayBean)) return;
+			if(messageIsEmpty(messFromGatewayBean))  return ResultUtil.error(406, "Unexpected param");
 			try{
 				//发送至缓存
 				redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),dataStr);
@@ -80,9 +81,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}
 			DataCache.add(dataStr);
 			addDataLogger.log(Level.INFO, dataStr);
-		} catch (Exception e) {
+ 		} catch (Exception e) {
 			addDataLogger.log(Level.SEVERE, dataStr, e);
 		}
+		return ResultUtil.success();
 
 
 	}
@@ -446,15 +448,65 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 
 
+	 /**
+	 * 判断对象内容是否相等，不相等返回true，需要更新
+	 * @param localDevice
+	 * @param newDevice
+	 * @return
+	 */
+	public boolean needUpdate(DeviceInfo localDevice,DeviceInfo newDevice){
+		if(!newDevice.getDeviceId().equals(localDevice.getDeviceId())){
+			return true;
+		}
+		if(!newDevice.getGatewayId().equals(localDevice.getGatewayId())){
+			return true;
+		}
+		if(!newDevice.getProject().equals(localDevice.getProject())){
+			return true;
+		}
+		if(!newDevice.getProvince().equals(localDevice.getProvince())){
+			return true;
+		}
+		if(!newDevice.getCity().equals(localDevice.getCity())){
+			return true;
+		}
+		if(!newDevice.getDistrict().equals(localDevice.getDistrict())){
+			return true;
+		}
+		if(!newDevice.getCommunity().equals(localDevice.getCommunity())){
+			return true;
+		}
+		if(!newDevice.getAddress().equals(localDevice.getAddress())){
+			return true;
+		}
+		if(!newDevice.getValveId().equals(localDevice.getValveId())){
+			return true;
+		}
+		if(!newDevice.getCategory().equals(localDevice.getCategory())){
+			return true;
+		}
+		if(!newDevice.getValveProtocol().equals(localDevice.getValveProtocol())){
+			return true;
+		}
+		if(!newDevice.getDeviceProtocol().equals(localDevice.getDeviceProtocol())){
+			return true;
+		}
+		if(!newDevice.getGatewayUrl().equals(localDevice.getGatewayUrl())){
+			return true;
+		}
+		return false;
+
+	}
+
 	/**
 	 * 注册设备相关信息
+	 * 增加更新逻辑判断
 	 *
 	 * @param
 	 */
 	@Override
 	public Map<String, Object> register(DeviceInfo deviceInfo) {
-		registerLogger.log(Level.INFO, deviceInfo.toString());
-		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId()) 
+		if (StringUtils.isEmpty(deviceInfo.getDeviceId()) || StringUtils.isEmpty(deviceInfo.getGatewayId())
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
 				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress())
@@ -464,10 +516,16 @@ public class AnalysisServiceImpl implements AnalysisService {
 			return ResultUtil.error(406, "Unexpected param");
 
 		try {
-			if (deviceInfoMapper.getOne(deviceInfo.getDeviceId())==null) {
+			DeviceInfo localDevice = deviceInfoMapper.getOne(deviceInfo.getDeviceId());
+			if (localDevice == null) {
+				//注册设备
 				deviceInfoMapper.insert(deviceInfo);
 			}else {
-				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				//更新设备逻辑：当内容发生变更时，才去update
+				if(needUpdate(localDevice,deviceInfo)){
+					deviceInfoMapper.updateDeviceInfo(deviceInfo);
+					registerLogger.log(Level.SEVERE, deviceInfo.toString());
+				}
 			}
 		} catch (Exception e) {
 			registerLogger.log(Level.SEVERE, deviceInfo.toString(), e);
