@@ -226,45 +226,7 @@ public class DeviceInfo {
 		
 		if(obj instanceof DeviceInfo) {
 			DeviceInfo localDevice = (DeviceInfo)obj;
-			if(!deviceId.equals(localDevice.getDeviceId())){
-				return false;
-			}
-			if(!gatewayId.equals(localDevice.getGatewayId())){
-				return false;
-			}
-			if(!project.equals(localDevice.getProject())){
-				return false;
-			}
-			if(!province.equals(localDevice.getProvince())){
-				return false;
-			}
-			if(!city.equals(localDevice.getCity())){
-				return false;
-			}
-			if(!district.equals(localDevice.getDistrict())){
-				return false;
-			}
-			if(!community.equals(localDevice.getCommunity())){
-				return false;
-			}
-			if(!address.equals(localDevice.getAddress())){
-				return false;
-			}
-			if(!valveId.equals(localDevice.getValveId())){
-				return false;
-			}
-			if(!category.equals(localDevice.getCategory())){
-				return false;
-			}
-			if(!valveProtocol.equals(localDevice.getValveProtocol())){
-				return false;
-			}
-			if(!deviceProtocol.equals(localDevice.getDeviceProtocol())){
-				return false;
-			}
-			if(!gatewayUrl.equals(localDevice.getGatewayUrl())){
-				return false;
-			}
+			if(this.toString().equals(localDevice.toString()))
 			return true;
 		}
 		return false;
