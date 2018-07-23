@@ -77,7 +77,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				updateDeviceLogger.log(Level.SEVERE, dataStr, e);
 			}
 			//过滤事件，发送至mysql
-			enventFilter(messFromGatewayBean);
+			eventFilter(messFromGatewayBean);
 			//发送数据到druid中
 			//获得的json数据格式增加了msg信息，将msg存入druid时，对应的字段为eventInfo
 			if(dataStr.contains("msg")){
@@ -86,7 +86,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			DataCache.add(dataStr);
 			addDataLogger.log(Level.INFO, dataStr);
 		} catch (Exception e) {
-			updateDeviceLogger.log(Level.SEVERE, dataStr, e);
+			addDataLogger.log(Level.SEVERE, dataStr, e);
 		}
 
 
@@ -97,7 +97,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * 分析设备的状态，更新抄表状态、设备状态、阀门状态发送至mysql的deviceInfo表中
 	 * @param messFromGatewayBean
 	 */
-	public  void enventFilter(MessFromGatewayBean messFromGatewayBean){
+	public  void eventFilter(MessFromGatewayBean messFromGatewayBean){
 		String event = messFromGatewayBean.getEvent();
 		String deviceId = messFromGatewayBean.getDeviceId();
 
@@ -204,7 +204,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				}
 			}
 		}catch (Exception e){
-			addDataLogger.log(Level.INFO,e+"凌晨用水统计方法异常"+messFromGatewayBean.toString());
+			usageHourLog.log(Level.INFO,e+"凌晨用水统计方法异常"+messFromGatewayBean.toString());
 		}
 
 	}
