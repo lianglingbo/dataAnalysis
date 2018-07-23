@@ -59,7 +59,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	@Override
 	public  Map<String, Object>  addData(String dataStr) {
 
-		if (EmptyUtils.isEmpty(dataStr))  return ResultUtil.error(406, "Unexpected param");
+		if (EmptyUtils.isEmpty(dataStr))  return ResultUtil.error(400, "Unexpected param");
 
 		try {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
@@ -85,7 +85,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 			addDataLogger.log(Level.SEVERE, dataStr, e);
 		}
 		return ResultUtil.success();
-
 
 	}
 
@@ -447,7 +446,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				|| StringUtils.isEmpty(deviceInfo.getValveId())|| StringUtils.isEmpty(deviceInfo.getCategory())
 				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol())
 				|| StringUtils.isEmpty(deviceInfo.getGatewayUrl()))
-			return ResultUtil.error(406, "Unexpected param");
+			return ResultUtil.error(400, "Unexpected param");
 
 		try {
 			DeviceInfo localDevice = deviceInfoMapper.getOne(deviceInfo.getDeviceId());
