@@ -62,14 +62,15 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 * @param dataStr
 	 */
 	@Override
-	public void addData(String dataStr) {
+	public  Map<String, Object>  addData(String dataStr) {
 
-		if (EmptyUtils.isEmpty(dataStr))return;
+		if (EmptyUtils.isEmpty(dataStr))  return ResultUtil.error(406, "Unexpected param");
+
 		try {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
 			MessFromGatewayBean messFromGatewayBean= new MessFromGatewayBean(jsonData);
 			//内容非空校验
-			if(messageIsEmpty(messFromGatewayBean)) return;
+			if(messageIsEmpty(messFromGatewayBean))  return ResultUtil.error(406, "Unexpected param");
 			try{
 				//发送至缓存
 				redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),dataStr);
@@ -85,9 +86,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}
 			DataCache.add(dataStr);
 			addDataLogger.log(Level.INFO, dataStr);
-		} catch (Exception e) {
+ 		} catch (Exception e) {
 			addDataLogger.log(Level.SEVERE, dataStr, e);
 		}
+		return ResultUtil.success();
 
 
 	}

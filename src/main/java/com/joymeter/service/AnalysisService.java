@@ -7,7 +7,7 @@ import java.util.Map;
 import com.joymeter.entity.DeviceInfo;
 
 public interface AnalysisService {
-	void addData(String data);
+	Map<String, Object>  addData(String data);
 
 	//注册，添加
 	Map<String, Object> register(DeviceInfo deviceInfo);
