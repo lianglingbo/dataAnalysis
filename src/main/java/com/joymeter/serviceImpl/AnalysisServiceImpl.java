@@ -36,6 +36,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private RedisService redisService;
 
 	private static String queryUrl = PropertiesUtils.getProperty("queryUrl", "");
+	private static String updateStatusUrl = PropertiesUtils.getProperty("updateStatusUrl", "");
+
 	private static final Logger logger = Logger.getLogger(AnalysisServiceImpl.class.getName());
 	private static final Logger updateSimLogger = Logger.getLogger("updateSim");
 	private static final Logger registerLogger = Logger.getLogger("register");
@@ -54,6 +56,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	 *   每天定时，清空usage_hour表
 	 *   最后把记录存进druid
 	 *
+	 * 4.设备的状态变更和阀门状态变化  需要通知业务层
 	 * @param dataStr
 	 */
 	@Override
@@ -97,20 +100,35 @@ public class AnalysisServiceImpl implements AnalysisService {
 		String event = messFromGatewayBean.getEvent();
 		String deviceId = messFromGatewayBean.getDeviceId();
 
-		//更新抄表状态、设备状态、阀门状态
+		//更新抄表状态、设备状态、阀门状态 ，deviceState , valveState
 		DeviceInfo deviceInfo = new DeviceInfo();
 		deviceInfo.setDeviceId(deviceId);
 		switch (event) {
 			case "offline":  //设备离线
 				deviceInfo.setDeviceState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
-				break;
+				try{
+					isStatusChange(deviceInfo,"deviceState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
+ 				break;
 			case "close":    //阀门关闭
 				deviceInfo.setValveState("0");
+				try{
+					isStatusChange(deviceInfo,"valveState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
 			case "open":     //阀门打开
 				deviceInfo.setValveState("1");
+				try{
+					isStatusChange(deviceInfo,"valveState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
 			case "data_failed":  //读表失败
@@ -120,6 +138,11 @@ public class AnalysisServiceImpl implements AnalysisService {
 			case "error":  //设备故障
 				deviceInfo.setDeviceState("2");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				try{
+					isStatusChange(deviceInfo,"deviceState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
 				break;
 			case "data":       //读表成功
 				deviceInfo.setDeviceState("1");
@@ -127,9 +150,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setReadState("0");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				try{
+					isStatusChange(deviceInfo,"deviceState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
+				try{
 					sendToUsage(messFromGatewayBean);
 				}catch (Exception e){
-
+					logger.log(Level.SEVERE, "sendTousage异常：", e);
 				}
  				break;
 			case "online":   //设备上线
@@ -137,9 +165,66 @@ public class AnalysisServiceImpl implements AnalysisService {
 			case "push":
 				//收到以上四种事件，说明设备在线
 				deviceInfo.setDeviceState("1");
+				try{
+					isStatusChange(deviceInfo,"deviceState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
 		}
+
+	}
+
+	/**
+	 * 更新设备状态；
+	 * 状态有变化，通知业务层
+	 * {
+	 *   "type”: "1"                  // 0:表计设备  1：网关设备
+	 *  "deviceId" : "201703001320",
+	 *  "status" : "2",                // 设备状态（包含网关）  0：离线 1：在线 2：故障
+	 *  "valveStatus" : "1"          // 阀门状态  0：关  1：开
+	 * }
+	 * http://39.106.25.214/api/DeviceController/updateStatus
+	 * @param deviceInfo
+	 * @param param   deviceState , valveState
+	 */
+	public void isStatusChange(DeviceInfo deviceInfo,String param){
+		//先判断redis中是否有此数据
+		try{
+			boolean exist = redisService.isExist(deviceInfo.getDeviceId());
+			if(!exist) return;
+			DeviceInfo localDevice = deviceInfoMapper.getOne(deviceInfo.getDeviceId());
+			if(EmptyUtils.isEmpty(localDevice)) return;
+			String type = null;
+			if(localDevice.getDeviceId().equals(localDevice.getGatewayId())){
+				//网关
+				type = "1";
+			}else {
+				//设备
+				type = "0";
+			}
+			JSONObject statusJson = new JSONObject();
+			statusJson.put("type",type);
+			statusJson.put("deviceId",deviceInfo.getDeviceId());
+			if("deviceState".equals(param)){
+				if(!deviceInfo.getDeviceState().equals(localDevice.getDeviceState())){
+					//设备状态发生变更，通知业务
+					statusJson.put("status",deviceInfo.getDeviceState());
+				}
+			}else if("valveState".equals(param)){
+				if(!deviceInfo.getValveState().equals(localDevice.getValveState())){
+					//阀门状态发生变更，通知业务
+					statusJson.put("valveStatus",deviceInfo.getValveState());
+				}
+			}
+			HttpClient.sendPost(updateStatusUrl,statusJson.toJSONString());
+		}catch (Exception e){
+			logger.log(Level.INFO,"isStatusChange 出错"+deviceInfo.toString(), e);
+		}
+
+
+
 
 	}
 

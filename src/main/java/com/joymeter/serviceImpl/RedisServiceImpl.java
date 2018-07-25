@@ -38,4 +38,11 @@ public class RedisServiceImpl implements RedisService {
 
 
     }
+
+    @Override
+    public boolean isExist(String deviceId) {
+        boolean exists = redisUtils.exists(deviceId);
+        return exists;
+
+    }
 }
