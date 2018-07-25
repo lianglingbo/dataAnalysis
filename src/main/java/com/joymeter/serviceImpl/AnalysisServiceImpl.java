@@ -117,6 +117,10 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setReadState("1");
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
+			case "error":  //设备故障
+				deviceInfo.setDeviceState("2");
+				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				break;
 			case "data":       //读表成功
 				deviceInfo.setDeviceState("1");
 				//能收到读表data数据，说明读表成功

@@ -270,8 +270,8 @@ GDMap.prototype = {
         for (var i = 0, len = polys.length; i < len; i++) {
             var opts = polys[i].getOptions();
             polys[i].setOptions({
-                fillColor: (isHover ? '#ccc' : opts.extData.fillColor)
-                //fillOpacity: isHover ? 0.9 : 1
+                fillColor: (isHover ? '#ccc' : opts.extData.fillColor),
+                fillOpacity: (isHover ? 0.9 : 1)
             });
         }
 
