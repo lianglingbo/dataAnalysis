@@ -99,7 +99,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	public  void eventFilter(MsgFromGatewayBean messFromGatewayBean){
 		String event = messFromGatewayBean.getEvent();
 		String deviceId = messFromGatewayBean.getDeviceId();
-
+		String dataUsed = messFromGatewayBean.getData();
 		//更新抄表状态、设备状态、阀门状态 ，deviceState , valveState
 		DeviceInfo deviceInfo = new DeviceInfo();
 		deviceInfo.setDeviceId(deviceId);
@@ -148,6 +148,8 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setDeviceState("1");
 				//能收到读表data数据，说明读表成功
 				deviceInfo.setReadState("0");
+				//设置使用量
+				deviceInfo.setDataUsed(dataUsed);
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				try{
 					isStatusChange(deviceInfo,"deviceState");
@@ -211,14 +213,18 @@ public class AnalysisServiceImpl implements AnalysisService {
 				if(!deviceInfo.getDeviceState().equals(localDevice.getDeviceState())){
 					//设备状态发生变更，通知业务
 					statusJson.put("status",deviceInfo.getDeviceState());
+					updateDeviceLogger.log(Level.INFO,"设备状态发生变更isStatusChange"+statusJson.toString());
+					HttpClient.sendPost(updateStatusUrl,statusJson.toJSONString());
 				}
 			}else if("valveState".equals(param)){
 				if(!deviceInfo.getValveState().equals(localDevice.getValveState())){
 					//阀门状态发生变更，通知业务
 					statusJson.put("valveStatus",deviceInfo.getValveState());
+					updateDeviceLogger.log(Level.INFO,"设备状态发生变更isStatusChange"+statusJson.toString());
+					HttpClient.sendPost(updateStatusUrl,statusJson.toJSONString());
 				}
 			}
-			HttpClient.sendPost(updateStatusUrl,statusJson.toJSONString());
+
 		}catch (Exception e){
 			logger.log(Level.INFO,"isStatusChange 出错"+deviceInfo.toString(), e);
 		}
