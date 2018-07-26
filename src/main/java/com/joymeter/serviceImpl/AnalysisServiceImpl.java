@@ -532,9 +532,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 				|| StringUtils.isEmpty(deviceInfo.getProject())|| StringUtils.isEmpty(deviceInfo.getProvince())
 				|| StringUtils.isEmpty(deviceInfo.getCity())|| StringUtils.isEmpty(deviceInfo.getDistrict())
 				|| StringUtils.isEmpty(deviceInfo.getCommunity())|| StringUtils.isEmpty(deviceInfo.getAddress())
-				|| StringUtils.isEmpty(deviceInfo.getValveId())|| StringUtils.isEmpty(deviceInfo.getCategory())
-				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol())
-				|| StringUtils.isEmpty(deviceInfo.getGatewayUrl()))
+				|| StringUtils.isEmpty(deviceInfo.getValveId()))
+
+		/**
+		 * || StringUtils.isEmpty(deviceInfo.getCategory())
+		 * 				|| StringUtils.isEmpty(deviceInfo.getValveProtocol())|| StringUtils.isEmpty(deviceInfo.getDeviceProtocol())
+		 * 				|| StringUtils.isEmpty(deviceInfo.getGatewayUrl()
+		 */
 			return ResultUtil.error(400, "Unexpected param");
 
 		try {
