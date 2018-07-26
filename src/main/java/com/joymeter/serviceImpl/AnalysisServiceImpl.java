@@ -148,8 +148,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 				deviceInfo.setDeviceState("1");
 				//能收到读表data数据，说明读表成功
 				deviceInfo.setReadState("0");
-				//设置使用量
-				deviceInfo.setDataUsed(dataUsed);
+				//设置使用量，只写入用量大于上一次的情况
+				try{
+					 deviceInfo = setDataUsed(deviceInfo, dataUsed);
+					updateDeviceLogger.log(Level.SEVERE,"更新设备用量"+ deviceInfo.toString());
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, "更新设备用量出错"+deviceInfo.toString(), e);
+				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				try{
 					isStatusChange(deviceInfo,"deviceState");
@@ -178,6 +183,26 @@ public class AnalysisServiceImpl implements AnalysisService {
 
 	}
 
+	/**
+	 * 判断用量，是否大于上一次，如果大于，给对象赋值返回；不大于，不处理
+	 * @param deviceInfo
+	 * @param dataUsedNow
+	 * @return
+	 */
+	public DeviceInfo setDataUsed(DeviceInfo deviceInfo,String dataUsedNow){
+		DeviceInfo localDevice = deviceInfoMapper.getOne(deviceInfo.getDeviceId());
+		String dataUsedLocal = localDevice.getDataUsed();
+		updateDeviceLogger.log(Level.SEVERE,"更新设备用量，上一次用量为："+dataUsedLocal+"本次用量为："+dataUsedNow);
+		if(EmptyUtils.isEmpty(dataUsedLocal)){
+			deviceInfo.setDataUsed(dataUsedNow);
+			return deviceInfo;
+		}
+		int i = dataUsedLocal.compareTo(dataUsedNow);
+		if(i < 0){
+			deviceInfo.setDataUsed(dataUsedNow);
+		}
+		return deviceInfo;
+	}
 	/**
 	 * 更新设备状态；
 	 * 状态有变化，通知业务层
