@@ -214,7 +214,7 @@ let TableInit = function(){
             pageSize: 10,                       //每页的记录行数（*）
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
             clickToSelect:true,
-            exportDataType: "selected",              //basic', 'all', 'selected'.
+            exportDataType: "all",              //basic', 'all', 'selected'.
             showExport: true,                     //是否显示导出
             columns:[]
         });
