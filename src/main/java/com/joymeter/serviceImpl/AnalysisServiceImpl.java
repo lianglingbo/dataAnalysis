@@ -68,13 +68,11 @@ public class AnalysisServiceImpl implements AnalysisService {
  			JSONObject jsonData = JSONObject.parseObject(dataStr);
 			MsgFromGatewayBean messFromGatewayBean= new MsgFromGatewayBean(jsonData);
 			//内容非空校验
-			if(messFromGatewayBean.isEmpty())  return ResultUtil.error(406, "Unexpected param");
-			try{
-				//发送至缓存
-				redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),dataStr);
-			}catch (Exception e) {
-				updateDeviceLogger.log(Level.SEVERE, dataStr, e);
+			if(messFromGatewayBean.isEmpty())  {
+				addDataLogger.log(Level.SEVERE, "接收的内容有空值"+dataStr);
+				return ResultUtil.error(406, "Unexpected param");
 			}
+
 			//过滤事件，发送至mysql
 			eventFilter(messFromGatewayBean);
 			//发送数据到druid中
@@ -85,7 +83,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			DataCache.add(dataStr);
 			addDataLogger.log(Level.INFO, dataStr);
  		} catch (Exception e) {
-			addDataLogger.log(Level.SEVERE, dataStr, e);
+			addDataLogger.log(Level.SEVERE, "add接口异常"+dataStr, e);
 		}
 		return ResultUtil.success();
 
@@ -115,12 +113,20 @@ public class AnalysisServiceImpl implements AnalysisService {
  				break;
 			case "close":    //阀门关闭
 				deviceInfo.setValveState("0");
-
+				try{
+					isStatusChange(deviceInfo,"valveState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
 			case "open":     //阀门打开
 				deviceInfo.setValveState("1");
-
+				try{
+					isStatusChange(deviceInfo,"valveState");
+				}catch (Exception e){
+					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
+				}
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
 				break;
 			case "data_failed":  //读表失败
@@ -147,16 +153,26 @@ public class AnalysisServiceImpl implements AnalysisService {
 				}catch (Exception e){
 					updateDeviceLogger.log(Level.SEVERE, "更新设备用量出错"+deviceInfo.toString(), e);
 				}
+				//更新mysql
 				deviceInfoMapper.updateDeviceInfo(deviceInfo);
+				//通知业务层
 				try{
 					isStatusChange(deviceInfo,"deviceState");
 				}catch (Exception e){
 					updateDeviceLogger.log(Level.SEVERE, deviceInfo.toString(), e);
 				}
+				//设置夜间用量
 				try{
 					sendToUsage(messFromGatewayBean);
 				}catch (Exception e){
 					logger.log(Level.SEVERE, "sendTousage异常：", e);
+				}
+				//更新至redis
+				try{
+					//发送至缓存
+					redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),messFromGatewayBean.toString());
+				}catch (Exception e) {
+					updateDeviceLogger.log(Level.SEVERE, messFromGatewayBean.toString(), e);
 				}
  				break;
 			case "online":   //设备上线
@@ -230,6 +246,13 @@ public class AnalysisServiceImpl implements AnalysisService {
 				if(!deviceInfo.getDeviceState().equals(localDevice.getDeviceState())){
 					//设备状态发生变更，通知业务
 					statusJson.put("status",deviceInfo.getDeviceState());
+					updateDeviceLogger.log(Level.INFO,"设备状态发生变更isStatusChange"+statusJson.toString());
+					HttpClient.sendPost(updateStatusUrl,statusJson.toJSONString());
+				}
+			}else if("valveState".equals(param)){
+				if(!deviceInfo.getValveState().equals(localDevice.getValveState())){
+					//阀门状态发生变更，通知业务
+					statusJson.put("valveStatus",deviceInfo.getValveState());
 					updateDeviceLogger.log(Level.INFO,"设备状态发生变更isStatusChange"+statusJson.toString());
 					HttpClient.sendPost(updateStatusUrl,statusJson.toJSONString());
 				}
