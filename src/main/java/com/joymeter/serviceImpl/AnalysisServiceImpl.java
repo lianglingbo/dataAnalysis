@@ -151,7 +151,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				//设置使用量，只写入用量大于上一次的情况
 				try{
 					 deviceInfo = setDataUsed(deviceInfo, dataUsed);
-					updateDeviceLogger.log(Level.SEVERE,"更新设备用量"+ deviceInfo.toString());
+					updateDeviceLogger.log(Level.INFO,"更新设备用量"+ deviceInfo.toString());
 				}catch (Exception e){
 					updateDeviceLogger.log(Level.SEVERE, "更新设备用量出错"+deviceInfo.toString(), e);
 				}
@@ -192,7 +192,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 	public DeviceInfo setDataUsed(DeviceInfo deviceInfo,String dataUsedNow){
 		DeviceInfo localDevice = deviceInfoMapper.getOne(deviceInfo.getDeviceId());
 		String dataUsedLocal = localDevice.getDataUsed();
-		updateDeviceLogger.log(Level.SEVERE,"更新设备用量，上一次用量为："+dataUsedLocal+"本次用量为："+dataUsedNow);
+		updateDeviceLogger.log(Level.INFO,"更新设备用量，上一次用量为："+dataUsedLocal+"本次用量为："+dataUsedNow);
 		if(EmptyUtils.isEmpty(dataUsedLocal)){
 			deviceInfo.setDataUsed(dataUsedNow);
 			return deviceInfo;
@@ -251,7 +251,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			}
 
 		}catch (Exception e){
-			logger.log(Level.INFO,"isStatusChange 出错"+deviceInfo.toString(), e);
+			logger.log(Level.SEVERE,"isStatusChange 出错"+deviceInfo.toString(), e);
 		}
 
 
@@ -581,7 +581,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				//更新设备逻辑：当内容发生变更时，才去update
 				if(!deviceInfo.equals(localDevice)){
 					deviceInfoMapper.updateDeviceInfo(deviceInfo);
-					registerLogger.log(Level.SEVERE, deviceInfo.toString());
+					registerLogger.log(Level.INFO, deviceInfo.toString());
 				}
 			}
 		} catch (Exception e) {
@@ -611,7 +611,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			return;
 		}
 		try {
-			logger.log(Level.SEVERE, "更新设备："+ deviceInfo);
+			logger.log(Level.INFO, "更新设备："+ deviceInfo);
 			deviceInfoMapper.updateDeviceInfo(deviceInfo);
 		} catch (Exception e) {
 
