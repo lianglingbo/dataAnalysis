@@ -262,9 +262,6 @@ public class AnalysisServiceImpl implements AnalysisService {
 			logger.log(Level.SEVERE,"isStatusChange 出错"+deviceInfo.toString(), e);
 		}
 
-
-
-
 	}
 
 	/**

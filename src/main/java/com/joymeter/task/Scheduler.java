@@ -18,7 +18,7 @@ import com.joymeter.util.PropertiesUtils;
  */
 public class Scheduler {
     private static Scheduler scheduler = null;
-	private static String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
+	private final String druidUrl = PropertiesUtils.getProperty("druidUrl", "");
 
     /**
      * 单例模式
