@@ -39,7 +39,7 @@ spring:
   #redis配置，往cjoy系统发送实时数据
   redis:
     database: 0
-    host: 39.106.25.214
-    password: 123456
-    port: 6379
+    host: 172.17.231.114
+    password: Joymeter@123
+    port: 6479
     timeout: 1000ms

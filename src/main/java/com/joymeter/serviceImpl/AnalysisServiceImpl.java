@@ -170,7 +170,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				//更新至redis
 				try{
 					//发送至缓存
-					redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),messFromGatewayBean.toString());
+					redisService.sendToCJoy(messFromGatewayBean.getDeviceId(),JSONObject.toJSON(messFromGatewayBean).toString());
 				}catch (Exception e) {
 					updateDeviceLogger.log(Level.SEVERE, messFromGatewayBean.toString(), e);
 				}
