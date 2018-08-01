@@ -1,4 +1,4 @@
-package com.joymeter;
+package com.joymeter.listener;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.joymeter.entity.RocketmqEvent;
 
 @Component
-public class Consumer {
+public class ConsumerListener {
 	@EventListener(condition = "#event.msgs[0].topic=='TopicTest1' && #event.msgs[0].tags=='TagA'")
 	public void rocketmqMsgListen(RocketmqEvent event) {
 		try {
