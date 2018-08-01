@@ -47,10 +47,11 @@ public class Consumer {
 	private static String instanceName = PropertiesUtils.getProperty("instanceName", "");
 	private static String topic = PropertiesUtils.getProperty("topic", "");
 	private static String subExpression = PropertiesUtils.getProperty("subExpression", "");
-
-
-	private DefaultMQPushConsumer mqconsumer = new DefaultMQPushConsumer("test-group");
 	
+	/**
+	 * 单例
+	 * @return
+	 */
 	public static Consumer GetInstance() {
 		if(consumer==null) {
 			consumer  = new Consumer();
@@ -344,6 +345,7 @@ public class Consumer {
 	 * 启动消费者
 	 */
 	public void start() {
+		DefaultMQPushConsumer mqconsumer = new DefaultMQPushConsumer("test-group");
     	try {
     		mqconsumer.setNamesrvAddr(namesrvAddr);
     		mqconsumer.setInstanceName(instanceName);
