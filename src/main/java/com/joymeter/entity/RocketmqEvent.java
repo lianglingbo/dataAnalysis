@@ -7,6 +7,11 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.context.ApplicationEvent;
 
+/**
+ * RocketMQ事件类
+ * @author Pan Shuoting
+ *
+ */
 public class RocketmqEvent extends ApplicationEvent {
 	private DefaultMQPushConsumer consumer;
 	private List<MessageExt> msgs;

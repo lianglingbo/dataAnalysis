@@ -5,6 +5,11 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * RocketMQ 配置
+ * @author Pan Shuoting
+ *
+ */
 @ConfigurationProperties(RocketmqProperties.PREFIX)
 public class RocketmqProperties {
 	public static final String PREFIX = "apache.rocketmq";

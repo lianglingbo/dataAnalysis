@@ -5,6 +5,11 @@ import org.springframework.stereotype.Component;
 
 import com.joymeter.entity.RocketmqEvent;
 
+/**
+ * 监听消费者消费事件
+ * @author Pan Shuoting
+ *
+ */
 @Component
 public class ConsumerListener {
 	@EventListener(condition = "#event.msgs[0].topic=='TopicTest1' && #event.msgs[0].tags=='TagA'")

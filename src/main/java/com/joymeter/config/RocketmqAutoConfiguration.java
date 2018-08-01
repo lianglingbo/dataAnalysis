@@ -1,6 +1,5 @@
 package com.joymeter.config;
 
-import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,6 +23,11 @@ import org.springframework.context.annotation.Configuration;
 
 import com.joymeter.entity.RocketmqEvent;
 
+/**
+ * 初始化Producer和consumer
+ * @author Pan Shuoting
+ *
+ */
 @Configuration
 @EnableConfigurationProperties(RocketmqProperties.class)
 @ConditionalOnProperty(prefix = RocketmqProperties.PREFIX, value = "namesrvAddr")
