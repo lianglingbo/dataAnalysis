@@ -4,8 +4,23 @@ server:
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
     min-response-size: 1024
   port: 18080
-spring:
+#RocketMQ配置
+apache:
+  rocketmq:
+    namesrvAddr: 192.168.31.168:9876
+    producerGroupName: test-group
+    transactionProducerGroupName: transactionProducerGroup
+    consumerGroupName: comsumerGroup
+    producerInstanceName: producerInstance
+    consumerInstanceName: cosumerInstance
+    producerTranInstanceName: producerTranInstance
+    consumerBatchMaxSize: 1
+    consumerBroadcasting: false
+    subscribe: TopicTest1:TagA
+    enableHisConsumer: false
+    enableOrderConsumer: false
 #配置mysql多环境,修改active属性即可
+spring:
   profiles:
     active: product
 ---

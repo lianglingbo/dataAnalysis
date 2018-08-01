@@ -30,15 +30,6 @@ public class Application {
 		} catch (Exception e) {
             Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, e);
 		}
-        
-        try {
-        	Runnable appScheduler = () -> {
-                Consumer.GetInstance().start();
-            };
-            ThreadsExecutor.GetPoolExecutorService().execute(appScheduler);
-		} catch (Exception e) {
-            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, e);
-		}
     }
     
     @Bean
