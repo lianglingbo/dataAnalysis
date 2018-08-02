@@ -15,80 +15,70 @@ import java.util.Date;
  **/
 public class TimeTools {
 
-    /** * 获得指定日期的前一天 *
+	/**
+	 * * 获得指定日期的前一天 *
+	 * 
+	 * @param specifiedDay
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception
+	 */
 
-     @param specifiedDay
+	public static String getSpecifiedDayBefore(String specifiedDay) {
+		Calendar c = Calendar.getInstance();
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 
-      * @return
+		c.setTime(date);
+		int day = c.get(Calendar.DATE);
+		c.set(Calendar.DATE, day - 1);
 
-     * @throws Exception */
+		String dayBefore = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+		return dayBefore;
+	}
 
-    public static String getSpecifiedDayBefore(String specifiedDay){
+	/**
+	 * 获得指定日期的后一天
+	 * 
+	 * @param specifiedDay
+	 * @return
+	 */
+	public static String getSpecifiedDayAfter(String specifiedDay) {
+		Calendar c = Calendar.getInstance();
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		c.setTime(date);
+		int day = c.get(Calendar.DATE);
+		c.set(Calendar.DATE, day + 1);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String dayAfter = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+		return dayAfter;
+	}
 
-        Calendar c = Calendar.getInstance();
+	/**
+	 * 时间戳转小时
+	 *
+	 * @param dateTime
+	 * @return
+	 */
+	public static int timestampToHour(long dateTime) {
+		SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+		int hour = Integer.valueOf(hourFormat.format(new Date(dateTime)));
+		return hour;
+	}
 
-        Date date=null;
-
-        try {
-
-            date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
-
-        } catch (ParseException e) {
-
-            e.printStackTrace();
-
-        }
-
-        c.setTime(date); int day=c.get(Calendar.DATE);
-
-        c.set(Calendar.DATE,day-1);
-
-        String dayBefore=new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
-
-        return dayBefore;
-
-    }
-
-
-    /**
-     * 获得指定日期的后一天
-     * @param specifiedDay
-     * @return
-     */
-    public static String getSpecifiedDayAfter(String specifiedDay){
-        Calendar c = Calendar.getInstance();
-        Date date=null;
-        try {
-            date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        c.setTime(date);
-        int day=c.get(Calendar.DATE);
-        c.set(Calendar.DATE,day+1);
-
-        String dayAfter=new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
-        return dayAfter;
-    }
-
-
-    /**
-     * 时间戳( 转 小时
-     *
-     * @param dateTime
-     * @return
-     */
-    public static int timestampToHour(long dateTime){
-        SimpleDateFormat hourFormat=new SimpleDateFormat("HH");
-        int hour =  Integer.valueOf(hourFormat.format(new Date(dateTime)));
-        return hour;
-    }
-
-    public static String timestampToDate(long dataTime){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        String format = dateFormat.format(dataTime);
-        return format;
-    }
+	public static String timestampToDate(long dataTime) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		String format = dateFormat.format(dataTime);
+		return format;
+	}
 }

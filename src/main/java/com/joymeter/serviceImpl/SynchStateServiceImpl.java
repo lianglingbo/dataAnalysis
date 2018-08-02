@@ -115,58 +115,69 @@ public class SynchStateServiceImpl implements SynchStateService {
                     logger.log(Level.INFO,e+"解析时间异常");
                  }
              //进行状态的判断，对druid结果进行分析，然后更新mysql
-             if("data".equals(event)){
-                 //得到数据，设备在线，抄表成功
-                 if("0".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
-                     flag=true;
-                     deviceInfo.setDeviceState("1");
-                 }
-                 if("1".equals(readState) || "".equals(readState) || StringUtils.isEmpty(readState)){
-                     flag=true;
-                     deviceInfo.setReadState("0");
-                 }
-             }else if("data_failed".equals(event)){
-                 //抄表失败
-                 if("0".equals(readState) || "".equals(readState) || StringUtils.isEmpty(readState)){
-                     flag=true;
-                     deviceInfo.setReadState("1");
-                 }
-             }else if("online".equals(event)){
-                 //设备在线
-                 if("0".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
-                     flag=true;
-                     deviceInfo.setDeviceState("1");
-                 }
-             }else if("offline".equals(event)){
-                 //设备离线
-                 if("1".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
-                     flag=true;
-                     deviceInfo.setDeviceState("0");
-                 }
-             }else if("keepalive".equals(event) ){
-                 //心跳，设备在线
-                 if("0".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
-                     flag=true;
-                     deviceInfo.setDeviceState("1");
-                 }
-             }else if("open".equals(event)){
-                 //阀门开
-                 if("0".equals(valveState) || "".equals(valveState) || StringUtils.isEmpty(valveState)) {
-                     flag=true;
-                     deviceInfo.setValveState("1");
-                 }
-             }else if("open_failed".equals(event)){
-                 //阀门开失败
-
-             }else if("close".equals(event)){
-                 //阀门关
-                 if("1".equals(valveState) || "".equals(valveState) || StringUtils.isEmpty(valveState)){
-                     flag=true;
-                     deviceInfo.setValveState("0");
-                 }
-             }else if("close_failed".equals(event)){
-                 //阀门关失败
-             }
+                switch (event) {
+				case "data":
+					 //得到数据，设备在线，抄表成功
+	                 if("0".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
+	                     flag=true;
+	                     deviceInfo.setDeviceState("1");
+	                 }
+	                 if("1".equals(readState) || "".equals(readState) || StringUtils.isEmpty(readState)){
+	                     flag=true;
+	                     deviceInfo.setReadState("0");
+	                 }
+					break;
+				case "data_failed":
+					 //抄表失败
+	                 if("0".equals(readState) || "".equals(readState) || StringUtils.isEmpty(readState)){
+	                     flag=true;
+	                     deviceInfo.setReadState("1");
+	                 }
+					break;
+				case "online":
+					//设备在线
+	                 if("0".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
+	                     flag=true;
+	                     deviceInfo.setDeviceState("1");
+	                 }
+					break;
+				case "offline":
+					//设备离线
+	                 if("1".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
+	                     flag=true;
+	                     deviceInfo.setDeviceState("0");
+	                 }
+					break;
+				case "keepalive":
+					 //心跳，设备在线
+	                 if("0".equals(deviceState) || "".equals(deviceState) || StringUtils.isEmpty(deviceState)){
+	                     flag=true;
+	                     deviceInfo.setDeviceState("1");
+	                 }
+					break;
+				case "open":
+					 //阀门开
+	                 if("0".equals(valveState) || "".equals(valveState) || StringUtils.isEmpty(valveState)) {
+	                     flag=true;
+	                     deviceInfo.setValveState("1");
+	                 }
+					break;
+				case "open_failed":
+					 //阀门开失败
+					break;
+				case "close":
+					//阀门关
+	                 if("1".equals(valveState) || "".equals(valveState) || StringUtils.isEmpty(valveState)){
+	                     flag=true;
+	                     deviceInfo.setValveState("0");
+	                 }
+					break;
+				case "close_failed":
+					 //阀门关失败
+					break;
+				default:
+					break;
+				}
              //判断完毕，更新数据库
              if(flag==true){
                  if(count > 50){
